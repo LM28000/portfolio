@@ -76,7 +76,7 @@ const translations = {
     'experience.devinci.mission3': 'Rédaction de devis et propositions commerciales',
     'experience.devinci.mission4': 'Gestion de projets internes',
     'experience.mainMissions': 'Missions principales :',
-    'experience.intro': 'Mon parcours professionnel entre innovation technologique et développement commercial',
+    'experience.intro': 'Mon parcours professionnel entre innovation technologique et investissement associatif',
 
     // Education section
     'education.title': 'Formation',
@@ -257,7 +257,7 @@ const translations = {
     'experience.devinci.mission3': 'Writing quotes and commercial proposals',
     'experience.devinci.mission4': 'Internal project management',
     'experience.mainMissions': 'Main missions:',
-    'experience.intro': 'My professional journey between technological innovation and commercial development',
+    'experience.intro': 'My professional journey between technological innovation and associative investment',
 
     // Education section
     'education.title': 'Education',
