@@ -18,7 +18,7 @@ const Hero = () => {
           {/* Profile Image */}
           <div className="relative mx-auto w-48 h-48 rounded-full overflow-hidden shadow-xl ring-4 ring-white">
             <img 
-              src="Capture_d_écran_du_2025-07-10_13-44-12-removebg-preview.png"
+              src="/profile.png"
               alt="Louis-Marie Perret du Cray"
               className="w-full h-full object-cover"
             />
