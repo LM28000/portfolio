@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Linkedin, Send, CheckCircle } from 'lucide-react';
+import { Mail, Phone, MapPin, Linkedin, Send, CheckCircle, AlertCircle } from 'lucide-react';
+import emailjs from '@emailjs/browser';
 import { useLanguage } from '../contexts/LanguageContext';
 
 const Contact = () => {
@@ -11,6 +12,8 @@ const Contact = () => {
     message: ''
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -19,14 +22,75 @@ const Contact = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate form submission
-    setIsSubmitted(true);
-    setTimeout(() => {
-      setIsSubmitted(false);
+    setIsLoading(true);
+    setError('');
+
+    try {
+      // Mode test pour développement
+      const testMode = import.meta.env.VITE_TEST_MODE === 'true';
+      
+      if (testMode) {
+        // Simulation d'envoi en mode test
+        console.log('📧 Mode test - Email simulé:', {
+          de: formData.name,
+          email: formData.email,
+          sujet: formData.subject,
+          message: formData.message
+        });
+        
+        // Simulation d'un délai d'envoi
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        setIsSubmitted(true);
+        setFormData({ name: '', email: '', subject: '', message: '' });
+        
+        setTimeout(() => {
+          setIsSubmitted(false);
+        }, 5000);
+        
+        return;
+      }
+
+      // Configuration EmailJS réelle
+      const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+      const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+      const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+      if (!serviceId || !templateId || !publicKey) {
+        throw new Error(t('contact.form.error.config'));
+      }
+
+      // Paramètres du template
+      const templateParams = {
+        from_name: formData.name,
+        from_email: formData.email,
+        subject: formData.subject,
+        message: formData.message,
+        to_name: 'Louis-Marie Perret du Cray',
+      };
+
+      await emailjs.send(serviceId, templateId, templateParams, publicKey);
+      
+      setIsSubmitted(true);
       setFormData({ name: '', email: '', subject: '', message: '' });
-    }, 3000);
+      
+      // Retour au formulaire après 5 secondes
+      setTimeout(() => {
+        setIsSubmitted(false);
+      }, 5000);
+
+    } catch (error) {
+      console.error('Erreur lors de l\'envoi:', error);
+      if (error instanceof Error && error.message === t('contact.form.error.config')) {
+        setError(t('contact.form.error.config'));
+      } else {
+        setError(t('contact.form.error.send'));
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const contactInfo = [
@@ -203,12 +267,33 @@ const Contact = () => {
                 />
               </div>
 
+              {error && (
+                <div className="p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-700">
+                  <AlertCircle size={16} />
+                  <span>{error}</span>
+                </div>
+              )}
+
               <button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 flex items-center justify-center gap-2 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                disabled={isLoading}
+                className={`w-full px-6 py-3 rounded-lg font-medium transition-all duration-300 flex items-center justify-center gap-2 transform hover:scale-105 shadow-lg hover:shadow-xl ${
+                  isLoading 
+                    ? 'bg-gray-400 cursor-not-allowed' 
+                    : 'bg-blue-600 hover:bg-blue-700 text-white'
+                }`}
               >
-                <Send size={20} />
-                {t('contact.send')}
+                {isLoading ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    {t('contact.form.sending')}
+                  </>
+                ) : (
+                  <>
+                    <Send size={20} />
+                    {t('contact.send')}
+                  </>
+                )}
               </button>
             </form>
           </div>

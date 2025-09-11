@@ -192,6 +192,9 @@ const translations = {
     'contact.success.description': 'Merci pour votre message. Je vous répondrai dans les plus brefs délais.',
     'contact.availability.title': 'Disponibilité',
     'contact.availability.description': 'Actuellement en alternance chez Devoteam. Disponible pour des discussions sur des projets innovants, des collaborations ou des opportunités futures.',
+    'contact.form.sending': 'Envoi en cours...',
+    'contact.form.error.config': 'Configuration EmailJS manquante. Veuillez contacter l\'administrateur.',
+    'contact.form.error.send': 'Une erreur est survenue lors de l\'envoi du message. Veuillez réessayer.',
 
     // Footer
     'footer.rights': 'Tous droits réservés.',
@@ -370,6 +373,9 @@ const translations = {
     'contact.success.description': 'Thank you for your message. I will reply as soon as possible.',
     'contact.availability.title': 'Availability',
     'contact.availability.description': 'Currently apprentice at Devoteam. Available for discussions about innovative projects, collaborations or future opportunities.',
+    'contact.form.sending': 'Sending...',
+    'contact.form.error.config': 'EmailJS configuration missing. Please contact the administrator.',
+    'contact.form.error.send': 'An error occurred while sending the message. Please try again.',
 
     // Footer
     'footer.rights': 'All rights reserved.',
