@@ -4,6 +4,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - VITE_TEST_MODE=false
+        - VITE_EMAILJS_SERVICE_ID=service_k0yp7g8
+        - VITE_EMAILJS_TEMPLATE_ID=template_qjmmeea
+        - VITE_EMAILJS_PUBLIC_KEY=989Z7HW0nw_PZ3wE7
     container_name: portfolio
     ports:
       - "2368:80"

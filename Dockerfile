@@ -4,6 +4,19 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
+
+# Arguments de build pour les variables d'environnement
+ARG VITE_TEST_MODE=false
+ARG VITE_EMAILJS_SERVICE_ID
+ARG VITE_EMAILJS_TEMPLATE_ID
+ARG VITE_EMAILJS_PUBLIC_KEY
+
+# Définir les variables d'environnement pour le build
+ENV VITE_TEST_MODE=$VITE_TEST_MODE
+ENV VITE_EMAILJS_SERVICE_ID=$VITE_EMAILJS_SERVICE_ID
+ENV VITE_EMAILJS_TEMPLATE_ID=$VITE_EMAILJS_TEMPLATE_ID
+ENV VITE_EMAILJS_PUBLIC_KEY=$VITE_EMAILJS_PUBLIC_KEY
+
 RUN npm run build
 
 # serve stage
