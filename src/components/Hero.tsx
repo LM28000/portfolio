@@ -41,18 +41,24 @@ const Hero = () => {
 
           {/* Quick Contact */}
           <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-600">
-            <div className="flex items-center gap-2 hover:text-blue-600 transition-colors">
+            <div className="flex items-center gap-2 hover:text-blue-600 transition-colors cursor-pointer">
               <MapPin size={16} />
               <span>{t('hero.location')}</span>
             </div>
-            <div className="flex items-center gap-2 hover:text-blue-600 transition-colors">
+            <a 
+              href="tel:+33619862297"
+              className="flex items-center gap-2 hover:text-blue-600 transition-colors"
+            >
               <Phone size={16} />
               <span>{t('hero.phone')}</span>
-            </div>
-            <div className="flex items-center gap-2 hover:text-blue-600 transition-colors">
+            </a>
+            <a 
+              href="mailto:louis-marie@du-cray.com"
+              className="flex items-center gap-2 hover:text-blue-600 transition-colors"
+            >
               <Mail size={16} />
               <span>{t('hero.email')}</span>
-            </div>
+            </a>
           </div>
 
           {/* CTA Button */}
