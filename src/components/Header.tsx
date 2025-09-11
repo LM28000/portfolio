@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
+import LanguageSwitch from './LanguageSwitch';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
+  const { t } = useLanguage();
 
   const navItems = [
-    { id: 'hero', label: 'Accueil' },
-    { id: 'about', label: 'À propos' },
-    { id: 'experience', label: 'Expérience' },
-    { id: 'education', label: 'Formation' },
-    { id: 'skills', label: 'Compétences' },
-    { id: 'projects', label: 'Projets' },
-    { id: 'interests', label: 'Centres d\'intérêt' },
-    { id: 'contact', label: 'Contact' },
+    { id: 'hero', label: t('nav.home') },
+    { id: 'about', label: t('nav.about') },
+    { id: 'experience', label: t('nav.experience') },
+    { id: 'education', label: t('nav.education') },
+    { id: 'skills', label: t('nav.skills') },
+    { id: 'projects', label: t('nav.projects') },
+    { id: 'interests', label: t('nav.interests') },
+    { id: 'contact', label: t('nav.contact') },
   ];
 
   useEffect(() => {
@@ -54,7 +57,7 @@ const Header = () => {
           </div>
           
           {/* Desktop Navigation */}
-          <div className="hidden md:flex space-x-8">
+          <div className="hidden md:flex items-center space-x-8">
             {navItems.map((item) => (
               <button
                 key={item.id}
@@ -66,15 +69,19 @@ const Header = () => {
                 {item.label}
               </button>
             ))}
+            <LanguageSwitch />
           </div>
 
-          {/* Mobile menu button */}
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 text-gray-700 hover:text-blue-600 transition-colors"
-          >
-            {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
+          {/* Mobile menu button and language switch */}
+          <div className="md:hidden flex items-center space-x-3">
+            <LanguageSwitch />
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="p-2 text-gray-700 hover:text-blue-600 transition-colors"
+            >
+              {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Navigation */}

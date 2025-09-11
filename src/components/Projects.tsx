@@ -1,29 +1,30 @@
-import React from 'react';
 import { Folder, ExternalLink, Github, Wrench, Server } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const Projects = () => {
+  const { t } = useLanguage();
   const projects = [
     {
-      title: "Projets d'Imagination et d'eXploration (PIX)",
-      category: "Robotique & Innovation",
-      description: "Projets académiques axés sur l'innovation et la créativité technique",
+      title: t('projects.pix.title'),
+      category: t('projects.pix.category'),
+      description: t('projects.pix.description'),
       details: [
-        "Conception d'un robot hexapode",
-        "Construction d'une maquette d'immeuble résistant aux séismes"
+        t('projects.pix.detail1'),
+        t('projects.pix.detail2')
       ],
-      technologies: ["Solidworks", "Mécanique", "Électronique", "Programmation"],
+      technologies: ["Solidworks", t('projects.technologies.mechanics'), t('projects.technologies.electronics'), t('projects.technologies.programming')],
       icon: Wrench,
       color: "blue"
     },
     {
-      title: "Serveur Multimédia Personnel",
-      category: "Infrastructure & Développement",
-      description: "Projet technique de développement et administration système",
+      title: t('projects.multimedia.title'),
+      category: t('projects.multimedia.category'),
+      description: t('projects.multimedia.description'),
       details: [
-        "Développement et administration d'un serveur personnel multimédia sous Debian",
-        "Configuration des services, sécurisation et optimisation des performances"
+        t('projects.multimedia.detail1'),
+        t('projects.multimedia.detail2')
       ],
-      technologies: ["Debian", "Linux", "Administration système", "Réseaux"],
+      technologies: ["Debian", "Linux", t('projects.technologies.system'), t('projects.technologies.networks')],
       icon: Server,
       color: "teal"
     }
@@ -33,9 +34,9 @@ const Projects = () => {
     <section id="projects" className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Projets</h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">{t('projects.title')}</h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Découvrez mes réalisations techniques et mes projets d'innovation
+            {t('projects.intro')}
           </p>
         </div>
 
@@ -72,7 +73,7 @@ const Projects = () => {
                   <p className="text-gray-600 mb-6">{project.description}</p>
 
                   <div className="space-y-4 mb-6">
-                    <h4 className="font-semibold text-gray-900">Réalisations :</h4>
+                    <h4 className="font-semibold text-gray-900">{t('projects.achievements')}</h4>
                     <ul className="space-y-2">
                       {project.details.map((detail, detailIndex) => (
                         <li key={detailIndex} className="flex items-start gap-2">
@@ -85,7 +86,7 @@ const Projects = () => {
 
                   {/* Technologies */}
                   <div className="space-y-3">
-                    <h4 className="font-semibold text-gray-900">Technologies utilisées :</h4>
+                    <h4 className="font-semibold text-gray-900">{t('projects.technologies')}</h4>
                     <div className="flex flex-wrap gap-2">
                       {project.technologies.map((tech, techIndex) => (
                         <span 
@@ -107,10 +108,9 @@ const Projects = () => {
         <div className="mt-16 text-center">
           <div className="bg-white rounded-xl p-8 shadow-lg max-w-2xl mx-auto">
             <Folder className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">Plus de projets à venir</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">{t('projects.moreProjects')}</h3>
             <p className="text-gray-600">
-              En cours de formation, je développe constamment de nouveaux projets. 
-              N'hésitez pas à me contacter pour en savoir plus sur mes réalisations récentes.
+              {t('projects.moreProjectsDesc')}
             </p>
           </div>
         </div>

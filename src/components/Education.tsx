@@ -1,24 +1,27 @@
-import React from 'react';
 import { GraduationCap, Calendar, Award, ExternalLink } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const Education = () => {
+  const { t } = useLanguage();
+  
   const educations = [
     {
-      institution: "ESILV",
-      degree: "Cycle ingénieur majeure Ingénierie Logicielle & IA",
-      location: "Nantes (44)",
-      period: "2023 - 2028",
-      description: "Formation d'ingénieur spécialisée en développement logiciel et intelligence artificielle",
+      institution: t('education.esilv.institution'),
+      degree: t('education.esilv.degree'),
+      location: t('education.esilv.location.full'),
+      period: t('education.esilv.period.full'),
+      description: t('education.esilv.description.full'),
       color: "blue",
       link: "https://www.esilv.fr/"
     },
     {
-      institution: "Académie musicale de Liesse",
-      degree: "Bac (mention bien) - Mathématiques & N.S.I.",
-      location: "Précigné (72)",
-      period: "2020 - 2023",
-      description: "Formation musicale approfondie parallèlement aux études scientifiques",
-      color: "teal"
+      institution: t('education.academie.institution'),
+      degree: t('education.academie.degree'),
+      location: t('education.academie.location'),
+      period: t('education.academie.period'),
+      description: t('education.academie.description'),
+      color: "teal",
+      link: "https://www.academiemusicaledeliesse.fr/"
     }
   ];
 
@@ -26,9 +29,9 @@ const Education = () => {
     <section id="education" className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Formation</h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">{t('education.title')}</h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Un parcours académique alliant excellence scientifique et formation artistique
+            {t('education.intro')}
           </p>
         </div>
 
@@ -49,19 +52,17 @@ const Education = () => {
                   </div>
                   
                   <div className="flex-grow">
-                    <div className="flex items-center gap-2 mb-2">
-                      <h3 className="text-2xl font-bold text-gray-900">{edu.institution}</h3>
-                      {edu.link && (
-                        <a 
-                          href={edu.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:text-blue-700 transition-colors"
-                        >
-                          <ExternalLink size={16} />
-                        </a>
-                      )}
-                    </div>
+                    <a 
+                      href={edu.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group"
+                    >
+                      <h3 className="text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors flex items-center gap-2 mb-2">
+                        {edu.institution}
+                        <ExternalLink className="w-5 h-5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </h3>
+                    </a>
                     <p className="text-lg font-medium text-gray-700 mb-2">{edu.degree}</p>
                     <p className="text-gray-600">{edu.description}</p>
                   </div>
@@ -86,7 +87,7 @@ const Education = () => {
         <div className="mt-12 text-center">
           <div className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-100 to-orange-100 px-6 py-3 rounded-full">
             <Award className="w-5 h-5 text-yellow-600" />
-            <span className="font-medium text-gray-700">Mention Bien au Baccalauréat</span>
+            <span className="font-medium text-gray-700">{t('education.baccalaureat.mention')}</span>
           </div>
         </div>
       </div>

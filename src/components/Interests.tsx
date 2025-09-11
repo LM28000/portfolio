@@ -1,33 +1,34 @@
-import React from 'react';
 import { Music, TrendingUp, Anchor, Users } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const Interests = () => {
+  const { t } = useLanguage();
   const interests = [
     {
-      title: "Musique",
-      description: "Violon, alto, piano, guitare, orchestre, chant",
-      detail: "Formation musicale approfondie à l'Académie de Liesse",
+      title: t('interests.music.title'),
+      description: t('interests.music.description'),
+      detail: t('interests.music.detail'),
       icon: Music,
       color: "purple"
     },
     {
-      title: "Finance & Cryptomonnaie",
-      description: "Analyse des marchés financiers et technologies blockchain",
-      detail: "Veille technologique et investissement responsable",
+      title: t('interests.finance.title'),
+      description: t('interests.finance.description'),
+      detail: t('interests.finance.detail'),
       icon: TrendingUp,
       color: "green"
     },
     {
-      title: "Sports Nautiques",
-      description: "Voile et aviron",
-      detail: "Pratique régulière et participation à des compétitions",
+      title: t('interests.sports.title'),
+      description: t('interests.sports.description'),
+      detail: t('interests.sports.detail'),
       icon: Anchor,
       color: "blue"
     },
     {
-      title: "Scoutisme",
-      description: "Engagement associatif et développement personnel",
-      detail: "Leadership, travail d'équipe et valeurs humaines",
+      title: t('interests.scouting.title'),
+      description: t('interests.scouting.description'),
+      detail: t('interests.scouting.detail'),
       icon: Users,
       color: "orange"
     }
@@ -37,9 +38,9 @@ const Interests = () => {
     <section id="interests" className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Centres d'intérêt</h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">{t('interests.title')}</h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Mes passions qui enrichissent ma vision et complètent mon profil professionnel
+            {t('interests.intro')}
           </p>
         </div>
 
@@ -81,11 +82,9 @@ const Interests = () => {
         {/* Philosophy */}
         <div className="mt-16 bg-gradient-to-r from-blue-50 to-teal-50 rounded-xl p-8">
           <div className="text-center max-w-3xl mx-auto">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">Ma philosophie</h3>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">{t('interests.philosophy.title')}</h3>
             <p className="text-gray-600 text-lg leading-relaxed">
-              Je crois fermement que la diversité des expériences enrichit la perspective professionnelle. 
-              Mes passions musicales développent ma créativité, le sport nautique renforce ma persévérance, 
-              et mon engagement scout cultive mes valeurs humaines - autant de qualités précieuses dans le monde de l'ingénierie.
+              {t('interests.philosophy.description')}
             </p>
           </div>
         </div>

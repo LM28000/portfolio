@@ -1,58 +1,60 @@
-import React from 'react';
 import { Code, Database, Globe, Users, Brain, Lightbulb } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const Skills = () => {
+  const { t } = useLanguage();
+  
   const skillCategories = [
     {
-      title: "Langages & Technologies",
+      title: t('skills.languages.title'),
       icon: Code,
       color: "blue",
       skills: ["C#", "Python", "SQL", "HTML", "CSS", "Bash"]
     },
     {
-      title: "Systèmes & Outils",
+      title: t('skills.systems.title'),
       icon: Database,
       color: "teal",
-      skills: ["Système UNIX", "SSH", "Docker", "VirtualBox", "VMware", "KVM"]
+      skills: t('skills.systems.items').split(', ')
     },
     {
-      title: "Logiciels & Design",
+      title: t('skills.software.title'),
       icon: Globe,
       color: "purple",
-      skills: ["Solidworks", "Montage vidéo/son", "MAO", "Outils bureautique"]
+      skills: t('skills.software.items').split(', ')
     },
     {
-      title: "Soft Skills",
+      title: t('skills.soft.title'),
       icon: Users,
       color: "green",
-      skills: ["Coopération en équipe", "Design thinking", "Connaissance de soi"]
+      skills: t('skills.soft.items').split(', ')
     },
     {
-      title: "Spécialisations",
+      title: t('skills.specializations.title'),
       icon: Brain,
       color: "indigo",
-      skills: ["Intelligence Artificielle", "Développement durable", "RSE"]
+      skills: t('skills.specializations.items').split(', ')
     },
     {
-      title: "Expériences",
+      title: t('skills.experiences.title'),
       icon: Lightbulb,
       color: "orange",
-      skills: ["Hackathon", "Projets collaboratifs", "Management"]
+      skills: t('skills.experiences.items').split(', ')
     }
   ];
 
   const languages = [
-    { name: "Français", level: "Natif", percentage: 100 },
-    { name: "Anglais", level: "B2+", percentage: 75 }
+    { name: t('skills.french'), level: t('skills.native'), percentage: 100 },
+    { name: t('skills.english'), level: t('skills.level.b2'), percentage: 75 }
   ];
 
   return (
     <section id="skills" className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Compétences</h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">{t('skills.title')}</h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Un éventail de compétences techniques et humaines acquises à travers mon parcours
+            {t('skills.intro')}
           </p>
         </div>
 
@@ -97,7 +99,7 @@ const Skills = () => {
 
         {/* Languages */}
         <div className="bg-gray-50 rounded-xl p-8">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">Langues</h3>
+          <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">{t('skills.languages.label')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {languages.map((lang, index) => (
               <div key={index} className="space-y-3">

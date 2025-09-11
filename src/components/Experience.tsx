@@ -1,34 +1,39 @@
 import React from 'react';
-import { Building, Calendar, ChevronRight } from 'lucide-react';
+import { Building, Calendar, ChevronRight, ExternalLink } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const Experience = () => {
+  const { t } = useLanguage();
+  
   const experiences = [
     {
-      company: "Devoteam",
-      position: "Alternant Agentic & RSE",
-      location: "Levallois-Perret (92)",
-      period: "2025 - 2028",
-      description: "En alternance dans une entreprise de conseil en transformation digitale",
+      company: t('experience.devoteam.company'),
+      position: t('experience.devoteam.title'),
+      location: t('experience.devoteam.location.full'),
+      period: t('experience.devoteam.period.full'),
+      description: t('experience.devoteam.description.full'),
       missions: [
-        "AI AgentSpace : aide à la mise en place du service et du support associé",
-        "AI Agentic : création et support d'agents",
-        "RSE : déploiement des processus de maîtrise des émissions CO₂e"
+        t('experience.devoteam.mission1'),
+        t('experience.devoteam.mission2'),
+        t('experience.devoteam.mission3')
       ],
-      color: "blue"
+      color: "blue",
+      link: "https://www.devoteam.com/"
     },
     {
-      company: "DeVinci Junior",
-      position: "Développeur commercial",
-      location: "Nantes (44)",
-      period: "2024 - 2025",
-      description: "Junior-Entreprise de l'école d'ingénieurs",
+      company: t('experience.devinci.company'),
+      position: t('experience.devinci.title'),
+      location: t('experience.devinci.location'),
+      period: t('experience.devinci.period'),
+      description: t('experience.devinci.description'),
       missions: [
-        "Prospection de nouveaux clients",
-        "Rendez-vous clients et présentation de services",
-        "Rédaction de devis et propositions commerciales",
-        "Gestion de projets internes"
+        t('experience.devinci.mission1'),
+        t('experience.devinci.mission2'),
+        t('experience.devinci.mission3'),
+        t('experience.devinci.mission4')
       ],
-      color: "teal"
+      color: "teal",
+      link: "https://www.devincijunior.fr/"
     }
   ];
 
@@ -36,9 +41,9 @@ const Experience = () => {
     <section id="experience" className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Expérience</h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">{t('experience.title')}</h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Mon parcours professionnel entre innovation technologique et développement commercial
+            {t('experience.intro')}
           </p>
         </div>
 
@@ -59,7 +64,17 @@ const Experience = () => {
                       }`} />
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold text-gray-900">{exp.company}</h3>
+                      <a 
+                        href={exp.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group"
+                      >
+                        <h3 className="text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors flex items-center gap-2">
+                          {exp.company}
+                          <ExternalLink className="w-5 h-5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </h3>
+                      </a>
                       <p className="text-lg font-medium text-gray-600">{exp.position}</p>
                     </div>
                   </div>
@@ -79,7 +94,7 @@ const Experience = () => {
                 <p className="text-gray-600 mb-6">{exp.description}</p>
 
                 <div className="space-y-3">
-                  <h4 className="font-semibold text-gray-900">Missions principales :</h4>
+                  <h4 className="font-semibold text-gray-900">{t('experience.mainMissions')}</h4>
                   <ul className="space-y-2">
                     {exp.missions.map((mission, missionIndex) => (
                       <li key={missionIndex} className="flex items-start gap-2">
