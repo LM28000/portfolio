@@ -103,7 +103,7 @@ const Timeline = () => {
           <div className="absolute left-1/2 transform -translate-x-1/2 w-0.5 h-full timeline-gradient hidden sm:block"></div>
           
           {/* Ligne gauche pour mobile */}
-          <div className="absolute left-6 top-0 w-0.5 h-full bg-gradient-to-b from-blue-500 via-purple-500 to-orange-500 sm:hidden"></div>
+          <div className="absolute left-6 top-0 w-0.5 h-full timeline-gradient sm:hidden"></div>
           
           {timelineEvents.map((event, index) => (
             <div
