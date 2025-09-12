@@ -16,9 +16,9 @@ function App() {
   return (
     <ThemeProvider>
       <LanguageProvider>
-        <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-all duration-300">
+        <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-all duration-300 overflow-x-hidden">
           <Header />
-          <main>
+          <main className="overflow-x-hidden">
             <Hero />
             <About />
             <Timeline />

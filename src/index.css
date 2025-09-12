@@ -5,11 +5,19 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    overflow-x: hidden; /* Empêche le scroll horizontal */
   }
   
   body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     line-height: 1.6;
+    overflow-x: hidden; /* Empêche le scroll horizontal */
+    max-width: 100vw; /* Force la largeur maximale */
+  }
+  
+  /* Empêche tous les débordements horizontaux */
+  * {
+    box-sizing: border-box;
   }
 }
 
@@ -414,6 +422,35 @@
       text-align: center;
     }
   }
+
+  /* Correction pour les débordements mobiles */
+  .mobile-safe {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+  
+  /* Empêche les éléments de déborder sur mobile */
+  @media (max-width: 640px) {
+    .prevent-overflow {
+      max-width: calc(100vw - 2rem);
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .hero-container {
+      max-width: 100vw;
+      overflow-x: hidden;
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+    
+    /* Force la largeur pour le texte long */
+    .text-container {
+      max-width: calc(100vw - 2rem);
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+  }
 }
 
 @keyframes fadeIn {
@@ -686,5 +723,34 @@ textarea {
   
   .mobile-text-center {
     text-align: center;
+  }
+}
+
+/* Correction pour les débordements mobiles */
+.mobile-safe {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+/* Empêche les éléments de déborder sur mobile */
+@media (max-width: 640px) {
+  .prevent-overflow {
+    max-width: calc(100vw - 2rem);
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .hero-container {
+    max-width: 100vw;
+    overflow-x: hidden;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  /* Force la largeur pour le texte long */
+  .text-container {
+    max-width: calc(100vw - 2rem);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 }

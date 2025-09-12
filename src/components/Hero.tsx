@@ -36,9 +36,9 @@ const Hero = () => {
         className="absolute inset-0 overflow-hidden pointer-events-none"
         style={{ transform: `translateY(${offset * 0.5}px)` }}
       >
-        <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-blue-200/30 dark:bg-blue-500/20 rounded-full mix-blend-multiply filter blur-xl animate-float"></div>
-        <div className="absolute top-3/4 right-1/4 w-48 h-48 bg-purple-200/30 dark:bg-purple-500/20 rounded-full mix-blend-multiply filter blur-xl animate-float" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute bottom-1/4 left-1/3 w-40 h-40 bg-indigo-200/30 dark:bg-indigo-500/20 rounded-full mix-blend-multiply filter blur-xl animate-float" style={{ animationDelay: '4s' }}></div>
+        <div className="absolute top-1/4 left-1/4 w-20 h-20 sm:w-32 sm:h-32 bg-blue-200/30 dark:bg-blue-500/20 rounded-full mix-blend-multiply filter blur-xl animate-float"></div>
+        <div className="absolute top-3/4 right-1/4 w-32 h-32 sm:w-48 sm:h-48 bg-purple-200/30 dark:bg-purple-500/20 rounded-full mix-blend-multiply filter blur-xl animate-float" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute bottom-1/4 left-1/3 w-24 h-24 sm:w-40 sm:h-40 bg-indigo-200/30 dark:bg-indigo-500/20 rounded-full mix-blend-multiply filter blur-xl animate-float" style={{ animationDelay: '4s' }}></div>
         
         {/* Particles en mouvement */}
         <div className="absolute top-1/2 left-1/2 w-2 h-2 bg-blue-400 rounded-full opacity-60"></div>
@@ -46,8 +46,8 @@ const Hero = () => {
         <div className="absolute bottom-1/3 left-1/4 w-1.5 h-1.5 bg-indigo-400 rounded-full opacity-50"></div>
       </div>
       
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="text-center space-y-8">
+      <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 mobile-safe">
+        <div className="text-center space-y-8 w-full prevent-overflow">
           {/* Profile Image avec effet 3D */}
           <div className="animate-bounce-in stagger-1">
             <div 
@@ -75,8 +75,8 @@ const Hero = () => {
           </div>
 
           {/* Name and Title avec animations */}
-          <div className="space-y-6 md:space-y-4">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white tracking-tight animate-slide-in-left stagger-2 leading-tight">
+          <div className="space-y-6 md:space-y-4 w-full">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white tracking-tight animate-slide-in-left stagger-2 leading-tight text-container">
               Louis-Marie
               <br />
               <span className="text-blue-600 dark:text-blue-400 animate-gradient bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
@@ -85,8 +85,8 @@ const Hero = () => {
             </h1>
             
             {/* Texte dynamique avec machine à écrire */}
-            <div className="h-20 md:h-16 flex items-center justify-center px-4">
-              <p className="text-lg sm:text-xl lg:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl animate-typing text-center leading-relaxed">
+            <div className="h-20 md:h-16 flex items-center justify-center px-4 w-full">
+              <p className="text-lg sm:text-xl lg:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl animate-typing text-center leading-relaxed text-container">
                 {texts[currentText]}
               </p>
             </div>
