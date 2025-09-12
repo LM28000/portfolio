@@ -85,22 +85,22 @@ const Header = () => {
             <LanguageSwitch />
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 text-gray-700 transition-colors"
+              className="p-2 text-gray-700 dark:text-gray-300 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
             >
-              {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 py-4">
+          <div className="md:hidden border-t border-gray-200 dark:border-gray-700 py-4 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm">
             {navItems.map((item) => (
               <button
                 key={item.id}
                 onClick={() => scrollToSection(item.id)}
-                className={`block w-full text-left px-4 py-2 text-sm font-medium transition-colors ${
-                  activeSection === item.id ? 'text-blue-600' : 'text-gray-700'
+                className={`block w-full text-left px-4 py-3 text-base font-medium transition-colors ${
+                  activeSection === item.id ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20' : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                 }`}
               >
                 {item.label}

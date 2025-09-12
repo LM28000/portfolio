@@ -134,13 +134,13 @@ const Contact = () => {
 
   if (isSubmitted) {
     return (
-      <section id="contact" className="py-20 bg-white dark:bg-gray-900 transition-colors duration-300">
+      <section id="contact" className="py-16 sm:py-20 bg-white dark:bg-gray-900 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl mx-auto text-center">
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-12 shadow-lg border border-gray-200 dark:border-gray-700">
-              <CheckCircle className="w-16 h-16 text-green-600 dark:text-green-400 mx-auto mb-6" />
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{t('contact.success.title')}</h3>
-              <p className="text-gray-600 dark:text-gray-300">
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-8 sm:p-12 shadow-lg border border-gray-200 dark:border-gray-700">
+              <CheckCircle className="w-12 h-12 sm:w-16 sm:h-16 text-green-600 dark:text-green-400 mx-auto mb-6" />
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">{t('contact.success.title')}</h3>
+              <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base">
                 {t('contact.success.description')}
               </p>
             </div>
@@ -151,23 +151,23 @@ const Contact = () => {
   }
 
   return (
-    <section id="contact" className="py-20 bg-white dark:bg-gray-900 transition-colors duration-300">
+    <section id="contact" className="py-16 sm:py-20 bg-white dark:bg-gray-900 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div 
           ref={titleAnimation.ref}
-          className={`text-center mb-16 scroll-fade-in ${titleAnimation.isVisible ? 'visible' : ''}`}
+          className={`text-center mb-12 sm:mb-16 scroll-fade-in ${titleAnimation.isVisible ? 'visible' : ''}`}
         >
-          <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">{t('contact.title')}</h2>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">{t('contact.title')}</h2>
+          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto px-4">
             {t('contact.subtitle')}
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12">
           {/* Contact Information */}
           <div 
             ref={contactCardsAnimation.ref}
-            className="space-y-6"
+            className="space-y-4 sm:space-y-6"
           >
             <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">{t('contact.coordinates')}</h3>
             

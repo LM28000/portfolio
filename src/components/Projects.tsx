@@ -49,7 +49,7 @@ const Projects = () => {
 
         <div 
           ref={projectsAnimation.ref}
-          className="grid grid-cols-1 lg:grid-cols-2 gap-8"
+          className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8"
         >
           {projects.map((project, index) => {
             const IconComponent = project.icon;
@@ -64,15 +64,15 @@ const Projects = () => {
                 className={`bg-gray-50 dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl dark:hover:shadow-2xl transition-all duration-300 overflow-hidden group border border-gray-200 dark:border-gray-700 hover-lift-gentle hover-glow hover-shadow-blue-dark stagger-item ${projectsAnimation.isItemVisible(index) ? 'visible' : ''}`}
               >
                 {/* Header */}
-                <div className={`p-6 bg-gradient-to-r ${colorClasses[project.color as keyof typeof colorClasses]} text-white`}>
+                <div className={`p-4 sm:p-6 bg-gradient-to-r ${colorClasses[project.color as keyof typeof colorClasses]} text-white`}>
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
-                        <IconComponent size={24} />
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-lg flex items-center justify-center">
+                        <IconComponent size={20} className="sm:w-6 sm:h-6" />
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold mb-1">{project.title}</h3>
-                        <p className="text-white/90 text-sm">{project.category}</p>
+                        <h3 className="text-lg sm:text-xl font-bold mb-1">{project.title}</h3>
+                        <p className="text-white/90 text-xs sm:text-sm">{project.category}</p>
                       </div>
                     </div>
                   </div>

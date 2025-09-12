@@ -75,8 +75,8 @@ const Hero = () => {
           </div>
 
           {/* Name and Title avec animations */}
-          <div className="space-y-4">
-            <h1 className="text-5xl sm:text-6xl font-bold text-gray-900 dark:text-white tracking-tight animate-slide-in-left stagger-2">
+          <div className="space-y-6 md:space-y-4">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white tracking-tight animate-slide-in-left stagger-2 leading-tight">
               Louis-Marie
               <br />
               <span className="text-blue-600 dark:text-blue-400 animate-gradient bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
@@ -85,29 +85,29 @@ const Hero = () => {
             </h1>
             
             {/* Texte dynamique avec machine à écrire */}
-            <div className="h-16 flex items-center justify-center">
-              <p className="text-xl sm:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl animate-typing">
+            <div className="h-20 md:h-16 flex items-center justify-center px-4">
+              <p className="text-lg sm:text-xl lg:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl animate-typing text-center leading-relaxed">
                 {texts[currentText]}
               </p>
             </div>
           </div>
 
           {/* Quick Contact avec animations staggered */}
-          <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-600 dark:text-gray-300 animate-slide-in-right stagger-3">
-            <div className="flex items-center gap-2 transition-all duration-300 cursor-pointer hover-lift p-2 rounded-lg">
+          <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6 text-sm text-gray-600 dark:text-gray-300 animate-slide-in-right stagger-3 px-4">
+            <div className="flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer hover-lift p-3 sm:p-2 rounded-lg">
               <MapPin size={16} />
-              <span>{t('hero.location')}</span>
+              <span className="text-center">{t('hero.location')}</span>
             </div>
             <a 
               href="tel:+33619862297"
-              className="flex items-center gap-2 transition-all duration-300 hover-lift p-2 rounded-lg"
+              className="flex items-center justify-center gap-2 transition-all duration-300 hover-lift p-3 sm:p-2 rounded-lg"
             >
               <Phone size={16} className="animate-bounce-in" style={{ animationDelay: '0.2s' }} />
               <span>{t('hero.phone')}</span>
             </a>
             <a 
               href="mailto:louis-marie@du-cray.com"
-              className="flex items-center gap-2 transition-all duration-300 hover-lift p-2 rounded-lg"
+              className="flex items-center justify-center gap-2 transition-all duration-300 hover-lift p-3 sm:p-2 rounded-lg"
             >
               <Mail size={16} className="animate-bounce-in" style={{ animationDelay: '0.4s' }} />
               <span>{t('hero.email')}</span>
@@ -115,10 +115,10 @@ const Hero = () => {
           </div>
 
           {/* CTA Button avec effet morphing */}
-          <div className="pt-8 animate-scale-in stagger-4">
+          <div className="pt-8 animate-scale-in stagger-4 px-4">
             <button
               onClick={scrollToAbout}
-              className="group relative inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-8 py-4 rounded-lg font-medium transition-all duration-500 hover-lift shadow-lg hover:shadow-xl overflow-hidden"
+              className="group relative inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-medium transition-all duration-500 hover-lift shadow-lg hover:shadow-xl overflow-hidden w-full sm:w-auto"
             >
               {/* Effet de vague au survol */}
               <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-gradient"></div>

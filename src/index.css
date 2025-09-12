@@ -351,6 +351,69 @@
     );
     animation: gradientShift 3s ease infinite;
   }
+
+  /* Responsive utilities pour mobile */
+  @media (max-width: 640px) {
+    .text-responsive {
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    
+    .heading-responsive {
+      font-size: 1.75rem;
+      line-height: 1.2;
+    }
+    
+    .section-padding-mobile {
+      padding-top: 3rem;
+      padding-bottom: 3rem;
+    }
+    
+    .container-padding-mobile {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+    
+    .card-padding-mobile {
+      padding: 1rem;
+    }
+    
+    .gap-mobile {
+      gap: 1rem;
+    }
+  }
+  
+  /* Optimisations pour très petits écrans */
+  @media (max-width: 360px) {
+    .text-xs-responsive {
+      font-size: 0.8rem;
+    }
+    
+    .heading-xs-responsive {
+      font-size: 1.5rem;
+    }
+    
+    .mini-padding {
+      padding: 0.75rem;
+    }
+  }
+
+  /* Améliorations pour les cartes sur mobile */
+  @media (max-width: 768px) {
+    .mobile-card {
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .mobile-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    
+    .mobile-text-center {
+      text-align: center;
+    }
+  }
 }
 
 @keyframes fadeIn {
@@ -561,4 +624,67 @@ textarea {
 .card-hover:hover {
   transform: translateY(-4px);
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Responsive utilities pour mobile */
+@media (max-width: 640px) {
+  .text-responsive {
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  
+  .heading-responsive {
+    font-size: 1.75rem;
+    line-height: 1.2;
+  }
+  
+  .section-padding-mobile {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+  }
+  
+  .container-padding-mobile {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .card-padding-mobile {
+    padding: 1rem;
+  }
+  
+  .gap-mobile {
+    gap: 1rem;
+  }
+}
+
+/* Optimisations pour très petits écrans */
+@media (max-width: 360px) {
+  .text-xs-responsive {
+    font-size: 0.8rem;
+  }
+  
+  .heading-xs-responsive {
+    font-size: 1.5rem;
+  }
+  
+  .mini-padding {
+    padding: 0.75rem;
+  }
+}
+
+/* Améliorations pour les cartes sur mobile */
+@media (max-width: 768px) {
+  .mobile-card {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .mobile-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .mobile-text-center {
+    text-align: center;
+  }
 }
