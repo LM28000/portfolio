@@ -81,16 +81,16 @@ const Timeline = () => {
   };
 
   return (
-    <section id="timeline" className="py-20 bg-white dark:bg-gray-900 transition-colors duration-300">
+    <section id="timeline" className="py-16 sm:py-20 bg-white dark:bg-gray-900 transition-colors duration-300">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div 
           ref={titleAnimation.ref}
-          className={`text-center mb-16 scroll-fade-in ${titleAnimation.isVisible ? 'visible' : ''}`}
+          className={`text-center mb-12 sm:mb-16 scroll-fade-in ${titleAnimation.isVisible ? 'visible' : ''}`}
         >
-          <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
             {t('timeline.title')}
           </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-300">
+          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 px-4">
             {t('timeline.subtitle')}
           </p>
         </div>
@@ -99,14 +99,17 @@ const Timeline = () => {
           ref={timelineAnimation.ref}
           className="relative"
         >
-          {/* Ligne centrale avec animation gradient */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 w-0.5 h-full timeline-gradient"></div>
+          {/* Ligne centrale avec animation gradient - cachée sur mobile */}
+          <div className="absolute left-1/2 transform -translate-x-1/2 w-0.5 h-full timeline-gradient hidden sm:block"></div>
+          
+          {/* Ligne gauche pour mobile */}
+          <div className="absolute left-6 top-0 w-0.5 h-full bg-gradient-to-b from-blue-500 via-purple-500 to-orange-500 sm:hidden"></div>
           
           {timelineEvents.map((event, index) => (
             <div
               key={index}
-              className={`relative flex items-center mb-12 ${
-                index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'
+              className={`relative flex items-center mb-8 sm:mb-12 ${
+                index % 2 === 0 ? 'sm:flex-row' : 'sm:flex-row-reverse'
               } stagger-item ${timelineAnimation.isItemVisible(index) ? 'visible' : ''}`}
               style={{ animationDelay: `${index * 200}ms` }}
             >

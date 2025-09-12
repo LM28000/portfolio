@@ -35,20 +35,28 @@ const TimelineCard = ({ event, index, isExpanded, onToggle, t }: TimelineCardPro
 
   return (
     <>
-      {/* Point central avec icône animée - du côté opposé à la carte */}
-      <div className={`absolute ${index % 2 === 0 ? 'right-1/2 translate-x-1/2' : 'left-1/2 -translate-x-1/2'} w-12 h-12 rounded-full flex items-center justify-center border-4 border-white dark:border-gray-800 shadow-lg z-10 transition-all duration-500 hover:scale-110 animate-bounce-in ${
+      {/* Point central avec icône animée - différent sur mobile */}
+      <div className={`absolute w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border-4 border-white dark:border-gray-800 shadow-lg z-10 transition-all duration-500 hover:scale-110 animate-bounce-in ${
         colorClasses[event.color as keyof typeof colorClasses]
+      } ${
+        // Sur mobile : toujours à gauche (left-6 -translate-x-1/2)
+        // Sur desktop : alternance gauche/droite selon l'index
+        'left-6 -translate-x-1/2 sm:left-auto sm:-translate-x-0 ' + 
+        (index % 2 === 0 
+          ? 'sm:right-1/2 sm:translate-x-1/2' 
+          : 'sm:left-1/2 sm:-translate-x-1/2'
+        )
       }`}
       style={{ animationDelay: `${index * 150}ms` }}>
-        <IconComponent className="w-5 h-5 text-white animate-rotate-in" 
+        <IconComponent className="w-4 h-4 sm:w-5 sm:h-5 text-white animate-rotate-in" 
           style={{ animationDelay: `${index * 150 + 300}ms` }} />
       </div>
       
       {/* Contenu avec effet 3D */}
-      <div className={`w-5/12 ${index % 2 === 0 ? 'pr-8' : 'pl-8'}`}>
+      <div className={`w-full pl-16 sm:pl-0 sm:w-5/12 ${index % 2 === 0 ? 'sm:pr-8' : 'sm:pl-8'}`}>
         <div 
           ref={ref}
-          className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-2xl transition-all duration-500 group cursor-pointer text-left overflow-hidden relative hover-glow hover-lift-gentle hover-shadow-colored hover-shadow-blue-dark"
+          className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-2xl transition-all duration-500 group cursor-pointer text-left overflow-hidden relative hover-glow hover-lift-gentle hover-shadow-colored hover-shadow-blue-dark"
           onClick={onToggle}
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
@@ -72,14 +80,14 @@ const TimelineCard = ({ event, index, isExpanded, onToggle, t }: TimelineCardPro
             {event.type === 'experience' ? t('timeline.experience') : t('timeline.education')}
           </div>
           
-          <div className="flex items-center gap-2 mb-2 text-sm text-gray-500 dark:text-gray-400 animate-fade-in"
+          <div className="flex items-center gap-2 mb-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400 animate-fade-in"
             style={{ animationDelay: `${index * 100 + 500}ms` }}>
-            <Calendar size={14} />
+            <Calendar size={12} className="sm:w-3.5 sm:h-3.5" />
             <span>{event.date}</span>
           </div>
           
           <div className="flex items-center justify-between">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 transition-colors animate-slide-up"
+            <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2 transition-colors animate-slide-up pr-2"
               style={{ animationDelay: `${index * 100 + 600}ms` }}>
               {event.title}
             </h3>
@@ -88,7 +96,7 @@ const TimelineCard = ({ event, index, isExpanded, onToggle, t }: TimelineCardPro
                 <div className={`transform transition-all duration-300 ${
                   isExpanded ? 'rotate-90 scale-110' : 'group-hover:scale-110'
                 }`}>
-                  <ChevronRight size={16} className="text-gray-400 dark:text-gray-500" />
+                  <ChevronRight size={14} className="sm:w-4 sm:h-4 text-gray-400 dark:text-gray-500" />
                 </div>
               )}
             </div>
@@ -96,12 +104,12 @@ const TimelineCard = ({ event, index, isExpanded, onToggle, t }: TimelineCardPro
           
           <div className="flex items-center gap-2 mb-2 animate-slide-up"
             style={{ animationDelay: `${index * 100 + 700}ms` }}>
-            <Building2 size={16} className="text-blue-600 dark:text-blue-400" />
+            <Building2 size={14} className="sm:w-4 sm:h-4 text-blue-600 dark:text-blue-400" />
             <a 
               href={event.link}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-medium text-blue-600 dark:text-blue-400 transition-all duration-300"
+              className="font-medium text-blue-600 dark:text-blue-400 transition-all duration-300 text-sm sm:text-base"
               onClick={(e) => e.stopPropagation()}
             >
               {event.company}
@@ -110,8 +118,8 @@ const TimelineCard = ({ event, index, isExpanded, onToggle, t }: TimelineCardPro
           
           <div className="flex items-center gap-2 mb-3 text-gray-500 dark:text-gray-400 animate-slide-up"
             style={{ animationDelay: `${index * 100 + 800}ms` }}>
-            <MapPin size={14} />
-            <span className="text-sm">{event.location}</span>
+            <MapPin size={12} className="sm:w-3.5 sm:h-3.5" />
+            <span className="text-xs sm:text-sm">{event.location}</span>
           </div>
           
           <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed animate-fade-in-up"
@@ -122,18 +130,18 @@ const TimelineCard = ({ event, index, isExpanded, onToggle, t }: TimelineCardPro
           {/* Section extensible pour les missions avec animation fluide */}
           {event.missions.length > 0 && (
             <div className={`overflow-hidden transition-all duration-500 ease-in-out ${
-              isExpanded ? 'max-h-96 mt-4 opacity-100' : 'max-h-0 opacity-0'
+              isExpanded ? 'max-h-96 mt-3 sm:mt-4 opacity-100' : 'max-h-0 opacity-0'
             }`}>
-              <div className="border-t border-gray-200 dark:border-gray-600 pt-4">
-                <h4 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm animate-slide-in-left">
+              <div className="border-t border-gray-200 dark:border-gray-600 pt-3 sm:pt-4">
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-2 sm:mb-3 text-xs sm:text-sm animate-slide-in-left">
                   {event.type === 'experience' ? t('experience.mainMissions') : t('education.specialization')}
                 </h4>
-                <ul className="space-y-2">
+                <ul className="space-y-1.5 sm:space-y-2">
                   {event.missions.map((mission, missionIndex) => (
                     <li key={missionIndex} 
-                      className="flex items-start gap-2 text-sm animate-slide-in-right"
+                      className="flex items-start gap-2 text-xs sm:text-sm animate-slide-in-right"
                       style={{ animationDelay: `${missionIndex * 100}ms` }}>
-                      <span className="text-blue-500 dark:text-blue-400 mt-1 text-xs">•</span>
+                      <span className="text-blue-500 dark:text-blue-400 mt-0.5 sm:mt-1 text-xs">•</span>
                       <span className="text-gray-600 dark:text-gray-300 leading-relaxed">{mission}</span>
                     </li>
                   ))}
