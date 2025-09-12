@@ -222,6 +222,7 @@ const translations = {
     // Footer
     'footer.rights': 'Tous droits réservés.',
     'footer.built': 'Conçu avec React & TypeScript',
+    'footer.year': 'en 2025',
     
     // Timeline
     'timeline.title': 'Mon Parcours',
@@ -438,6 +439,7 @@ const translations = {
     // Footer
     'footer.rights': 'All rights reserved.',
     'footer.built': 'Built with React & TypeScript',
+    'footer.year': 'in 2025',
     
     // Timeline
     'timeline.title': 'My Journey',

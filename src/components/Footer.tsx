@@ -1,4 +1,3 @@
-import { Heart, Code } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 const Footer = () => {
@@ -15,11 +14,7 @@ const Footer = () => {
           
           <div className="border-t border-gray-800 pt-6">
             <div className="flex items-center justify-center gap-2 text-gray-400">
-              <span>{t('footer.built').split(' ')[0]}</span>
-              <Heart size={16} className="text-red-500" />
-              <span>et</span>
-              <Code size={16} className="text-blue-400" />
-              <span>en 2025</span>
+              <span>{t('footer.built')} {t('footer.year')}</span>
             </div>
             <p className="text-sm text-gray-500 mt-2">
               © 2025 Louis-Marie Perret du Cray. {t('footer.rights')}
