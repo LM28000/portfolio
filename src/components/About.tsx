@@ -67,7 +67,7 @@ const About = () => {
           {/* Stats */}
           <div 
             ref={statsAnimation.ref}
-            className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8"
+            className="grid grid-cols-2 gap-4 sm:gap-6"
           >
             <div className={`text-center p-4 sm:p-6 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover-lift-gentle hover-shadow-blue-dark stagger-item ${statsAnimation.isItemVisible(0) ? 'visible' : ''}`}>
               <div className="text-2xl sm:text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">2025</div>
