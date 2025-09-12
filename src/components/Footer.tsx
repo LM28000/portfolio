@@ -9,7 +9,7 @@ const Footer = () => {
         <div className="text-center">
           <div className="mb-6">
             <h3 className="text-2xl font-bold mb-2">Louis-Marie Perret du Cray</h3>
-            <p className="text-gray-400">{t('hero.subtitle')+' Devoteam'}</p>
+            <p className="text-gray-400">{t('hero.subtitle')}</p>
           </div>
           
           <div className="border-t border-gray-800 pt-6">
