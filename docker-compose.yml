@@ -9,6 +9,7 @@ services:
         - VITE_EMAILJS_SERVICE_ID=service_k0yp7g8
         - VITE_EMAILJS_TEMPLATE_ID=template_qjmmeea
         - VITE_EMAILJS_PUBLIC_KEY=989Z7HW0nw_PZ3wE7
+        - VITE_GA_TRACKING_ID=G-DZVTZVB6CJ
     container_name: portfolio
     ports:
       - "2368:80"
