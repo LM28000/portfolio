@@ -1,11 +1,11 @@
-import { Code, Database, Globe, Users, Brain, Lightbulb } from 'lucide-react';
+import { Code, Database, Globe, Users, Brain, Lightbulb, Music } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useScrollAnimation, useStaggeredAnimation } from '../hooks/useScrollAnimation';
 
 const Skills = () => {
   const { t } = useLanguage();
   const titleAnimation = useScrollAnimation({ delay: 200 });
-  const skillsAnimation = useStaggeredAnimation(6, 200);
+  const skillsAnimation = useStaggeredAnimation(7, 200);
   const languagesAnimation = useScrollAnimation({ delay: 600 });
   
   const skillCategories = [
@@ -44,6 +44,12 @@ const Skills = () => {
       icon: Lightbulb,
       color: "orange",
       skills: t('skills.experiences.items').split(', ')
+    },
+    {
+      title: t('skills.music.title'),
+      icon: Music,
+      color: "pink",
+      skills: t('skills.music.items').split(', ')
     }
   ];
 
@@ -78,7 +84,8 @@ const Skills = () => {
               purple: "bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400",
               green: "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400",
               indigo: "bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400",
-              orange: "bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400"
+              orange: "bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400",
+              pink: "bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400"
             };
 
             return (

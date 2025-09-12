@@ -31,7 +31,13 @@ const Timeline = () => {
       company: t('education.esilv.institution'),
       location: t('education.esilv.location.full'),
       description: t('timeline.esilv.engineer.description'),
-      missions: [],
+      missions: [
+        t('timeline.esilv.engineer.specialization1'),
+        t('timeline.esilv.engineer.specialization2'),
+        t('timeline.esilv.engineer.specialization3'),
+        t('timeline.esilv.engineer.specialization4'),
+        t('timeline.esilv.engineer.specialization5')
+      ],
       type: "education",
       color: "purple",
       link: "https://www.esilv.fr/"
@@ -69,7 +75,13 @@ const Timeline = () => {
       company: t('education.academie.institution'),
       location: t('education.academie.location'),
       description: t('education.academie.description'),
-      missions: [],
+      missions: [
+        t('education.academie.mission1'),
+        t('education.academie.mission2'),
+        t('education.academie.mission3'),
+        t('education.academie.mission4'),
+        t('education.academie.mission5')
+      ],
       type: "education",
       color: "orange",
       link: "https://www.academiemusicaledeliesse.fr/"
