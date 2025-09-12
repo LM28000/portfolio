@@ -3,6 +3,7 @@ import { Mail, Phone, MapPin, Linkedin, Send, CheckCircle, AlertCircle } from 'l
 import emailjs from '@emailjs/browser';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useScrollAnimation, useStaggeredAnimation } from '../hooks/useScrollAnimation';
+import { trackPortfolioEvent } from '../utils/analytics';
 
 const Contact = () => {
   const { t } = useLanguage();
@@ -76,6 +77,9 @@ const Contact = () => {
       };
 
       await emailjs.send(serviceId, templateId, templateParams, publicKey);
+      
+      // Track successful form submission
+      trackPortfolioEvent.contactFormSubmit();
       
       setIsSubmitted(true);
       setFormData({ name: '', email: '', subject: '', message: '' });

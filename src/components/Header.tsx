@@ -3,6 +3,7 @@ import { Menu, X } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import LanguageSwitch from './LanguageSwitch';
 import ThemeToggle from './ThemeToggle';
+import { trackPortfolioEvent } from '../utils/analytics';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -43,6 +44,8 @@ const Header = () => {
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
       setIsMenuOpen(false);
+      // Track navigation event
+      trackPortfolioEvent.navigation(sectionId);
     }
   };
 

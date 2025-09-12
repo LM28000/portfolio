@@ -1,12 +1,19 @@
 import { Moon, Sun } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
+import { trackPortfolioEvent } from '../utils/analytics';
 
 const ThemeToggle = () => {
   const { isDark, toggleTheme } = useTheme();
 
+  const handleToggle = () => {
+    toggleTheme();
+    // Track theme change
+    trackPortfolioEvent.themeToggle(isDark ? 'light' : 'dark');
+  };
+
   return (
     <button
-      onClick={toggleTheme}
+      onClick={handleToggle}
       className="p-2 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors duration-200"
       aria-label={isDark ? 'Activer le mode clair' : 'Activer le mode sombre'}
     >
