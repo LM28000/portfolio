@@ -64,7 +64,12 @@ const Timeline = () => {
       company: t('education.esilv.institution'),
       location: t('education.esilv.location.full'),
       description: t('timeline.esilv.prepa.description'),
-      missions: [],
+      missions: [
+        t('timeline.esilv.prepa.specialization1'),
+        t('timeline.esilv.prepa.specialization2'),
+        t('timeline.esilv.prepa.specialization3'),
+        t('timeline.esilv.prepa.specialization4')
+      ],
       type: "education",
       color: "indigo",
       link: "https://www.esilv.fr/"
