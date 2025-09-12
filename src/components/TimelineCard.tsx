@@ -40,9 +40,13 @@ const TimelineCard = ({ event, index, isExpanded, onToggle, t }: TimelineCardPro
         colorClasses[event.color as keyof typeof colorClasses]
       } ${
         // Sur mobile : toujours centré sur la ligne gauche
-        // Sur desktop : alternance gauche/droite selon l'index
-        'left-6 -translate-x-1/2 ' + 
-        `sm:${index % 2 === 0 ? 'right-1/2 sm:translate-x-1/2' : 'left-1/2 sm:-translate-x-1/2'}`
+        'left-6 -translate-x-1/2 ' +
+        // Sur desktop : reset mobile puis alternance gauche/droite
+        'sm:left-auto sm:translate-x-0 ' +
+        (index % 2 === 0 
+          ? 'sm:right-1/2 sm:translate-x-1/2' 
+          : 'sm:left-1/2 sm:-translate-x-1/2'
+        )
       }`}
       style={{ animationDelay: `${index * 150}ms` }}>
         <IconComponent className="w-4 h-4 sm:w-5 sm:h-5 text-white animate-rotate-in" 
