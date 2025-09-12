@@ -35,17 +35,9 @@ const TimelineCard = ({ event, index, isExpanded, onToggle, t }: TimelineCardPro
 
   return (
     <>
-      {/* Point central avec icône animée - différent sur mobile */}
-      <div className={`absolute w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border-4 border-white dark:border-gray-800 shadow-lg z-10 transition-all duration-500 hover:scale-110 animate-bounce-in ${
+      {/* Point central avec icône animée - du côté opposé à la carte */}
+      <div className={`absolute ${index % 2 === 0 ? 'right-1/2 translate-x-1/2' : 'left-1/2 -translate-x-1/2'} w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border-4 border-white dark:border-gray-800 shadow-lg z-10 transition-all duration-500 hover:scale-110 animate-bounce-in ${
         colorClasses[event.color as keyof typeof colorClasses]
-      } ${
-        // Sur mobile : toujours à gauche (left-6 -translate-x-1/2)
-        // Sur desktop : alternance gauche/droite selon l'index
-        'left-6 -translate-x-1/2 sm:left-auto sm:-translate-x-0 ' + 
-        (index % 2 === 0 
-          ? 'sm:right-1/2 sm:translate-x-1/2' 
-          : 'sm:left-1/2 sm:-translate-x-1/2'
-        )
       }`}
       style={{ animationDelay: `${index * 150}ms` }}>
         <IconComponent className="w-4 h-4 sm:w-5 sm:h-5 text-white animate-rotate-in" 
