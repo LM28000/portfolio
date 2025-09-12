@@ -12,7 +12,7 @@ const LanguageSwitch: React.FC = () => {
   return (
     <button
       onClick={toggleLanguage}
-      className="flex items-center space-x-2 px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors duration-200 bg-white/80 backdrop-blur-sm rounded-lg border border-gray-200 hover:border-blue-300"
+      className="flex items-center space-x-2 px-3 py-2 text-gray-700 dark:text-gray-300 transition-colors duration-200 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg border border-gray-200 dark:border-gray-600"
       aria-label={`Switch to ${language === 'fr' ? 'English' : 'French'}`}
     >
       <Globe size={18} />

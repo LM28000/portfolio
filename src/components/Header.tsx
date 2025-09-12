@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import LanguageSwitch from './LanguageSwitch';
+import ThemeToggle from './ThemeToggle';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -11,9 +12,9 @@ const Header = () => {
   const navItems = [
     { id: 'hero', label: t('nav.home') },
     { id: 'about', label: t('nav.about') },
-    { id: 'experience', label: t('nav.experience') },
-    { id: 'education', label: t('nav.education') },
+    { id: 'timeline', label: t('timeline.title') },
     { id: 'skills', label: t('nav.skills') },
+    { id: 'certifications', label: t('certifications.title') },
     { id: 'projects', label: t('nav.projects') },
     { id: 'interests', label: t('nav.interests') },
     { id: 'contact', label: t('nav.contact') },
@@ -46,12 +47,12 @@ const Header = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm shadow-sm z-50">
+    <header className="fixed top-0 left-0 right-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm shadow-sm z-50 transition-colors duration-300">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
-          <div 
-            className="text-xl font-bold text-gray-900 cursor-pointer hover:text-blue-600 transition-colors"
-            onClick={() => scrollToSection('hero')}
+          <div
+            className="text-xl font-bold text-gray-900 dark:text-white cursor-pointer"
+            onClick={() => scrollToSection('home')}
           >
             Louis-Marie
           </div>
@@ -62,22 +63,26 @@ const Header = () => {
               <button
                 key={item.id}
                 onClick={() => scrollToSection(item.id)}
-                className={`text-sm font-medium transition-colors hover:text-blue-600 ${
-                  activeSection === item.id ? 'text-blue-600' : 'text-gray-700'
+                className={`text-sm font-medium transition-colors ${
+                  activeSection === item.id ? 'text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300'
                 }`}
               >
                 {item.label}
               </button>
             ))}
-            <LanguageSwitch />
+            <div className="flex items-center space-x-3">
+              <ThemeToggle />
+              <LanguageSwitch />
+            </div>
           </div>
 
-          {/* Mobile menu button and language switch */}
+          {/* Mobile menu button and controls */}
           <div className="md:hidden flex items-center space-x-3">
+            <ThemeToggle />
             <LanguageSwitch />
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 text-gray-700 hover:text-blue-600 transition-colors"
+              className="p-2 text-gray-700 transition-colors"
             >
               {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
@@ -91,7 +96,7 @@ const Header = () => {
               <button
                 key={item.id}
                 onClick={() => scrollToSection(item.id)}
-                className={`block w-full text-left px-4 py-2 text-sm font-medium transition-colors hover:text-blue-600 ${
+                className={`block w-full text-left px-4 py-2 text-sm font-medium transition-colors ${
                   activeSection === item.id ? 'text-blue-600' : 'text-gray-700'
                 }`}
               >

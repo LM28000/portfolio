@@ -1,0 +1,27 @@
+{
+  "name": "Louis-Marie Perret du Cray - Portfolio",
+  "short_name": "LM Portfolio",
+  "description": "Portfolio professionnel de Louis-Marie Perret du Cray, Consultant Cybersécurité et Étudiant Ingénieur",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "categories": ["portfolio", "professional", "technology"],
+  "lang": "fr",
+  "icons": [
+    {
+      "src": "/profile.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/profile.png",
+      "sizes": "640x480",
+      "type": "image/png"
+    }
+  ]
+}

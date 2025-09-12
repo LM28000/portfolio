@@ -1,11 +1,12 @@
 import React from 'react';
 import { LanguageProvider } from './contexts/LanguageContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import About from './components/About';
-import Experience from './components/Experience';
-import Education from './components/Education';
+import Timeline from './components/Timeline';
 import Skills from './components/Skills';
+import Certifications from './components/Certifications';
 import Projects from './components/Projects';
 import Interests from './components/Interests';
 import Contact from './components/Contact';
@@ -13,22 +14,24 @@ import Footer from './components/Footer';
 
 function App() {
   return (
-    <LanguageProvider>
-      <div className="min-h-screen bg-gray-50">
-        <Header />
-        <main>
-          <Hero />
-          <About />
-          <Experience />
-          <Education />
-          <Skills />
-          <Projects />
-          <Interests />
-          <Contact />
-        </main>
-        <Footer />
-      </div>
-    </LanguageProvider>
+    <ThemeProvider>
+      <LanguageProvider>
+        <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-all duration-300">
+          <Header />
+          <main>
+            <Hero />
+            <About />
+            <Timeline />
+            <Skills />
+            <Certifications />
+            <Projects />
+            <Interests />
+            <Contact />
+          </main>
+          <Footer />
+        </div>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }
 

@@ -31,7 +31,7 @@ const translations = {
     'nav.contact': 'Contact',
 
     // Hero section
-    'hero.subtitle': 'Alternant Agentic & RSE chez',
+    'hero.subtitle': 'Alternant Agentic & RSE chez Devoteam',
     'hero.description': 'Étudiant en ingénierie logicielle & IA à l\'ESILV',
     'hero.location': 'Levallois-Perret/Nantes, France',
     'hero.phone': '+33 6 19 86 22 97',
@@ -170,6 +170,29 @@ const translations = {
     'interests.philosophy.title': 'Ma philosophie',
     'interests.philosophy.description': 'Je crois fermement que la diversité des expériences enrichit la perspective professionnelle. Mes passions musicales développent ma créativité, le sport nautique renforce ma persévérance, et mon engagement scout cultive mes valeurs humaines - autant de qualités précieuses dans le monde de l\'ingénierie.',
 
+    // Certifications section
+    'certifications.title': 'Certifications',
+    'certifications.description': 'Mes certifications et qualifications professionnelles validées',
+    'certifications.verified': 'Certifié',
+    'certifications.viewCredential': 'Voir le certificat',
+    'certifications.toefl.title': 'TOEFL ITP',
+    'certifications.toefl.date': '2024',
+    'certifications.toefl.description': 'Test d\'anglais institutionnel certifiant un niveau B2+ en compréhension écrite et orale',
+    'certifications.design.title': 'Design Thinking',
+    'certifications.design.issuer': 'Design Thinking Academy',
+    'certifications.design.date': '2024',
+    'certifications.design.description': 'Méthodologie d\'innovation centrée sur l\'utilisateur et résolution créative de problèmes',
+    'certifications.mantu.title': 'The Mantu Manager Program',
+    'certifications.mantu.date': '2024',
+    'certifications.mantu.description': 'Programme de développement du leadership et des compétences managériales',
+    'certifications.voltaire.title': 'Projet Voltaire',
+    'certifications.voltaire.date': '2024',
+    'certifications.voltaire.description': 'Certification en orthographe et expression écrite française',
+    'certifications.stats.total': 'Certifications',
+    'certifications.stats.recent': 'Année récente',
+    'certifications.stats.english': 'Niveau anglais',
+    'certifications.stats.verified': 'Vérifiées',
+
     // Contact section
     'contact.title': 'Me contacter',
     'contact.subtitle': 'N\'hésitez pas à me contacter pour toute opportunité ou collaboration',
@@ -199,6 +222,18 @@ const translations = {
     // Footer
     'footer.rights': 'Tous droits réservés.',
     'footer.built': 'Conçu avec React & TypeScript',
+    
+    // Timeline
+    'timeline.title': 'Mon Parcours',
+    'timeline.subtitle': 'Une progression continue vers l\'excellence',
+    'timeline.experience': 'Expérience',
+    'timeline.education': 'Formation',
+    'timeline.clickToExpand': 'Cliquer pour voir les détails',
+    'timeline.clickToCollapse': 'Cliquer pour masquer',
+    'timeline.esilv.engineer.title': 'Cycle Ingénieur - Ingénierie Logicielle & IA',
+    'timeline.esilv.engineer.description': 'Spécialisation en développement logiciel, intelligence artificielle et sciences des données avec focus sur les technologies émergentes.',
+    'timeline.esilv.prepa.title': 'Prépa Intégrée - Sciences de l\'Ingénieur',
+    'timeline.esilv.prepa.description': 'Classes préparatoires intégrées avec apprentissage des fondamentaux scientifiques et techniques.',
   },
   en: {
     // Navigation
@@ -212,7 +247,7 @@ const translations = {
     'nav.contact': 'Contact',
 
     // Hero section
-    'hero.subtitle': 'Agentic & CSR Apprentice at',
+    'hero.subtitle': 'Agentic & CSR Apprentice at Devoteam',
     'hero.description': 'Software & AI Engineering Student at ESILV',
     'hero.location': 'Levallois-Perret/Nantes, France',
     'hero.phone': '+33 6 19 86 22 97',
@@ -351,6 +386,29 @@ const translations = {
     'interests.philosophy.title': 'My philosophy',
     'interests.philosophy.description': 'I firmly believe that diversity of experiences enriches professional perspective. My musical passions develop my creativity, water sports strengthen my perseverance, and my scout commitment cultivates my human values - all precious qualities in the engineering world.',
 
+    // Certifications section
+    'certifications.title': 'Certifications',
+    'certifications.description': 'My validated professional certifications and qualifications',
+    'certifications.verified': 'Certified',
+    'certifications.viewCredential': 'View certificate',
+    'certifications.toefl.title': 'TOEFL ITP',
+    'certifications.toefl.date': '2024',
+    'certifications.toefl.description': 'Institutional English test certifying B2+ level in reading and listening comprehension',
+    'certifications.design.title': 'Design Thinking',
+    'certifications.design.issuer': 'Design Thinking Academy',
+    'certifications.design.date': '2024',
+    'certifications.design.description': 'User-centered innovation methodology and creative problem solving',
+    'certifications.mantu.title': 'The Mantu Manager Program',
+    'certifications.mantu.date': '2024',
+    'certifications.mantu.description': 'Leadership development and managerial skills program',
+    'certifications.voltaire.title': 'Projet Voltaire',
+    'certifications.voltaire.date': '2024',
+    'certifications.voltaire.description': 'French spelling and written expression certification',
+    'certifications.stats.total': 'Certifications',
+    'certifications.stats.recent': 'Recent year',
+    'certifications.stats.english': 'English level',
+    'certifications.stats.verified': 'Verified',
+
     // Contact section
     'contact.title': 'Contact me',
     'contact.subtitle': 'Feel free to contact me for any opportunity or collaboration',
@@ -380,6 +438,18 @@ const translations = {
     // Footer
     'footer.rights': 'All rights reserved.',
     'footer.built': 'Built with React & TypeScript',
+    
+    // Timeline
+    'timeline.title': 'My Journey',
+    'timeline.subtitle': 'Continuous progression towards excellence',
+    'timeline.experience': 'Experience',
+    'timeline.education': 'Education',
+    'timeline.clickToExpand': 'Click to see details',
+    'timeline.clickToCollapse': 'Click to hide',
+    'timeline.esilv.engineer.title': 'Engineering Program - Software Engineering & AI',
+    'timeline.esilv.engineer.description': 'Specialization in software development, artificial intelligence and data science with focus on emerging technologies.',
+    'timeline.esilv.prepa.title': 'Integrated Preparatory Classes - Engineering Sciences',
+    'timeline.esilv.prepa.description': 'Integrated preparatory classes with learning of scientific and technical fundamentals.',
   },
 };
 
