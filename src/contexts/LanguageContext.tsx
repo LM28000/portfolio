@@ -30,6 +30,23 @@ const translations = {
     'nav.interests': 'Centres d\'intérêt',
     'nav.contact': 'Contact',
 
+    // QR Code & Calendly
+    'qrcode.title': 'Partager mon portfolio',
+    'qrcode.description': 'Scannez ce QR code pour accéder directement à mon portfolio',
+    'qrcode.download': 'Télécharger',
+    'qrcode.share': 'Partager',
+    'qrcode.close': 'Fermer',
+    'calendly.title': 'Prendre rendez-vous',
+    'calendly.description': 'Discutons de vos projets ! Réservez un créneau pour un entretien ou une collaboration.',
+    'calendly.duration': 'Créneaux disponibles : 30min à 1h',
+    'calendly.types': 'Entretiens techniques, collaborations, ou simple échange',
+    'calendly.open': 'Ouvrir Calendly',
+    'calendly.email': 'Email direct',
+    'calendly.call': 'Appeler',
+    'theme.system': 'Système',
+    'theme.light': 'Clair',
+    'theme.dark': 'Sombre',
+
     // Hero section
     'hero.subtitle': 'Alternant Agentic & RSE chez Devoteam',
     'hero.description': 'Étudiant en ingénierie logicielle & IA à l\'ESILV',
@@ -261,6 +278,23 @@ const translations = {
     'nav.projects': 'Projects',
     'nav.interests': 'Interests',
     'nav.contact': 'Contact',
+
+    // QR Code & Calendly
+    'qrcode.title': 'Share my portfolio',
+    'qrcode.description': 'Scan this QR code to access my portfolio directly',
+    'qrcode.download': 'Download',
+    'qrcode.share': 'Share',
+    'qrcode.close': 'Close',
+    'calendly.title': 'Schedule a meeting',
+    'calendly.description': 'Let\'s discuss your projects! Book a slot for an interview or collaboration.',
+    'calendly.duration': 'Available slots: 30min to 1h',
+    'calendly.types': 'Technical interviews, collaborations, or casual chat',
+    'calendly.open': 'Open Calendly',
+    'calendly.email': 'Direct email',
+    'calendly.call': 'Call',
+    'theme.system': 'System',
+    'theme.light': 'Light',
+    'theme.dark': 'Dark',
 
     // Hero section
     'hero.subtitle': 'Agentic & CSR Apprentice at Devoteam',

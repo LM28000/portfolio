@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import LanguageSwitch from './LanguageSwitch';
 import ThemeToggle from './ThemeToggle';
+import QRCodeGenerator from './QRCodeGenerator';
+import CalendlyWidget from './CalendlyWidget';
 import { trackPortfolioEvent } from '../utils/analytics';
 
 const Header = () => {
@@ -52,14 +54,7 @@ const Header = () => {
   return (
     <header className="fixed top-0 left-0 right-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm shadow-sm z-50 transition-colors duration-300">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center py-4">
-          <div
-            className="text-xl font-bold text-gray-900 dark:text-white cursor-pointer"
-            onClick={() => scrollToSection('home')}
-          >
-            Louis-Marie
-          </div>
-          
+        <div className="flex justify-center items-center py-4">
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {navItems.map((item) => (
@@ -73,14 +68,18 @@ const Header = () => {
                 {item.label}
               </button>
             ))}
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-3 ml-6">
+              <CalendlyWidget />
+              <QRCodeGenerator />
               <ThemeToggle />
               <LanguageSwitch />
             </div>
           </div>
 
           {/* Mobile menu button and controls */}
-          <div className="md:hidden flex items-center space-x-3">
+          <div className="md:hidden flex items-center justify-center space-x-2 w-full">
+            <CalendlyWidget />
+            <QRCodeGenerator />
             <ThemeToggle />
             <LanguageSwitch />
             <button
