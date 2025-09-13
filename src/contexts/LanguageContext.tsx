@@ -35,7 +35,7 @@ const translations = {
     'hero.description': 'Étudiant en ingénierie logicielle & IA à l\'ESILV',
     'hero.location': 'Levallois-Perret/Nantes, France',
     'hero.phone': '+33 6 19 86 22 97',
-    'hero.email': 'louis-marie.perret_du_cray@edu.devinci.fr',
+    'hero.email': 'louis-marie@du-cray.com',
     'hero.linkedin': 'LinkedIn',
     'hero.scrollDown': 'Découvrir mon parcours',
 
@@ -267,7 +267,7 @@ const translations = {
     'hero.description': 'Software & AI Engineering Student at ESILV',
     'hero.location': 'Levallois-Perret/Nantes, France',
     'hero.phone': '+33 6 19 86 22 97',
-    'hero.email': 'louis-marie.perret_du_cray@edu.devinci.fr',
+    'hero.email': 'louis-marie@du-cray.com',
     'hero.linkedin': 'LinkedIn',
     'hero.scrollDown': 'Discover my journey',
 
