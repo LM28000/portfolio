@@ -38,6 +38,7 @@ const AdminDashboard: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [isUploading, setIsUploading] = useState(false);
   const [showLogs, setShowLogs] = useState(false);
+  const [storageInfo, setStorageInfo] = useState({ used: 0, total: 0 });
 
   const categories = [
     { id: 'all', name: 'Tous les documents', icon: FileText },
@@ -52,6 +53,7 @@ const AdminDashboard: React.FC = () => {
   useEffect(() => {
     loadFiles();
     loadSecurityLogs();
+    calculateStorageUsage();
     
     // Marquer l'activité régulièrement
     const activityInterval = setInterval(() => {
@@ -60,6 +62,28 @@ const AdminDashboard: React.FC = () => {
 
     return () => clearInterval(activityInterval);
   }, [updateActivity]);
+
+  const calculateStorageUsage = () => {
+    try {
+      let used = 0;
+      let total = 5 * 1024 * 1024; // 5MB approximatif pour localStorage
+
+      // Calculer l'espace utilisé par les fichiers admin
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('admin-file-data-')) {
+          const value = localStorage.getItem(key);
+          if (value) {
+            used += value.length;
+          }
+        }
+      }
+
+      setStorageInfo({ used, total });
+    } catch (error) {
+      console.error('Erreur calcul stockage:', error);
+    }
+  };
 
   const loadFiles = () => {
     try {
@@ -93,9 +117,16 @@ const AdminDashboard: React.FC = () => {
     setIsUploading(true);
     
     try {
+      // Vérifier la taille du fichier (limite 10MB pour localStorage)
+      const maxSize = 10 * 1024 * 1024; // 10MB
+      if (file.size > maxSize) {
+        alert('Fichier trop volumineux. Taille maximale : 10MB');
+        return;
+      }
+
       // Créer l'objet fichier
       const newFile: AdminFile = {
-        id: `file-${Date.now()}`,
+        id: `file-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         name: file.name,
         type: file.type,
         size: file.size,
@@ -106,26 +137,59 @@ const AdminDashboard: React.FC = () => {
         tags: []
       };
 
-      // Chiffrer et stocker le fichier (simulation simple pour le prototype)
+      // Convertir le fichier en base64 de manière sécurisée
       const fileData = await file.arrayBuffer();
-      const base64Data = btoa(String.fromCharCode(...new Uint8Array(fileData)));
+      
+      // Méthode plus robuste pour la conversion base64
+      let base64Data: string;
+      try {
+        const uint8Array = new Uint8Array(fileData);
+        const chunkSize = 8192; // Traiter par chunks pour éviter les erreurs de pile
+        const chunks: string[] = [];
+        
+        for (let i = 0; i < uint8Array.length; i += chunkSize) {
+          const chunk = uint8Array.subarray(i, i + chunkSize);
+          chunks.push(String.fromCharCode.apply(null, Array.from(chunk)));
+        }
+        
+        base64Data = btoa(chunks.join(''));
+      } catch (conversionError) {
+        console.error('Erreur de conversion base64:', conversionError);
+        throw new Error('Erreur lors de la conversion du fichier');
+      }
+
+      // Vérifier que le localStorage peut stocker les données
+      try {
+        localStorage.setItem(`admin-file-data-${newFile.id}`, base64Data);
+      } catch (storageError) {
+        console.error('Erreur de stockage:', storageError);
+        throw new Error('Espace de stockage insuffisant');
+      }
       
       // Stocker les métadonnées
       const updatedFiles = [...files, newFile];
       setFiles(updatedFiles);
       localStorage.setItem('admin-files-lm', JSON.stringify(updatedFiles));
 
-      // Stocker le fichier en base64
-      localStorage.setItem(`admin-file-data-${newFile.id}`, base64Data);
-
       // Log de sécurité
-      AdminAuthUtils.logSecurityEvent('file_upload', `Fichier ${file.name} uploadé et chiffré`);
+      AdminAuthUtils.logSecurityEvent('file_upload', `Fichier ${file.name} uploadé (${formatFileSize(file.size)})`);
       loadSecurityLogs();
+      calculateStorageUsage(); // Recalculer l'usage du stockage
 
-      alert('Fichier uploadé avec succès !');
+      alert(`Fichier "${file.name}" uploadé avec succès !`);
     } catch (error) {
       console.error('Erreur lors de l\'upload:', error);
-      alert('Erreur lors de l\'upload du fichier');
+      
+      // Message d'erreur plus spécifique
+      let errorMessage = 'Erreur lors de l\'upload du fichier';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      
+      alert(errorMessage);
+      
+      // Log de l'erreur
+      AdminAuthUtils.logSecurityEvent('file_upload', `Échec upload: ${file?.name} - ${errorMessage}`);
     } finally {
       setIsUploading(false);
       // Réinitialiser l'input
@@ -137,23 +201,33 @@ const AdminDashboard: React.FC = () => {
     try {
       const base64Data = localStorage.getItem(`admin-file-data-${file.id}`);
       if (!base64Data) {
-        alert('Fichier non trouvé');
+        alert('Fichier non trouvé dans le stockage');
         return;
       }
 
-      // Décoder le base64
-      const binaryString = atob(base64Data);
+      // Décoder le base64 de manière sécurisée
+      let binaryString: string;
+      try {
+        binaryString = atob(base64Data);
+      } catch (decodeError) {
+        console.error('Erreur de décodage base64:', decodeError);
+        alert('Erreur lors du décodage du fichier');
+        return;
+      }
+
+      // Convertir en Uint8Array
       const bytes = new Uint8Array(binaryString.length);
       for (let i = 0; i < binaryString.length; i++) {
         bytes[i] = binaryString.charCodeAt(i);
       }
 
       // Créer un blob et le télécharger
-      const blob = new Blob([bytes], { type: file.type });
+      const blob = new Blob([bytes], { type: file.type || 'application/octet-stream' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
       a.download = file.name;
+      a.style.display = 'none';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -164,7 +238,7 @@ const AdminDashboard: React.FC = () => {
       loadSecurityLogs();
     } catch (error) {
       console.error('Erreur lors du téléchargement:', error);
-      alert('Erreur lors du téléchargement');
+      alert('Erreur lors du téléchargement du fichier');
     }
   };
 
@@ -182,6 +256,7 @@ const AdminDashboard: React.FC = () => {
         // Log de sécurité
         AdminAuthUtils.logSecurityEvent('file_delete', `Fichier ${file.name} supprimé`);
         loadSecurityLogs();
+        calculateStorageUsage(); // Recalculer l'usage du stockage
 
         setSelectedFile(null);
         alert('Fichier supprimé avec succès');
@@ -329,6 +404,26 @@ const AdminDashboard: React.FC = () => {
                     </button>
                   );
                 })}
+              </div>
+            </div>
+
+            {/* Storage Info */}
+            <div className="pt-4 border-t border-gray-700">
+              <h3 className="text-sm font-medium text-gray-300 mb-2">Stockage</h3>
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs text-gray-400">
+                  <span>Utilisé</span>
+                  <span>{formatFileSize(storageInfo.used)} / {formatFileSize(storageInfo.total)}</span>
+                </div>
+                <div className="w-full bg-gray-700 rounded-full h-2">
+                  <div 
+                    className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${Math.min((storageInfo.used / storageInfo.total) * 100, 100)}%` }}
+                  ></div>
+                </div>
+                <div className="text-xs text-gray-500">
+                  {files.length} document{files.length !== 1 ? 's' : ''} stocké{files.length !== 1 ? 's' : ''}
+                </div>
               </div>
             </div>
           </div>
