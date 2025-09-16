@@ -89,6 +89,11 @@ export const trackPortfolioEvent = {
     trackEvent('download', 'cv', 'portfolio_cv');
   },
 
+  // CV download with specific version
+  cvDownloadSpecific: (filename: string) => {
+    trackEvent('download', 'cv', filename);
+  },
+
   // Social link clicks
   socialClick: (platform: string) => {
     trackEvent('click', 'social', platform);

@@ -2,6 +2,7 @@ import { ChevronDown, MapPin, Phone, Mail } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useScrollParallax, useHover3D } from '../hooks/useAdvancedAnimations';
 import { useState, useEffect } from 'react';
+import CVDownload from './CVDownload';
 
 const Hero = () => {
   const { t } = useLanguage();
@@ -114,25 +115,31 @@ const Hero = () => {
             </a>
           </div>
 
-          {/* CTA Button avec effet morphing */}
+          {/* CTA Buttons avec effet morphing */}
           <div className="pt-8 animate-scale-in stagger-4 px-4">
-            <button
-              onClick={scrollToAbout}
-              className="group relative inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-medium transition-all duration-500 hover-lift shadow-lg hover:shadow-xl overflow-hidden w-full sm:w-auto"
-            >
-              {/* Effet de vague au survol */}
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-gradient"></div>
-              
-              <span className="relative z-10">{t('hero.scrollDown')}</span>
-              <ChevronDown size={20} className="relative z-10 group-hover:translate-y-1 group-hover:animate-bounce transition-transform duration-300" />
-              
-              {/* Particules qui s'échappent au survol */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div className="absolute -top-1 left-1/4 w-1 h-1 bg-white rounded-full"></div>
-                <div className="absolute -top-1 right-1/4 w-0.5 h-0.5 bg-white rounded-full"></div>
-                <div className="absolute -bottom-1 left-1/3 w-1.5 h-1.5 bg-white rounded-full"></div>
-              </div>
-            </button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              {/* Bouton Découvrir */}
+              <button
+                onClick={scrollToAbout}
+                className="group relative inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-medium transition-all duration-500 hover-lift shadow-lg hover:shadow-xl overflow-hidden w-full sm:w-auto"
+              >
+                {/* Effet de vague au survol */}
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-gradient"></div>
+                
+                <span className="relative z-10">{t('hero.scrollDown')}</span>
+                <ChevronDown size={20} className="relative z-10 group-hover:translate-y-1 group-hover:animate-bounce transition-transform duration-300" />
+                
+                {/* Particules qui s'échappent au survol */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="absolute -top-1 left-1/4 w-1 h-1 bg-white rounded-full"></div>
+                  <div className="absolute -top-1 right-1/4 w-0.5 h-0.5 bg-white rounded-full"></div>
+                  <div className="absolute -bottom-1 left-1/3 w-1.5 h-1.5 bg-white rounded-full"></div>
+                </div>
+              </button>
+
+              {/* CV Download Button */}
+              <CVDownload variant="primary" className="w-full sm:w-auto" />
+            </div>
           </div>
         </div>
       </div>

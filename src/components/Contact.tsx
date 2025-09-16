@@ -4,6 +4,7 @@ import emailjs from '@emailjs/browser';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useScrollAnimation, useStaggeredAnimation } from '../hooks/useScrollAnimation';
 import { trackPortfolioEvent } from '../utils/analytics';
+import CVDownload from './CVDownload';
 
 const Contact = () => {
   const { t } = useLanguage();
@@ -161,6 +162,11 @@ const Contact = () => {
           <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto px-4">
             {t('contact.subtitle')}
           </p>
+          
+          {/* CV Download Button */}
+          <div className="mt-6 flex justify-center">
+            <CVDownload variant="secondary" />
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12">
