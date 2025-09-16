@@ -1,35 +1,36 @@
-import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { ThemeProvider } from './contexts/ThemeContext';
-import Header from './components/Header';
-import Hero from './components/Hero';
-import About from './components/About';
-import Timeline from './components/Timeline';
-import Skills from './components/Skills';
-import Certifications from './components/Certifications';
-import Projects from './components/Projects';
-import Interests from './components/Interests';
-import Contact from './components/Contact';
-import Footer from './components/Footer';
+import { AdminProvider } from './contexts/AdminContext';
+import Portfolio from './Portfolio';
+import AdminRoute from './admin/AdminRoute';
+import AdminDashboard from './admin/AdminDashboard';
 
 function App() {
   return (
     <ThemeProvider>
       <LanguageProvider>
-        <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-all duration-300 overflow-x-hidden">
-          <Header />
-          <main className="overflow-x-hidden">
-            <Hero />
-            <About />
-            <Timeline />
-            <Skills />
-            <Certifications />
-            <Projects />
-            <Interests />
-            <Contact />
-          </main>
-          <Footer />
-        </div>
+        <AdminProvider>
+          <Router>
+            <Routes>
+              {/* Portfolio principal */}
+              <Route path="/" element={<Portfolio />} />
+              
+              {/* Administration sécurisée */}
+              <Route 
+                path="/admin" 
+                element={
+                  <AdminRoute>
+                    <AdminDashboard />
+                  </AdminRoute>
+                } 
+              />
+              
+              {/* Redirection vers l'accueil pour les routes non trouvées */}
+              <Route path="*" element={<Portfolio />} />
+            </Routes>
+          </Router>
+        </AdminProvider>
       </LanguageProvider>
     </ThemeProvider>
   );

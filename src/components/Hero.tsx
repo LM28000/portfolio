@@ -1,8 +1,9 @@
-import { ChevronDown, MapPin, Phone, Mail } from 'lucide-react';
+import { ChevronDown, MapPin, Phone, Mail, Github } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useScrollParallax, useHover3D } from '../hooks/useAdvancedAnimations';
 import { useState, useEffect } from 'react';
 import CVDownload from './CVDownload';
+import { trackPortfolioEvent } from '../utils/analytics';
 
 const Hero = () => {
   const { t } = useLanguage();
@@ -112,6 +113,16 @@ const Hero = () => {
             >
               <Mail size={16} className="animate-bounce-in" style={{ animationDelay: '0.4s' }} />
               <span>{t('hero.email')}</span>
+            </a>
+            <a 
+              href="https://github.com/LM28000"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackPortfolioEvent.socialClick('github')}
+              className="flex items-center justify-center gap-2 transition-all duration-300 hover-lift p-3 sm:p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+            >
+              <Github size={16} className="animate-bounce-in" style={{ animationDelay: '0.6s' }} />
+              <span>{t('hero.github')}</span>
             </a>
           </div>
 

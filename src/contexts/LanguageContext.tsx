@@ -70,6 +70,7 @@ const translations = {
     'hero.phone': '+33 6 19 86 22 97',
     'hero.email': 'louis-marie@du-cray.com',
     'hero.linkedin': 'LinkedIn',
+    'hero.github': 'GitHub',
     'hero.scrollDown': 'Découvrir mon parcours',
 
     // About section
@@ -335,6 +336,7 @@ const translations = {
     'hero.phone': '+33 6 19 86 22 97',
     'hero.email': 'louis-marie@du-cray.com',
     'hero.linkedin': 'LinkedIn',
+    'hero.github': 'GitHub',
     'hero.scrollDown': 'Discover my journey',
 
     // About section
