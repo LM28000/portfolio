@@ -12,7 +12,13 @@ import {
   CheckCircle,
   Search,
   Plus,
-  LogOut
+  LogOut,
+  Filter,
+  SortAsc,
+  SortDesc,
+  Calendar,
+  HardDrive,
+  X
 } from 'lucide-react';
 import { useAdmin } from '../contexts/AdminContext';
 import { AdminAuthUtils, SecurityLog } from '../utils/adminAuth';
@@ -39,6 +45,11 @@ const AdminDashboard: React.FC = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [showLogs, setShowLogs] = useState(false);
   const [storageInfo, setStorageInfo] = useState({ used: 0, total: 0 });
+  const [sortBy, setSortBy] = useState<'name' | 'date' | 'size' | 'type'>('date');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [dateFilter, setDateFilter] = useState<'all' | 'today' | 'week' | 'month'>('all');
+  const [sizeFilter, setSizeFilter] = useState<'all' | 'small' | 'medium' | 'large'>('all');
+  const [showFilters, setShowFilters] = useState(false);
 
   const categories = [
     { id: 'all', name: 'Tous les documents', icon: FileText },
@@ -274,12 +285,80 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
-  const filteredFiles = files.filter(file => {
-    const matchesSearch = file.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         file.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesCategory = selectedCategory === 'all' || file.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  const filteredAndSortedFiles = React.useMemo(() => {
+    let filtered = files.filter(file => {
+      // Filtre de recherche
+      const matchesSearch = file.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           file.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+      
+      // Filtre de catégorie
+      const matchesCategory = selectedCategory === 'all' || file.category === selectedCategory;
+      
+      // Filtre de date
+      let matchesDate = true;
+      if (dateFilter !== 'all') {
+        const now = new Date();
+        const fileDate = file.uploadDate;
+        
+        switch (dateFilter) {
+          case 'today':
+            matchesDate = fileDate.toDateString() === now.toDateString();
+            break;
+          case 'week':
+            const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            matchesDate = fileDate >= weekAgo;
+            break;
+          case 'month':
+            const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+            matchesDate = fileDate >= monthAgo;
+            break;
+        }
+      }
+      
+      // Filtre de taille
+      let matchesSize = true;
+      if (sizeFilter !== 'all') {
+        const sizeInMB = file.size / (1024 * 1024);
+        switch (sizeFilter) {
+          case 'small':
+            matchesSize = sizeInMB < 1;
+            break;
+          case 'medium':
+            matchesSize = sizeInMB >= 1 && sizeInMB < 5;
+            break;
+          case 'large':
+            matchesSize = sizeInMB >= 5;
+            break;
+        }
+      }
+      
+      return matchesSearch && matchesCategory && matchesDate && matchesSize;
+    });
+
+    // Tri des fichiers
+    filtered.sort((a, b) => {
+      let comparison = 0;
+      
+      switch (sortBy) {
+        case 'name':
+          comparison = a.name.localeCompare(b.name);
+          break;
+        case 'date':
+          comparison = a.uploadDate.getTime() - b.uploadDate.getTime();
+          break;
+        case 'size':
+          comparison = a.size - b.size;
+          break;
+        case 'type':
+          comparison = (a.type || '').localeCompare(b.type || '');
+          break;
+      }
+      
+      return sortOrder === 'asc' ? comparison : -comparison;
+    });
+
+    return filtered;
+  }, [files, searchTerm, selectedCategory, dateFilter, sizeFilter, sortBy, sortOrder]);
 
   const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return '0 Bytes';
@@ -382,6 +461,97 @@ const AdminDashboard: React.FC = () => {
               />
             </div>
 
+            {/* Filter Toggle */}
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-medium text-gray-300">Filtres</h3>
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className={`p-1 rounded ${showFilters ? 'text-blue-400 bg-blue-900/30' : 'text-gray-400 hover:text-white'}`}
+              >
+                <Filter className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Advanced Filters */}
+            {showFilters && (
+              <div className="space-y-4 p-3 bg-gray-800/50 rounded-lg border border-gray-700">
+                {/* Sort Options */}
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 mb-2">Tri par :</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value as 'name' | 'date' | 'size' | 'type')}
+                      className="px-2 py-1 text-xs bg-gray-700 border border-gray-600 rounded text-white"
+                    >
+                      <option value="date">Date</option>
+                      <option value="name">Nom</option>
+                      <option value="size">Taille</option>
+                      <option value="type">Type</option>
+                    </select>
+                    <button
+                      onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                      className="flex items-center justify-center px-2 py-1 bg-gray-700 border border-gray-600 rounded text-gray-300 hover:text-white"
+                    >
+                      {sortOrder === 'asc' ? <SortAsc className="w-3 h-3" /> : <SortDesc className="w-3 h-3" />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Date Filter */}
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 mb-2">
+                    <Calendar className="w-3 h-3 inline mr-1" />
+                    Période :
+                  </label>
+                  <select
+                    value={dateFilter}
+                    onChange={(e) => setDateFilter(e.target.value as 'all' | 'today' | 'week' | 'month')}
+                    className="w-full px-2 py-1 text-xs bg-gray-700 border border-gray-600 rounded text-white"
+                  >
+                    <option value="all">Toutes les dates</option>
+                    <option value="today">Aujourd'hui</option>
+                    <option value="week">Cette semaine</option>
+                    <option value="month">Ce mois</option>
+                  </select>
+                </div>
+
+                {/* Size Filter */}
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 mb-2">
+                    <HardDrive className="w-3 h-3 inline mr-1" />
+                    Taille :
+                  </label>
+                  <select
+                    value={sizeFilter}
+                    onChange={(e) => setSizeFilter(e.target.value as 'all' | 'small' | 'medium' | 'large')}
+                    className="w-full px-2 py-1 text-xs bg-gray-700 border border-gray-600 rounded text-white"
+                  >
+                    <option value="all">Toutes les tailles</option>
+                    <option value="small">Petit (&lt; 1MB)</option>
+                    <option value="medium">Moyen (1-5MB)</option>
+                    <option value="large">Grand (&gt; 5MB)</option>
+                  </select>
+                </div>
+
+                {/* Reset Filters */}
+                <button
+                  onClick={() => {
+                    setSearchTerm('');
+                    setSelectedCategory('all');
+                    setDateFilter('all');
+                    setSizeFilter('all');
+                    setSortBy('date');
+                    setSortOrder('desc');
+                  }}
+                  className="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs bg-gray-600 hover:bg-gray-500 rounded transition-colors"
+                >
+                  <X className="w-3 h-3" />
+                  Réinitialiser
+                </button>
+              </div>
+            )}
+
             {/* Categories */}
             <div>
               <h3 className="text-sm font-medium text-gray-300 mb-3">Catégories</h3>
@@ -470,15 +640,48 @@ const AdminDashboard: React.FC = () => {
             /* Files List */
             <div className="space-y-6">
               <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold">Documents Sécurisés</h2>
+                <div>
+                  <h2 className="text-2xl font-bold">Documents Sécurisés</h2>
+                  {/* Active Filters Indicator */}
+                  {(searchTerm || selectedCategory !== 'all' || dateFilter !== 'all' || sizeFilter !== 'all') && (
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className="text-xs text-gray-400">Filtres actifs:</span>
+                      {searchTerm && (
+                        <span className="px-2 py-1 text-xs bg-blue-900/30 text-blue-300 rounded">
+                          "{searchTerm}"
+                        </span>
+                      )}
+                      {selectedCategory !== 'all' && (
+                        <span className="px-2 py-1 text-xs bg-purple-900/30 text-purple-300 rounded">
+                          {categories.find(c => c.id === selectedCategory)?.name}
+                        </span>
+                      )}
+                      {dateFilter !== 'all' && (
+                        <span className="px-2 py-1 text-xs bg-green-900/30 text-green-300 rounded">
+                          {dateFilter === 'today' ? 'Aujourd\'hui' : 
+                           dateFilter === 'week' ? 'Cette semaine' : 'Ce mois'}
+                        </span>
+                      )}
+                      {sizeFilter !== 'all' && (
+                        <span className="px-2 py-1 text-xs bg-orange-900/30 text-orange-300 rounded">
+                          {sizeFilter === 'small' ? '< 1MB' : 
+                           sizeFilter === 'medium' ? '1-5MB' : '> 5MB'}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
                 <div className="text-sm text-gray-400">
-                  {filteredFiles.length} document{filteredFiles.length !== 1 ? 's' : ''}
+                  {filteredAndSortedFiles.length} document{filteredAndSortedFiles.length !== 1 ? 's' : ''}
+                  {files.length !== filteredAndSortedFiles.length && (
+                    <span className="text-gray-500"> sur {files.length}</span>
+                  )}
                 </div>
               </div>
 
-              {filteredFiles.length > 0 ? (
+              {filteredAndSortedFiles.length > 0 ? (
                 <div className="grid gap-4">
-                  {filteredFiles.map((file) => (
+                  {filteredAndSortedFiles.map((file) => (
                     <div
                       key={file.id}
                       className="bg-gray-800/50 border border-gray-700 rounded-lg p-4 hover:bg-gray-800/70 transition-colors"
@@ -557,22 +760,28 @@ const AdminDashboard: React.FC = () => {
               ) : (
                 <div className="text-center py-12">
                   <FileText className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-300 mb-2">Aucun document</h3>
+                  <h3 className="text-lg font-medium text-gray-300 mb-2">
+                    {files.length === 0 ? 'Aucun document' : 'Aucun résultat'}
+                  </h3>
                   <p className="text-gray-400 mb-6">
-                    {searchTerm || selectedCategory !== 'all' 
-                      ? 'Aucun document ne correspond à vos critères'
-                      : 'Commencez par ajouter vos premiers documents sécurisés'
+                    {files.length === 0 
+                      ? 'Commencez par ajouter vos premiers documents sécurisés'
+                      : 'Aucun document ne correspond à vos critères de filtrage'
                     }
                   </p>
-                  {searchTerm || selectedCategory !== 'all' ? (
+                  {(searchTerm || selectedCategory !== 'all' || dateFilter !== 'all' || sizeFilter !== 'all') ? (
                     <button
                       onClick={() => {
                         setSearchTerm('');
                         setSelectedCategory('all');
+                        setDateFilter('all');
+                        setSizeFilter('all');
+                        setSortBy('date');
+                        setSortOrder('desc');
                       }}
                       className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
                     >
-                      Réinitialiser les filtres
+                      Réinitialiser tous les filtres
                     </button>
                   ) : null}
                 </div>
