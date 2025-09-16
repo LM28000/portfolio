@@ -59,7 +59,7 @@ const Hero = () => {
               }}
             >
               <img 
-                src="/profile.png"
+                src="/profile-new.png"
                 alt="Louis-Marie Perret du Cray"
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
               />
