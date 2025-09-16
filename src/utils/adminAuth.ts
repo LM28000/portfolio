@@ -2,7 +2,7 @@
 
 export interface SecurityLog {
   timestamp: Date;
-  action: 'login_success' | 'login_failed' | 'logout' | 'file_upload' | 'file_download' | 'file_delete';
+  action: 'login_success' | 'login_failed' | 'logout' | 'file_upload' | 'file_download' | 'file_delete' | 'file_preview';
   details: string;
   ip?: string;
   userAgent?: string;
