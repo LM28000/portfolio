@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { QrCode, Download, Share2 } from 'lucide-react';
+import { QrCode, Download, Share2, Copy, Check } from 'lucide-react';
 import QRCode from 'qrcode';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -19,6 +19,7 @@ const QRCodeGenerator = ({
   const [isVisible, setIsVisible] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [qrCodeData, setQrCodeData] = useState<string>('');
+  const [linkCopied, setLinkCopied] = useState(false);
 
   useEffect(() => {
     generateQRCode();
@@ -97,6 +98,25 @@ const QRCodeGenerator = ({
       // Fallback: copier l'URL
       navigator.clipboard.writeText(url);
       alert('URL copiée dans le presse-papiers !');
+    }
+  };
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(url);
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2000);
+    } catch (error) {
+      console.error('Erreur lors de la copie:', error);
+      // Fallback pour les navigateurs qui ne supportent pas l'API Clipboard
+      const textArea = document.createElement('textarea');
+      textArea.value = url;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2000);
     }
   };
 
@@ -179,6 +199,38 @@ const QRCodeGenerator = ({
                     <Share2 size={14} />
                     {t('qrcode.share')}
                   </button>
+                </div>
+
+                {/* Lien du portfolio */}
+                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 space-y-2">
+                  <p className="text-xs font-medium text-gray-700 dark:text-gray-300">
+                    {t('qrcode.link.title')}
+                  </p>
+                  <div className="flex items-center gap-2 p-2 bg-white dark:bg-gray-600 rounded border text-xs">
+                    <span className="flex-1 text-gray-600 dark:text-gray-300 truncate font-mono">
+                      {url}
+                    </span>
+                    <button
+                      onClick={copyLink}
+                      className={`flex items-center gap-1 px-2 py-1 rounded transition-all duration-200 ${
+                        linkCopied 
+                          ? 'bg-green-500 text-white' 
+                          : 'bg-blue-500 hover:bg-blue-600 text-white'
+                      }`}
+                    >
+                      {linkCopied ? (
+                        <>
+                          <Check size={12} />
+                          <span>{t('qrcode.link.copied')}</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy size={12} />
+                          <span>{t('qrcode.link.copy')}</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
                 
                 <button
