@@ -1,3 +1,6 @@
+// Charger les variables d'environnement depuis le dossier du serveur
+require('dotenv').config({ path: require('path').join(__dirname, '.env') });
+
 const express = require('express');
 const multer = require('multer');
 const cors = require('cors');
@@ -7,6 +10,7 @@ const path = require('path');
 const app = express();
 const PORT = process.env.API_PORT || 8080;
 const NODE_ENV = process.env.NODE_ENV || 'development';
+const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'admin123';
 
 // Configuration CORS adaptée à l'environnement
 let corsOptions = {
@@ -209,10 +213,19 @@ app.get('/api/download', authenticateToken, (req, res) => {
   }
 });
 
-// GET /api/preview - Prévisualiser fichier
-app.get('/api/preview', authenticateToken, (req, res) => {
+// GET /api/preview - Prévisualiser fichier (auth via query parameter pour HTML)
+app.get('/api/preview', (req, res) => {
   try {
     const fileId = req.query.id;
+    const token = req.query.token || req.headers.authorization?.replace('Bearer ', '');
+    
+    // Vérifier l'authentification
+    if (!token || token !== ADMIN_TOKEN) {
+      return res.status(401).json({ success: false, error: 'Token invalide' });
+    }
+    
+    console.log(`📄 Prévisualisation demandée: ${fileId}`);
+    
     const files = loadMetadata();
     const file = files.find(f => f.id === fileId);
 
@@ -226,7 +239,11 @@ app.get('/api/preview', authenticateToken, (req, res) => {
       return res.status(404).json({ success: false, error: 'Fichier physique non trouvé' });
     }
 
+    console.log(`✅ Prévisualisation: ${file.name} (${file.type})`);
+    
+    // Headers pour la prévisualisation
     res.setHeader('Content-Type', file.type);
+    res.setHeader('Content-Disposition', 'inline');
     res.sendFile(filePath);
 
   } catch (error) {

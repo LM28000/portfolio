@@ -3,7 +3,7 @@
  * Alternative sécurisée à localStorage avec stockage sur le serveur
  */
 
-// Interface partagée pour les fichiers admin
+// Interface partagée pour les fichiers administratifs
 export interface AdminFile {
   id: string;
   name: string;
@@ -193,13 +193,6 @@ class AdminFileService {
       console.error('Erreur downloadFile:', error);
       throw error;
     }
-  }
-
-  /**
-   * Obtenir l'URL de prévisualisation d'un fichier
-   */
-  getPreviewUrl(fileId: string): string {
-    return `${this.baseUrl}/preview.php?id=${encodeURIComponent(fileId)}&token=${encodeURIComponent(this.token)}`;
   }
 
   /**
@@ -444,6 +437,13 @@ class AdminFileService {
       console.error('Erreur getLocalStoragePreviewUrl:', error);
       return null;
     }
+  }
+
+  /**
+   * Récupérer l'URL de prévisualisation d'un fichier depuis le serveur
+   */
+  getPreviewUrl(fileId: string): string {
+    return `${this.baseUrl}/preview?id=${encodeURIComponent(fileId)}&token=${encodeURIComponent(this.token)}`;
   }
 }
 
