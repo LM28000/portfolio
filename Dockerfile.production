@@ -1,0 +1,65 @@
+# Multi-stage build pour React + Node.js API Server
+FROM node:18 AS build
+
+# Build de l'application React
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+
+# Arguments de build pour les variables d'environnement
+ARG VITE_TEST_MODE=false
+ARG VITE_EMAILJS_SERVICE_ID
+ARG VITE_EMAILJS_TEMPLATE_ID
+ARG VITE_EMAILJS_PUBLIC_KEY
+ARG VITE_GA_TRACKING_ID
+ARG VITE_API_URL=http://localhost:8080/api
+
+# Définir les variables d'environnement pour le build
+ENV VITE_TEST_MODE=$VITE_TEST_MODE
+ENV VITE_EMAILJS_SERVICE_ID=$VITE_EMAILJS_SERVICE_ID
+ENV VITE_EMAILJS_TEMPLATE_ID=$VITE_EMAILJS_TEMPLATE_ID
+ENV VITE_EMAILJS_PUBLIC_KEY=$VITE_EMAILJS_PUBLIC_KEY
+ENV VITE_GA_TRACKING_ID=$VITE_GA_TRACKING_ID
+ENV VITE_API_URL=$VITE_API_URL
+
+RUN npm run build
+
+# Stage final avec Nginx + Node.js
+FROM node:18-alpine
+
+# Installer Nginx
+RUN apk add --no-cache nginx
+
+# Créer les répertoires nécessaires
+RUN mkdir -p /usr/share/nginx/html
+RUN mkdir -p /app/api-server
+RUN mkdir -p /app/admin-files/uploads
+RUN mkdir -p /var/log/nginx
+RUN mkdir -p /run/nginx
+
+# Copier l'application React buildée
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# Copier le serveur API
+COPY api-server/ /app/api-server/
+WORKDIR /app/api-server
+RUN npm install --production
+
+# Copier la configuration Nginx
+COPY nginx.production.conf /etc/nginx/nginx.conf
+
+# Créer un script de démarrage
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+
+# Créer un utilisateur non-root pour sécurité
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nodejs -u 1001
+RUN chown -R nodejs:nodejs /app/admin-files
+
+# Exposer les ports
+EXPOSE 80 8080
+
+# Point d'entrée
+ENTRYPOINT ["/docker-entrypoint.sh"]

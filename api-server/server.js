@@ -5,13 +5,25 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
-const PORT = 8080;
+const PORT = process.env.API_PORT || 8080;
+const NODE_ENV = process.env.NODE_ENV || 'development';
 
-// Configuration CORS
-app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174'],
+// Configuration CORS adaptée à l'environnement
+let corsOptions = {
   credentials: true
-}));
+};
+
+if (NODE_ENV === 'production') {
+  // En production, accepter toutes les origines du même domaine
+  corsOptions.origin = true;
+  console.log('🌐 Mode production : CORS configuré pour tous les domaines');
+} else {
+  // En développement, origines spécifiques
+  corsOptions.origin = ['http://localhost:5173', 'http://localhost:5174'];
+  console.log('🔧 Mode développement : CORS configuré pour localhost');
+}
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 

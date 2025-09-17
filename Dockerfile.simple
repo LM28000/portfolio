@@ -1,0 +1,29 @@
+# build stage
+FROM node:18 AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+
+# Arguments de build pour les variables d'environnement
+ARG VITE_TEST_MODE=false
+ARG VITE_EMAILJS_SERVICE_ID
+ARG VITE_EMAILJS_TEMPLATE_ID
+ARG VITE_EMAILJS_PUBLIC_KEY
+ARG VITE_GA_TRACKING_ID
+
+# Définir les variables d'environnement pour le build
+ENV VITE_TEST_MODE=$VITE_TEST_MODE
+ENV VITE_EMAILJS_SERVICE_ID=$VITE_EMAILJS_SERVICE_ID
+ENV VITE_EMAILJS_TEMPLATE_ID=$VITE_EMAILJS_TEMPLATE_ID
+ENV VITE_EMAILJS_PUBLIC_KEY=$VITE_EMAILJS_PUBLIC_KEY
+ENV VITE_GA_TRACKING_ID=$VITE_GA_TRACKING_ID
+
+RUN npm run build
+
+# serve stage
+FROM nginx:stable-alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

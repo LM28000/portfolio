@@ -25,8 +25,23 @@ export interface ApiResponse<T = any> {
 }
 
 class AdminFileService {
-  private baseUrl = 'http://localhost:8080/api'; // URL de l'API PHP sur port 8080
+  private baseUrl: string;
   private token = 'admin123'; // Token d'authentification
+
+  constructor() {
+    // Détection automatique de l'environnement
+    if (import.meta.env.DEV) {
+      // Mode développement : serveur API local sur port 8080
+      this.baseUrl = 'http://localhost:8080/api';
+    } else {
+      // Mode production : API servie par le même domaine via proxy Nginx
+      this.baseUrl = `${window.location.origin}/api`;
+    }
+    
+    console.log(`[AdminFileService] Mode: ${import.meta.env.DEV ? 'développement' : 'production'}`);
+    console.log(`[AdminFileService] API URL: ${this.baseUrl}`);
+    console.log(`[AdminFileService] Window origin: ${window.location.origin}`);
+  }
 
   /**
    * Headers par défaut pour les requêtes API
