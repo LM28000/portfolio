@@ -1,16 +1,29 @@
-// Charger les variables d'environnement depuis le dossier du serveur
-require('dotenv').config({ path: require('path').join(__dirname, '.env') });
+// Charger les variables d'environnement depuis le dossier du serveur (dev seulement)
+const fs = require('fs');
+const path = require('path');
+const envPath = path.join(__dirname, '.env');
+if (fs.existsSync(envPath)) {
+  require('dotenv').config({ path: envPath });
+  console.log('🔧 Variables d\'environnement chargées depuis .env');
+} else {
+  console.log('📦 Production mode: utilisation des variables d\'environnement système');
+}
 
 const express = require('express');
 const multer = require('multer');
 const cors = require('cors');
-const fs = require('fs');
-const path = require('path');
 
 const app = express();
 const PORT = process.env.API_PORT || 8080;
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'admin123';
+
+// Debug des variables d'environnement
+console.log('🔍 Variables d\'environnement:');
+console.log(`   - NODE_ENV: ${NODE_ENV}`);
+console.log(`   - API_PORT: ${PORT}`);
+console.log(`   - ADMIN_TOKEN: ${ADMIN_TOKEN ? '***défini***' : 'NON DÉFINI'}`);
+console.log(`   - process.env.ADMIN_TOKEN: ${process.env.ADMIN_TOKEN ? '***défini***' : 'NON DÉFINI'}`);
 
 // Configuration CORS adaptée à l'environnement
 let corsOptions = {
