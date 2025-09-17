@@ -1,8 +1,15 @@
 // Charger les variables d'environnement depuis le dossier du serveur (dev seulement)
 const fs = require('fs');
 const path = require('path');
+
+// Chercher d'abord .env.local, puis .env
+const envLocalPath = path.join(__dirname, '.env.local');
 const envPath = path.join(__dirname, '.env');
-if (fs.existsSync(envPath)) {
+
+if (fs.existsSync(envLocalPath)) {
+  require('dotenv').config({ path: envLocalPath });
+  console.log('🔧 Variables d\'environnement chargées depuis .env.local');
+} else if (fs.existsSync(envPath)) {
   require('dotenv').config({ path: envPath });
   console.log('🔧 Variables d\'environnement chargées depuis .env');
 } else {

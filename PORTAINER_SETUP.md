@@ -25,13 +25,13 @@ PORTFOLIO_PORT=2368
 # Token admin (CHANGEZ EN PRODUCTION!)
 ADMIN_TOKEN=votre_token_securise_ici
 
-# Configuration EmailJS (déjà dans le compose)
-VITE_EMAILJS_SERVICE_ID=service_k0yp7g8
-VITE_EMAILJS_TEMPLATE_ID=template_qjmmeea
-VITE_EMAILJS_PUBLIC_KEY=989Z7HW0nw_PZ3wE7
+# Configuration EmailJS (à configurer selon vos services)
+VITE_EMAILJS_SERVICE_ID=service_XXXXXXXXX
+VITE_EMAILJS_TEMPLATE_ID=template_XXXXXXXXX  
+VITE_EMAILJS_PUBLIC_KEY=XXXXXXXXXXXXXXXXXXXXX
 
-# Google Analytics
-VITE_GA_TRACKING_ID=G-DZVTZVB6CJ
+# Google Analytics (optionnel)
+VITE_GA_TRACKING_ID=G-XXXXXXXXXX
 ```
 
 ### 3. **Configuration avancée**

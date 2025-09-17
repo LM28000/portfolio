@@ -43,7 +43,7 @@ docker run -d -p 2368:80 -v admin_files:/app/admin-files --name portfolio portfo
 
 - `NODE_ENV=production`
 - `API_PORT=8080`
-- `ADMIN_TOKEN=admin123`
+- `ADMIN_TOKEN=VotreTokenSecurise` (à configurer dans Portainer)
 
 ### Ports
 
@@ -76,7 +76,7 @@ Utilisez le `docker-compose.production.yml` dans Portainer :
 
 ## 🛡️ Sécurité
 
-- **Token d'authentification** : `admin123` (à changer en production)
+- **Token d'authentification** : Configuré via variables d'environnement Portainer
 - **Upload limité** : 100MB max par fichier
 - **CORS** : Configuré pour le domaine de production
 - **Volumes isolés** : Fichiers stockés dans volume Docker dédié
