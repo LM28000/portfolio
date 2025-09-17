@@ -13,8 +13,11 @@ const AdminAuth: React.FC = () => {
   const [isBlocked, setIsBlocked] = useState(false);
   const [blockTimeRemaining, setBlockTimeRemaining] = useState(0);
 
-  // Vérifier si l'utilisateur est bloqué
+  // Vérifier si l'utilisateur est bloqué - TEMPORAIREMENT DÉSACTIVÉ
   useEffect(() => {
+    // Nettoyer tout blocage existant pour les tests
+    localStorage.removeItem('admin-login-block');
+    /* TEMPORAIREMENT DÉSACTIVÉ
     const blockData = localStorage.getItem('admin-login-block');
     if (blockData) {
       const { blockedUntil, attempts: storedAttempts } = JSON.parse(blockData);
@@ -29,6 +32,7 @@ const AdminAuth: React.FC = () => {
         localStorage.removeItem('admin-login-block');
       }
     }
+    */
   }, []);
 
   // Compte à rebours pour le déblocage
@@ -53,10 +57,13 @@ const AdminAuth: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // TEMPORAIREMENT DÉSACTIVÉ - Blocage après 5 tentatives
+    /* 
     if (isBlocked) {
       setError(`Accès bloqué. Réessayez dans ${blockTimeRemaining} secondes.`);
       return;
     }
+    */
 
     if (!password.trim()) {
       setError('Veuillez saisir un mot de passe');
@@ -75,12 +82,16 @@ const AdminAuth: React.FC = () => {
         localStorage.removeItem('admin-login-block');
         setAttempts(0);
       } else {
-        // Échec de connexion
+        // Échec de connexion - SYSTÈME DE BLOCAGE TEMPORAIREMENT DÉSACTIVÉ
         const newAttempts = attempts + 1;
         setAttempts(newAttempts);
         
-        AdminAuthUtils.logSecurityEvent('login_failed', `Tentative ${newAttempts}/5`);
+        AdminAuthUtils.logSecurityEvent('login_failed', `Tentative ${newAttempts}`);
         
+        // Afficher juste l'erreur sans bloquer
+        setError(`Mot de passe incorrect. Tentative ${newAttempts}. Vérifiez les variables d'environnement.`);
+        
+        /* TEMPORAIREMENT DÉSACTIVÉ
         if (newAttempts >= 5) {
           // Bloquer pour 15 minutes après 5 tentatives
           const blockedUntil = Date.now() + (15 * 60 * 1000);
@@ -94,6 +105,7 @@ const AdminAuth: React.FC = () => {
         } else {
           setError(`Mot de passe incorrect. ${5 - newAttempts} tentatives restantes.`);
         }
+        */
       }
     } catch (error) {
       console.error('Erreur de connexion:', error);
@@ -175,6 +187,26 @@ const AdminAuth: React.FC = () => {
                 <span>Accès bloqué pour {formatTime(blockTimeRemaining)}</span>
               </div>
             )}
+
+            {/* Debug Information */}
+            <div className="space-y-2 p-3 bg-blue-900/20 border border-blue-700 rounded-lg text-xs">
+              <div className="text-blue-300 font-medium">Debug Info:</div>
+              <div className="text-gray-300">
+                Env Password: {import.meta.env.VITE_ADMIN_PASSWORD ? 'Set' : 'Not set'} 
+                {import.meta.env.VITE_ADMIN_PASSWORD && ` (${import.meta.env.VITE_ADMIN_PASSWORD.substring(0, 5)}...)`}
+              </div>
+              <div className="text-gray-300">
+                Password Hash: {import.meta.env.VITE_ADMIN_PASSWORD_HASH ? 'Set' : 'Not set'}
+              </div>
+              <div className="text-gray-300">Current Input: {password}</div>
+              <button
+                type="button"
+                onClick={() => setPassword(import.meta.env.VITE_ADMIN_PASSWORD || '')}
+                className="px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700"
+              >
+                Use Env Password
+              </button>
+            </div>
 
             {/* Tentatives restantes */}
             {attempts > 0 && !isBlocked && (
