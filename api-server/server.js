@@ -337,7 +337,7 @@ app.patch('/api/files/:id/category', authenticateToken, (req, res) => {
     }
 
     // Vérifier que la catégorie est valide
-    const validCategories = ['identity', 'finance', 'medical', 'legal', 'other'];
+    const validCategories = ['identity', 'finance', 'medical', 'legal', 'other', 'scolaire'];
     if (!validCategories.includes(category)) {
       return res.status(400).json({ success: false, error: 'Catégorie invalide' });
     }
