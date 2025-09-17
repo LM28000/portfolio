@@ -57,6 +57,10 @@ const AdminDashboard: React.FC = () => {
   const [editingName, setEditingName] = useState<string | null>(null);
   const [newName, setNewName] = useState<string>('');
   
+  // États pour la sélection multiple
+  const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
+  const [selectionMode, setSelectionMode] = useState(false);
+  
   // Nouveaux états pour la gestion serveur/localStorage
   const [useServerStorage, setUseServerStorage] = useState(true);
   const [serverStatus, setServerStatus] = useState<'checking' | 'online' | 'offline'>('checking');
@@ -653,6 +657,72 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
+  // Fonctions de gestion de la sélection multiple
+  const toggleSelectionMode = () => {
+    setSelectionMode(!selectionMode);
+    setSelectedFiles(new Set());
+  };
+
+  const toggleFileSelection = (fileId: string) => {
+    const newSelected = new Set(selectedFiles);
+    if (newSelected.has(fileId)) {
+      newSelected.delete(fileId);
+    } else {
+      newSelected.add(fileId);
+    }
+    setSelectedFiles(newSelected);
+  };
+
+  const selectAllFiles = () => {
+    const allFileIds = new Set(files.map(file => file.id));
+    setSelectedFiles(allFileIds);
+  };
+
+  const deselectAllFiles = () => {
+    setSelectedFiles(new Set());
+  };
+
+  const handleDeleteSelected = async () => {
+    if (selectedFiles.size === 0) {
+      alert('Aucun fichier sélectionné');
+      return;
+    }
+
+    const confirmMessage = `Êtes-vous sûr de vouloir supprimer ${selectedFiles.size} fichier(s) ?`;
+    if (!confirm(confirmMessage)) {
+      return;
+    }
+
+    try {
+      const selectedFilesList = Array.from(selectedFiles);
+      
+      for (const fileId of selectedFilesList) {
+        const file = files.find(f => f.id === fileId);
+        if (file) {
+          if (useServerStorage) {
+            await adminFileService.deleteFile(fileId);
+          } else {
+            adminFileService.deleteFromLocalStorage(fileId);
+          }
+        }
+      }
+
+      // Recharger la liste des fichiers
+      await initializeSystem();
+      
+      // Réinitialiser la sélection
+      setSelectedFiles(new Set());
+      
+      // Log de sécurité
+      AdminAuthUtils.logSecurityEvent('file_delete', `Suppression groupée de ${selectedFiles.size} fichiers`);
+      
+      alert(`${selectedFilesList.length} fichier(s) supprimé(s) avec succès!`);
+    } catch (error) {
+      console.error('Erreur lors de la suppression des fichiers:', error);
+      alert('Erreur lors de la suppression des fichiers: ' + (error instanceof Error ? error.message : 'Erreur inconnue'));
+    }
+  };
+
   const handleZoom = (delta: number) => {
     setZoom(prev => Math.max(25, Math.min(300, prev + delta)));
   };
@@ -858,6 +928,55 @@ const AdminDashboard: React.FC = () => {
         {/* Sidebar */}
         <div className="w-64 bg-gray-800/30 border-r border-gray-700 p-6">
           <div className="space-y-6">
+            {/* Sélection multiple */}
+            <div className="space-y-3">
+              <button
+                onClick={toggleSelectionMode}
+                className={`flex items-center justify-center gap-2 w-full py-2 px-3 rounded-lg transition-all duration-200 font-medium ${
+                  selectionMode 
+                    ? 'bg-amber-600 hover:bg-amber-700 text-white' 
+                    : 'bg-gray-700 hover:bg-gray-600 text-gray-300'
+                }`}
+              >
+                <CheckCircle className="w-4 h-4" />
+                {selectionMode ? 'Annuler sélection' : 'Sélectionner plusieurs'}
+              </button>
+              
+              {selectionMode && (
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    <button
+                      onClick={selectAllFiles}
+                      className="flex-1 py-1 px-2 text-xs bg-blue-600 hover:bg-blue-700 rounded transition-colors"
+                    >
+                      Tout sélectionner
+                    </button>
+                    <button
+                      onClick={deselectAllFiles}
+                      className="flex-1 py-1 px-2 text-xs bg-gray-600 hover:bg-gray-700 rounded transition-colors"
+                    >
+                      Tout désélectionner
+                    </button>
+                  </div>
+                  
+                  {selectedFiles.size > 0 && (
+                    <div className="space-y-2">
+                      <div className="text-xs text-amber-300 text-center">
+                        {selectedFiles.size} fichier(s) sélectionné(s)
+                      </div>
+                      <button
+                        onClick={handleDeleteSelected}
+                        className="flex items-center justify-center gap-2 w-full py-2 px-3 bg-red-600 hover:bg-red-700 rounded-lg transition-colors text-sm font-medium"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        Supprimer sélection
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
             {/* Upload */}
             <div>
               <label className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-lg cursor-pointer transition-all duration-200 font-medium shadow-lg">
@@ -1166,6 +1285,14 @@ const AdminDashboard: React.FC = () => {
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
+                          {selectionMode && (
+                            <input
+                              type="checkbox"
+                              checked={selectedFiles.has(file.id)}
+                              onChange={() => toggleFileSelection(file.id)}
+                              className="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-2"
+                            />
+                          )}
                           <div className="flex items-center justify-center w-10 h-10 bg-blue-600/20 rounded-lg">
                             <FileText className="w-5 h-5 text-blue-400" />
                           </div>
