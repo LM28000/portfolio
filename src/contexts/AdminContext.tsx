@@ -25,8 +25,8 @@ interface AdminProviderProps {
 
 // Configuration sécurisée
 const ADMIN_CONFIG = {
-  // CHANGEZ CE MOT DE PASSE !
-  PASSWORD_HASH: 'lm2025-admin-secure-key', // En production, utilisez un hash bcrypt
+  // Mot de passe récupéré depuis les variables d'environnement
+  PASSWORD_HASH: import.meta.env.VITE_ADMIN_PASSWORD || 'default-password-change-me',
   SESSION_DURATION: 4 * 60 * 60 * 1000, // 4 heures en millisecondes
   INACTIVITY_TIMEOUT: 60 * 60 * 1000, // 60 minutes d'inactivité (1 heure)
   STORAGE_KEY: 'admin-session-lm',
