@@ -185,18 +185,22 @@ app.post('/api/files', authenticateToken, upload.single('file'), (req, res) => {
   }
 });
 
-// POST /api/files/upload-with-path - Upload fichier avec préservation du chemin
+// POST /api/files/upload-with-path - Upload fichier avec nom personnalisé (sans chemin)
 app.post('/api/files/upload-with-path', authenticateToken, upload.single('file'), (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ success: false, error: 'Aucun fichier reçu' });
     }
 
-    const relativePath = req.body.relativePath || req.file.originalname;
+    // Utiliser le nom fourni ou extraire le nom du fichier sans chemin
+    const providedName = req.body.relativePath || req.file.originalname;
+    const fileName = providedName.includes('/') ? 
+      providedName.split('/').pop() : 
+      providedName;
     
     const fileData = {
       id: Date.now() + '-' + Math.random().toString(36).substr(2, 9),
-      name: relativePath, // Utiliser le chemin relatif comme nom
+      name: fileName, // Utiliser seulement le nom du fichier (sans chemin)
       type: req.file.mimetype,
       size: req.file.size,
       uploadDate: new Date().toISOString(),
@@ -205,8 +209,10 @@ app.post('/api/files/upload-with-path', authenticateToken, upload.single('file')
       category: req.body.category || 'other',
       tags: [],
       filePath: `uploads/${req.file.filename}`,
-      originalPath: relativePath // Garder une trace du chemin original
+      originalPath: providedName // Garder une trace du chemin original pour référence
     };
+
+    console.log(`📁 Upload dossier: ${providedName} -> ${fileName}`);
 
     const files = loadMetadata();
     files.push(fileData);

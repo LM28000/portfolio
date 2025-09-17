@@ -372,17 +372,22 @@ const AdminDashboard: React.FC = () => {
         totalSize += file.size;
 
         try {
+          // Extraire seulement le nom du fichier (sans le chemin du dossier)
+          const fileName = file.webkitRelativePath ? 
+            file.webkitRelativePath.split('/').pop() || file.name : 
+            file.name;
+
           if (useServerStorage && serverStatus === 'online') {
-            // Upload vers le serveur avec préservation du chemin relatif
+            // Upload vers le serveur avec seulement le nom du fichier
             try {
-              await adminFileService.uploadFileWithPath(file, category, file.webkitRelativePath);
+              await adminFileService.uploadFileWithPath(file, category, fileName);
             } catch (serverError) {
-              console.warn('Échec upload serveur pour', file.name, ', fallback localStorage:', serverError);
-              await adminFileService.saveToLocalStorageWithPath(file, category, file.webkitRelativePath);
+              console.warn('Échec upload serveur pour', fileName, ', fallback localStorage:', serverError);
+              await adminFileService.saveToLocalStorageWithPath(file, category, fileName);
             }
           } else {
-            // Sauvegarde localStorage avec chemin
-            await adminFileService.saveToLocalStorageWithPath(file, category, file.webkitRelativePath);
+            // Sauvegarde localStorage avec seulement le nom
+            await adminFileService.saveToLocalStorageWithPath(file, category, fileName);
           }
 
           uploadedCount++;

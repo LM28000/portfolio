@@ -381,12 +381,14 @@ class AdminFileService {
   /**
    * Sauvegarder en localStorage avec préservation du chemin
    */
-  async saveToLocalStorageWithPath(file: File, category: string = 'other', relativePath: string = ''): Promise<AdminFile> {
+  async saveToLocalStorageWithPath(file: File, category: string = 'other', fileName: string = ''): Promise<AdminFile> {
     try {
-      // Créer l'objet fichier avec le chemin relatif
+      // Créer l'objet fichier avec le nom de fichier fourni (sans chemin)
+      const finalFileName = fileName || file.name;
+      
       const newFile: AdminFile = {
         id: `file-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        name: relativePath || file.name, // Utiliser le chemin relatif comme nom si fourni
+        name: finalFileName, // Utiliser seulement le nom du fichier
         type: file.type,
         size: file.size,
         uploadDate: new Date(),
@@ -394,7 +396,7 @@ class AdminFileService {
         isEncrypted: true,
         category: category,
         tags: [],
-        filePath: relativePath || undefined
+        filePath: undefined // Pas de chemin conservé
       };
 
       // Convertir en base64
