@@ -199,13 +199,25 @@ const AdminAuth: React.FC = () => {
                 Password Hash: {import.meta.env.VITE_ADMIN_PASSWORD_HASH ? 'Set' : 'Not set'}
               </div>
               <div className="text-gray-300">Current Input: {password}</div>
-              <button
-                type="button"
-                onClick={() => setPassword(import.meta.env.VITE_ADMIN_PASSWORD || '')}
-                className="px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700"
-              >
-                Use Env Password
-              </button>
+              <div className="text-yellow-300">
+                Fallback Password: Portfolio2025-SecurePassword-FE*456!
+              </div>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setPassword(import.meta.env.VITE_ADMIN_PASSWORD || 'Portfolio2025-SecurePassword-FE*456!')}
+                  className="px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700"
+                >
+                  Use Env Password
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPassword('Portfolio2025-SecurePassword-FE*456!')}
+                  className="px-2 py-1 bg-yellow-600 text-white rounded text-xs hover:bg-yellow-700"
+                >
+                  Use Fallback
+                </button>
+              </div>
             </div>
 
             {/* Tentatives restantes */}
