@@ -137,6 +137,45 @@ class AdminFileService {
   }
 
   /**
+   * Uploader un fichier vers le serveur avec préservation du chemin
+   */
+  async uploadFileWithPath(file: File, category: string = 'other', relativePath: string = ''): Promise<AdminFile> {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('category', category);
+      formData.append('relativePath', relativePath);
+
+      const response = await fetch(`${this.baseUrl}/files/upload-with-path`, {
+        method: 'POST',
+        headers: this.getUploadHeaders(),
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erreur HTTP: ${response.status}`);
+      }
+
+      const result: ApiResponse<AdminFile> = await response.json();
+      
+      if (result.success && result.data) {
+        // Convertir les dates
+        const adminFile = {
+          ...result.data,
+          uploadDate: new Date(result.data.uploadDate),
+          lastModified: new Date(result.data.lastModified)
+        };
+        return adminFile;
+      } else {
+        throw new Error(result.error || 'Erreur lors de l\'upload du fichier avec chemin');
+      }
+    } catch (error) {
+      console.error('Erreur uploadFileWithPath:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Supprimer un fichier du serveur
    */
   async deleteFile(fileId: string): Promise<void> {
@@ -340,6 +379,54 @@ class AdminFileService {
   }
 
   /**
+   * Sauvegarder en localStorage avec préservation du chemin
+   */
+  async saveToLocalStorageWithPath(file: File, category: string = 'other', relativePath: string = ''): Promise<AdminFile> {
+    try {
+      // Créer l'objet fichier avec le chemin relatif
+      const newFile: AdminFile = {
+        id: `file-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        name: relativePath || file.name, // Utiliser le chemin relatif comme nom si fourni
+        type: file.type,
+        size: file.size,
+        uploadDate: new Date(),
+        lastModified: new Date(),
+        isEncrypted: true,
+        category: category,
+        tags: [],
+        filePath: relativePath || undefined
+      };
+
+      // Convertir en base64
+      const fileData = await file.arrayBuffer();
+      const uint8Array = new Uint8Array(fileData);
+      const chunkSize = 8192;
+      const chunks: string[] = [];
+      
+      for (let i = 0; i < uint8Array.length; i += chunkSize) {
+        const chunk = uint8Array.subarray(i, i + chunkSize);
+        chunks.push(String.fromCharCode.apply(null, Array.from(chunk)));
+      }
+      
+      const base64Data = btoa(chunks.join(''));
+      
+      // Sauvegarder
+      localStorage.setItem(`admin-file-data-${newFile.id}`, base64Data);
+      
+      // Mettre à jour la liste
+      const storedFiles = localStorage.getItem('admin-files-lm');
+      const files = storedFiles ? JSON.parse(storedFiles) : [];
+      files.push(newFile);
+      localStorage.setItem('admin-files-lm', JSON.stringify(files));
+
+      return newFile;
+    } catch (error) {
+      console.error('Erreur saveToLocalStorageWithPath:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Charger depuis localStorage (mode fallback)
    */
   getLocalStorageFiles(): AdminFile[] {
@@ -448,6 +535,113 @@ class AdminFileService {
    */
   getPreviewUrl(fileId: string): string {
     return `${this.baseUrl}/preview?id=${encodeURIComponent(fileId)}&token=${encodeURIComponent(this.token)}`;
+  }
+
+  /**
+   * Tester la connectivité avec le serveur
+   */
+  async testServerConnection(): Promise<boolean> {
+    try {
+      console.log('🔍 Test connexion serveur...');
+      const response = await fetch(`${this.baseUrl}/health`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${this.token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      const isConnected = response.ok;
+      console.log('📡 Test serveur résultat:', { status: response.status, connected: isConnected });
+      return isConnected;
+    } catch (error) {
+      console.warn('❌ Test serveur échoué:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Mettre à jour la catégorie d'un fichier sur le serveur
+   */
+  async updateFileCategory(fileId: string, category: string): Promise<AdminFile> {
+    try {
+      // Test de connectivité d'abord
+      const isServerReachable = await this.testServerConnection();
+      if (!isServerReachable) {
+        throw new Error('Serveur non accessible, utilisez le mode localStorage');
+      }
+
+      const url = `${this.baseUrl}/files/${encodeURIComponent(fileId)}/category`;
+      console.log('🔍 Debug updateFileCategory:');
+      console.log('   - URL:', url);
+      console.log('   - fileId:', fileId);
+      console.log('   - category:', category);
+      
+      const response = await fetch(url, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.token}`
+        },
+        body: JSON.stringify({ category })
+      });
+
+      console.log('   - Response status:', response.status);
+      console.log('   - Response ok:', response.ok);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.log('   - Error response:', errorText);
+        throw new Error(`Erreur HTTP: ${response.status} - ${errorText}`);
+      }
+
+      const result: ApiResponse<AdminFile> = await response.json();
+      
+      if (result.success && result.data) {
+        // Convertir les dates
+        const adminFile = {
+          ...result.data,
+          uploadDate: new Date(result.data.uploadDate),
+          lastModified: new Date(result.data.lastModified)
+        };
+        return adminFile;
+      } else {
+        throw new Error(result.error || 'Erreur lors de la mise à jour de la catégorie');
+      }
+    } catch (error) {
+      console.error('Erreur updateFileCategory:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Mettre à jour la catégorie d'un fichier dans localStorage
+   */
+  async updateLocalStorageFileCategory(fileId: string, category: string): Promise<AdminFile> {
+    try {
+      // Récupérer la liste des fichiers
+      const storedFiles = localStorage.getItem('admin-files-lm');
+      const files = storedFiles ? JSON.parse(storedFiles) : [];
+      
+      // Trouver le fichier
+      const fileIndex = files.findIndex((f: AdminFile) => f.id === fileId);
+      if (fileIndex === -1) {
+        throw new Error('Fichier non trouvé');
+      }
+
+      // Mettre à jour la catégorie
+      files[fileIndex].category = category;
+      files[fileIndex].lastModified = new Date();
+
+      // Sauvegarder
+      localStorage.setItem('admin-files-lm', JSON.stringify(files));
+
+      // Retourner le fichier mis à jour
+      return files[fileIndex];
+    } catch (error) {
+      console.error('Erreur updateLocalStorageFileCategory:', error);
+      throw error;
+    }
   }
 }
 

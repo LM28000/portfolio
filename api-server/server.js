@@ -131,6 +131,16 @@ app.get('/api/test', (req, res) => {
   });
 });
 
+// Route de santé avec authentification
+app.get('/api/health', authenticateToken, (req, res) => {
+  res.json({ 
+    success: true, 
+    message: 'Serveur en ligne et authentifié',
+    timestamp: new Date().toISOString(),
+    authenticated: true
+  });
+});
+
 // GET /api/files - Lister les fichiers
 app.get('/api/files', authenticateToken, (req, res) => {
   try {
@@ -159,6 +169,43 @@ app.post('/api/files', authenticateToken, upload.single('file'), (req, res) => {
       category: req.body.category || 'other',
       tags: [],
       filePath: `uploads/${req.file.filename}`
+    };
+
+    const files = loadMetadata();
+    files.push(fileData);
+    
+    if (saveMetadata(files)) {
+      res.json({ success: true, data: fileData });
+    } else {
+      throw new Error('Erreur sauvegarde métadonnées');
+    }
+
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// POST /api/files/upload-with-path - Upload fichier avec préservation du chemin
+app.post('/api/files/upload-with-path', authenticateToken, upload.single('file'), (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, error: 'Aucun fichier reçu' });
+    }
+
+    const relativePath = req.body.relativePath || req.file.originalname;
+    
+    const fileData = {
+      id: Date.now() + '-' + Math.random().toString(36).substr(2, 9),
+      name: relativePath, // Utiliser le chemin relatif comme nom
+      type: req.file.mimetype,
+      size: req.file.size,
+      uploadDate: new Date().toISOString(),
+      lastModified: new Date().toISOString(),
+      isEncrypted: true,
+      category: req.body.category || 'other',
+      tags: [],
+      filePath: `uploads/${req.file.filename}`,
+      originalPath: relativePath // Garder une trace du chemin original
     };
 
     const files = loadMetadata();
@@ -267,6 +314,71 @@ app.get('/api/preview', (req, res) => {
     res.sendFile(filePath);
 
   } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// PATCH /api/files/:id/category - Mettre à jour la catégorie d'un fichier
+app.patch('/api/files/:id/category', authenticateToken, (req, res) => {
+  try {
+    const fileId = req.params.id;
+    const { category } = req.body;
+
+    console.log(`📝 PATCH /api/files/${fileId}/category - Mise à jour de catégorie`);
+    console.log(`   - fileId: ${fileId}`);
+    console.log(`   - category: ${category}`);
+
+    if (!fileId) {
+      return res.status(400).json({ success: false, error: 'ID fichier manquant' });
+    }
+
+    if (!category) {
+      return res.status(400).json({ success: false, error: 'Catégorie manquante' });
+    }
+
+    // Vérifier que la catégorie est valide
+    const validCategories = ['identity', 'finance', 'medical', 'legal', 'other'];
+    if (!validCategories.includes(category)) {
+      return res.status(400).json({ success: false, error: 'Catégorie invalide' });
+    }
+
+    let files = loadMetadata();
+    console.log(`   - Nombre de fichiers total: ${files.length}`);
+    console.log(`   - IDs disponibles: ${files.map(f => `${f.id} (${f.name})`).join(', ')}`);
+    
+    const fileIndex = files.findIndex(f => f.id === fileId);
+    console.log(`   - Index trouvé: ${fileIndex}`);
+    
+    if (fileIndex === -1) {
+      console.log(`   - ❌ Fichier non trouvé avec ID: ${fileId}`);
+      return res.status(404).json({ 
+        success: false, 
+        error: 'Fichier non trouvé',
+        debug: {
+          requestedId: fileId,
+          availableIds: files.map(f => f.id),
+          totalFiles: files.length
+        }
+      });
+    }
+
+    // Mettre à jour la catégorie
+    files[fileIndex].category = category;
+    files[fileIndex].lastModified = new Date().toISOString();
+
+    if (saveMetadata(files)) {
+      console.log(`📝 Catégorie mise à jour: ${files[fileIndex].name} -> ${category}`);
+      res.json({ 
+        success: true, 
+        data: files[fileIndex],
+        message: 'Catégorie mise à jour avec succès'
+      });
+    } else {
+      throw new Error('Erreur sauvegarde métadonnées');
+    }
+
+  } catch (error) {
+    console.error('Erreur mise à jour catégorie:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 });

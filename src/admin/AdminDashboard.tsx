@@ -23,7 +23,8 @@ import {
   ZoomOut,
   RotateCw,
   Server,
-  Cloud
+  Cloud,
+  Folder
 } from 'lucide-react';
 import { useAdmin } from '../contexts/AdminContext';
 import { AdminAuthUtils, SecurityLog } from '../utils/adminAuth';
@@ -49,6 +50,8 @@ const AdminDashboard: React.FC = () => {
   const [previewLoading, setPreviewLoading] = useState(false);
   const [zoom, setZoom] = useState(100);
   const [rotation, setRotation] = useState(0);
+  const [editingCategory, setEditingCategory] = useState<string | null>(null);
+  const [newCategory, setNewCategory] = useState<string>('');
   
   // Nouveaux états pour la gestion serveur/localStorage
   const [useServerStorage, setUseServerStorage] = useState(true);
@@ -117,10 +120,12 @@ const AdminDashboard: React.FC = () => {
   // Charger les fichiers depuis le serveur
   const loadFilesFromServer = async () => {
     try {
+      console.log('📂 loadFilesFromServer: Début du chargement...');
       const serverFiles = await adminFileService.getFiles();
+      console.log('📂 loadFilesFromServer: Fichiers reçus:', serverFiles.length);
       setFiles(serverFiles);
     } catch (error) {
-      console.error('Erreur chargement serveur:', error);
+      console.error('📂 Erreur chargement serveur:', error);
       // Fallback vers localStorage
       loadFilesFromLocalStorage();
       setUseServerStorage(false);
@@ -131,10 +136,12 @@ const AdminDashboard: React.FC = () => {
   // Charger les fichiers depuis localStorage
   const loadFilesFromLocalStorage = () => {
     try {
+      console.log('💾 loadFilesFromLocalStorage: Début du chargement...');
       const localFiles = adminFileService.getLocalStorageFiles();
+      console.log('💾 loadFilesFromLocalStorage: Fichiers reçus:', localFiles.length);
       setFiles(localFiles);
     } catch (error) {
-      console.error('Erreur chargement localStorage:', error);
+      console.error('💾 Erreur chargement localStorage:', error);
       setFiles([]);
     }
   };
@@ -313,21 +320,107 @@ const AdminDashboard: React.FC = () => {
       }
 
       // Mettre à jour la liste des fichiers
-      setFiles(prev => [...prev, newFile]);
+      if (useServerStorage && serverStatus === 'online') {
+        await loadFilesFromServer();
+      } else {
+        loadFilesFromLocalStorage();
+      }
       await calculateStorageUsage();
-      loadSecurityLogs();
-
-      alert(`Fichier "${file.name}" uploadé avec succès !`);
+      
+      // Reset du formulaire
+      event.target.value = '';
+      
     } catch (error) {
       console.error('Erreur lors de l\'upload:', error);
-      
-      const errorMessage = error instanceof Error ? error.message : 'Erreur lors de l\'upload du fichier';
-      alert(errorMessage);
-      
-      AdminAuthUtils.logSecurityEvent('file_upload', `Échec upload: ${file?.name} - ${errorMessage}`);
+      alert('Erreur lors de l\'upload du fichier');
     } finally {
       setIsUploading(false);
+    }
+  };
+
+  const handleFolderUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    setIsUploading(true);
+    
+    try {
+      const maxSize = useServerStorage ? 50 * 1024 * 1024 : 10 * 1024 * 1024; // 50MB serveur, 10MB localStorage
+      const category = selectedCategory === 'all' ? 'other' : selectedCategory;
+      
+      let uploadedCount = 0;
+      let skippedCount = 0;
+      let totalSize = 0;
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        
+        // Vérifier la taille du fichier
+        if (file.size > maxSize) {
+          skippedCount++;
+          console.warn(`Fichier ${file.name} trop volumineux (${formatFileSize(file.size)}), ignoré`);
+          continue;
+        }
+
+        totalSize += file.size;
+
+        try {
+          if (useServerStorage && serverStatus === 'online') {
+            // Upload vers le serveur avec préservation du chemin relatif
+            try {
+              await adminFileService.uploadFileWithPath(file, category, file.webkitRelativePath);
+            } catch (serverError) {
+              console.warn('Échec upload serveur pour', file.name, ', fallback localStorage:', serverError);
+              await adminFileService.saveToLocalStorageWithPath(file, category, file.webkitRelativePath);
+            }
+          } else {
+            // Sauvegarde localStorage avec chemin
+            await adminFileService.saveToLocalStorageWithPath(file, category, file.webkitRelativePath);
+          }
+
+          uploadedCount++;
+        } catch (error) {
+          console.error(`Erreur pour le fichier ${file.name}:`, error);
+          skippedCount++;
+        }
+      }
+
+      // Log de sécurité
+      AdminAuthUtils.logSecurityEvent('file_upload', 
+        `Dossier uploadé: ${uploadedCount} fichiers (${formatFileSize(totalSize)}), ${skippedCount} ignorés`
+      );
+
+      // Mettre à jour la liste des fichiers
+      console.log('🔍 Debug folder upload - Reloading files...');
+      console.log('   - useServerStorage:', useServerStorage);
+      console.log('   - serverStatus:', serverStatus);
+      
+      if (useServerStorage && serverStatus === 'online') {
+        console.log('   - Chargement depuis le serveur...');
+        await loadFilesFromServer();
+      } else {
+        console.log('   - Chargement depuis localStorage...');
+        loadFilesFromLocalStorage();
+      }
+      await calculateStorageUsage();
+      
+      console.log('   - Nouveau nombre de fichiers:', files.length);
+      
+      // Reset du formulaire
       event.target.value = '';
+
+      // Message de confirmation
+      if (uploadedCount > 0) {
+        alert(`✅ Dossier uploadé avec succès!\n${uploadedCount} fichiers ajoutés${skippedCount > 0 ? `\n${skippedCount} fichiers ignorés (trop volumineux)` : ''}`);
+      } else {
+        alert('❌ Aucun fichier n\'a pu être uploadé.');
+      }
+      
+    } catch (error) {
+      console.error('Erreur lors de l\'upload du dossier:', error);
+      alert('Erreur lors de l\'upload du dossier');
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -432,6 +525,63 @@ const AdminDashboard: React.FC = () => {
     setPreviewData(null);
     setZoom(100);
     setRotation(0);
+  };
+
+  // Fonction pour mettre à jour la catégorie d'un fichier
+  const handleUpdateCategory = async (fileId: string, newCategoryValue: string) => {
+    if (!newCategoryValue || newCategoryValue === 'all') {
+      alert('Veuillez sélectionner une catégorie valide');
+      return;
+    }
+
+    try {
+      console.log('🔄 Mise à jour catégorie:', { 
+        fileId, 
+        newCategoryValue, 
+        useServerStorage, 
+        serverStatus,
+        fileExists: files.find(f => f.id === fileId) ? 'oui' : 'non'
+      });
+      
+      // Afficher tous les IDs disponibles pour débugger
+      console.log('📋 IDs de fichiers disponibles:', files.map(f => ({ id: f.id, name: f.name })));
+      
+      // Mettre à jour via le service approprié
+      if (useServerStorage && serverStatus === 'online') {
+        console.log('📡 Tentative de mise à jour via serveur...');
+        try {
+          await adminFileService.updateFileCategory(fileId, newCategoryValue);
+          console.log('✅ Mise à jour serveur réussie');
+        } catch (serverError) {
+          console.warn('❌ Échec serveur, fallback localStorage:', serverError);
+          await adminFileService.updateLocalStorageFileCategory(fileId, newCategoryValue);
+          console.log('✅ Mise à jour localStorage réussie');
+        }
+      } else {
+        console.log('💾 Mise à jour via localStorage...');
+        await adminFileService.updateLocalStorageFileCategory(fileId, newCategoryValue);
+        console.log('✅ Mise à jour localStorage réussie');
+      }
+
+      // Recharger la liste des fichiers
+      if (useServerStorage && serverStatus === 'online') {
+        await loadFilesFromServer();
+      } else {
+        loadFilesFromLocalStorage();
+      }
+
+      // Log de sécurité
+      AdminAuthUtils.logSecurityEvent('file_upload', `Catégorie du fichier mise à jour vers: ${newCategoryValue}`);
+      
+      // Réinitialiser l'état d'édition
+      setEditingCategory(null);
+      setNewCategory('');
+
+      alert('Catégorie mise à jour avec succès!');
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour de la catégorie:', error);
+      alert('Erreur lors de la mise à jour de la catégorie: ' + (error instanceof Error ? error.message : 'Erreur inconnue'));
+    }
   };
 
   const handleZoom = (delta: number) => {
@@ -659,6 +809,36 @@ const AdminDashboard: React.FC = () => {
                   disabled={isUploading}
                   className="hidden"
                   accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt"
+                />
+              </label>
+            </div>
+
+            {/* Upload de dossier */}
+            <div>
+              <label className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 rounded-lg cursor-pointer transition-all duration-200 font-medium shadow-lg">
+                {isUploading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    Upload...
+                  </>
+                ) : (
+                  <>
+                    <Folder className="w-4 h-4" />
+                    Ajouter un dossier
+                  </>
+                )}
+                <input
+                  type="file"
+                  onChange={handleFolderUpload}
+                  disabled={isUploading}
+                  className="hidden"
+                  ref={(input) => {
+                    if (input) {
+                      (input as any).webkitdirectory = true;
+                      (input as any).directory = true;
+                    }
+                  }}
+                  multiple
                 />
               </label>
             </div>
@@ -913,7 +1093,7 @@ const AdminDashboard: React.FC = () => {
                   {filteredAndSortedFiles.map((file) => (
                     <div
                       key={file.id}
-                      className="bg-gray-800/50 border border-gray-700 rounded-lg p-4 hover:bg-gray-800/70 transition-colors"
+                      className="group bg-gray-800/50 border border-gray-700 rounded-lg p-4 hover:bg-gray-800/70 transition-colors"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
@@ -975,7 +1155,52 @@ const AdminDashboard: React.FC = () => {
                             </div>
                             <div>
                               <span className="text-gray-400">Catégorie:</span>
-                              <span className="ml-2 capitalize">{file.category}</span>
+                              {editingCategory === file.id ? (
+                                <div className="ml-2 flex items-center gap-2">
+                                  <select
+                                    value={newCategory}
+                                    onChange={(e) => setNewCategory(e.target.value)}
+                                    className="px-2 py-1 bg-gray-700 border border-gray-600 rounded text-white text-sm"
+                                  >
+                                    <option value="">Sélectionnez...</option>
+                                    {categories.filter(cat => cat.id !== 'all').map(cat => (
+                                      <option key={cat.id} value={cat.id}>
+                                        {cat.name}
+                                      </option>
+                                    ))}
+                                  </select>
+                                  <button
+                                    onClick={() => handleUpdateCategory(file.id, newCategory)}
+                                    className="px-2 py-1 bg-green-600 hover:bg-green-700 rounded text-xs text-white"
+                                    disabled={!newCategory}
+                                  >
+                                    ✓
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      setEditingCategory(null);
+                                      setNewCategory('');
+                                    }}
+                                    className="px-2 py-1 bg-red-600 hover:bg-red-700 rounded text-xs text-white"
+                                  >
+                                    ✗
+                                  </button>
+                                </div>
+                              ) : (
+                                <div className="ml-2 flex items-center gap-2">
+                                  <span className="capitalize">{file.category}</span>
+                                  <button
+                                    onClick={() => {
+                                      setEditingCategory(file.id);
+                                      setNewCategory(file.category);
+                                    }}
+                                    className="px-2 py-1 bg-blue-600 hover:bg-blue-700 rounded text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                                    title="Modifier la catégorie"
+                                  >
+                                    📝
+                                  </button>
+                                </div>
+                              )}
                             </div>
                             <div>
                               <span className="text-gray-400">Modifié:</span>
@@ -1245,8 +1470,54 @@ const AdminDashboard: React.FC = () => {
                     </span>
                   )}
                 </div>
-                <div className="text-xs">
-                  Catégorie: <span className="capitalize">{previewFile.category}</span>
+                <div className="text-xs flex items-center gap-2">
+                  <span>Catégorie:</span>
+                  {editingCategory === previewFile.id ? (
+                    <div className="flex items-center gap-2">
+                      <select
+                        value={newCategory}
+                        onChange={(e) => setNewCategory(e.target.value)}
+                        className="px-2 py-1 bg-gray-700 border border-gray-600 rounded text-white text-xs"
+                      >
+                        <option value="">Sélectionnez...</option>
+                        {categories.filter(cat => cat.id !== 'all').map(cat => (
+                          <option key={cat.id} value={cat.id}>
+                            {cat.name}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        onClick={() => handleUpdateCategory(previewFile.id, newCategory)}
+                        className="px-1 py-1 bg-green-600 hover:bg-green-700 rounded text-xs text-white"
+                        disabled={!newCategory}
+                      >
+                        ✓
+                      </button>
+                      <button
+                        onClick={() => {
+                          setEditingCategory(null);
+                          setNewCategory('');
+                        }}
+                        className="px-1 py-1 bg-red-600 hover:bg-red-700 rounded text-xs text-white"
+                      >
+                        ✗
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <span className="capitalize">{previewFile.category}</span>
+                      <button
+                        onClick={() => {
+                          setEditingCategory(previewFile.id);
+                          setNewCategory(previewFile.category);
+                        }}
+                        className="px-1 py-1 bg-blue-600 hover:bg-blue-700 rounded text-xs text-white"
+                        title="Modifier la catégorie"
+                      >
+                        📝
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

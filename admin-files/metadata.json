@@ -1,1 +1,26 @@
-[]
+[
+  {
+    "id": "1758149085759-6m7cp17z1",
+    "name": "Carte_vitale.pdf",
+    "type": "application/pdf",
+    "size": 59176,
+    "uploadDate": "2025-09-17T22:44:45.759Z",
+    "lastModified": "2025-09-17T22:44:45.759Z",
+    "isEncrypted": true,
+    "category": "other",
+    "tags": [],
+    "filePath": "uploads/1758149085757-448251330-Carte_vitale.pdf"
+  },
+  {
+    "id": "1758149085774-qs6ccaqtg",
+    "name": "Carte_mutuelle_2023.pdf",
+    "type": "application/pdf",
+    "size": 1013527,
+    "uploadDate": "2025-09-17T22:44:45.774Z",
+    "lastModified": "2025-09-17T23:27:43.177Z",
+    "isEncrypted": true,
+    "category": "medical",
+    "tags": [],
+    "filePath": "uploads/1758149085754-854628361-Carte_mutuelle_2023.pdf"
+  }
+]
