@@ -26,9 +26,12 @@ export interface ApiResponse<T = any> {
 
 class AdminFileService {
   private baseUrl: string;
-  private token = 'admin123'; // Token d'authentification
+  private token: string;
 
   constructor() {
+    // Token d'authentification depuis les variables d'environnement ou fallback dev
+    this.token = import.meta.env.VITE_ADMIN_TOKEN || 'default-dev-token';
+    
     // Détection automatique de l'environnement
     if (import.meta.env.DEV) {
       // Mode développement : serveur API local sur port 8080
@@ -40,6 +43,7 @@ class AdminFileService {
     
     console.log(`[AdminFileService] Mode: ${import.meta.env.DEV ? 'développement' : 'production'}`);
     console.log(`[AdminFileService] API URL: ${this.baseUrl}`);
+    console.log(`[AdminFileService] Token: ${this.token.substring(0, 8)}...`);
     console.log(`[AdminFileService] Window origin: ${window.location.origin}`);
   }
 

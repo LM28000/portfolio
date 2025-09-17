@@ -23,7 +23,7 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.API_PORT || 8080;
 const NODE_ENV = process.env.NODE_ENV || 'development';
-const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'admin123';
+const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'default-dev-token';
 
 // Debug des variables d'environnement
 console.log('🔍 Variables d\'environnement:');
