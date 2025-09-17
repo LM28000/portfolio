@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+  import React, { useState, useEffect } from 'react';
 import { 
   FileText, 
   Download, 
@@ -21,22 +21,13 @@ import {
   X,
   ZoomIn,
   ZoomOut,
-  RotateCw
+  RotateCw,
+  Server,
+  Cloud
 } from 'lucide-react';
 import { useAdmin } from '../contexts/AdminContext';
 import { AdminAuthUtils, SecurityLog } from '../utils/adminAuth';
-
-interface AdminFile {
-  id: string;
-  name: string;
-  type: string;
-  size: number;
-  uploadDate: Date;
-  lastModified: Date;
-  isEncrypted: boolean;
-  category: string;
-  tags: string[];
-}
+import { adminFileService, AdminFile } from '../utils/adminFileService';
 
 const AdminDashboard: React.FC = () => {
   const { user, logout, updateActivity } = useAdmin();
@@ -58,6 +49,11 @@ const AdminDashboard: React.FC = () => {
   const [previewLoading, setPreviewLoading] = useState(false);
   const [zoom, setZoom] = useState(100);
   const [rotation, setRotation] = useState(0);
+  
+  // Nouveaux états pour la gestion serveur/localStorage
+  const [useServerStorage, setUseServerStorage] = useState(true);
+  const [serverStatus, setServerStatus] = useState<'checking' | 'online' | 'offline'>('checking');
+  const [migrationStatus, setMigrationStatus] = useState<'none' | 'in-progress' | 'completed' | 'error'>('none');
 
   const categories = [
     { id: 'all', name: 'Tous les documents', icon: FileText },
@@ -70,9 +66,8 @@ const AdminDashboard: React.FC = () => {
 
   // Charger les données au montage
   useEffect(() => {
-    loadFiles();
+    initializeSystem();
     loadSecurityLogs();
-    calculateStorageUsage();
     
     // Marquer l'activité régulièrement
     const activityInterval = setInterval(() => {
@@ -81,6 +76,93 @@ const AdminDashboard: React.FC = () => {
 
     return () => clearInterval(activityInterval);
   }, [updateActivity]);
+
+  // Fonction d'initialisation du système
+  const initializeSystem = async () => {
+    try {
+      // Vérifier la connectivité du serveur
+      setServerStatus('checking');
+      const isServerOnline = await adminFileService.testConnection();
+      
+      if (isServerOnline) {
+        setServerStatus('online');
+        setUseServerStorage(true);
+        await loadFilesFromServer();
+        await calculateStorageUsage();
+        
+        // Proposer la migration si des données localStorage existent
+        const localFiles = adminFileService.getLocalStorageFiles();
+        if (localFiles.length > 0 && migrationStatus === 'none') {
+          const shouldMigrate = confirm(`${localFiles.length} fichier(s) trouvé(s) en local. Migrer vers le serveur ?`);
+          if (shouldMigrate) {
+            await performMigration();
+          }
+        }
+      } else {
+        setServerStatus('offline');
+        setUseServerStorage(false);
+        loadFilesFromLocalStorage();
+        calculateLocalStorageUsage();
+        console.warn('🔄 Mode local : Serveur indisponible, utilisation de localStorage');
+      }
+    } catch (error) {
+      console.error('Erreur initialisation système:', error);
+      setServerStatus('offline');
+      setUseServerStorage(false);
+      loadFilesFromLocalStorage();
+      calculateLocalStorageUsage();
+    }
+  };
+
+  // Charger les fichiers depuis le serveur
+  const loadFilesFromServer = async () => {
+    try {
+      const serverFiles = await adminFileService.getFiles();
+      setFiles(serverFiles);
+    } catch (error) {
+      console.error('Erreur chargement serveur:', error);
+      // Fallback vers localStorage
+      loadFilesFromLocalStorage();
+      setUseServerStorage(false);
+      setServerStatus('offline');
+    }
+  };
+
+  // Charger les fichiers depuis localStorage
+  const loadFilesFromLocalStorage = () => {
+    try {
+      const localFiles = adminFileService.getLocalStorageFiles();
+      setFiles(localFiles);
+    } catch (error) {
+      console.error('Erreur chargement localStorage:', error);
+      setFiles([]);
+    }
+  };
+
+  // Effectuer la migration depuis localStorage vers le serveur
+  const performMigration = async () => {
+    try {
+      setMigrationStatus('in-progress');
+      const result = await adminFileService.migrateFromLocalStorage();
+      
+      if (result.errors.length === 0) {
+        setMigrationStatus('completed');
+        alert(`Migration réussie ! ${result.success} fichier(s) transféré(s) vers le serveur.`);
+        await loadFilesFromServer();
+      } else {
+        setMigrationStatus('error');
+        const errorMsg = `Migration partiellement réussie: ${result.success} succès, ${result.errors.length} erreurs.\n\nErreurs:\n${result.errors.join('\n')}`;
+        alert(errorMsg);
+        await loadFilesFromServer();
+      }
+      
+      AdminAuthUtils.logSecurityEvent('file_upload', `Migration: ${result.success} succès, ${result.errors.length} erreurs`);
+    } catch (error) {
+      console.error('Erreur migration:', error);
+      setMigrationStatus('error');
+      alert('Erreur lors de la migration: ' + (error instanceof Error ? error.message : 'Erreur inconnue'));
+    }
+  };
 
   // Gestion des raccourcis clavier pour la navigation PDF
   useEffect(() => {
@@ -149,7 +231,23 @@ const AdminDashboard: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [previewFile]);
 
-  const calculateStorageUsage = () => {
+  // Calculer l'usage du stockage serveur
+  const calculateStorageUsage = async () => {
+    try {
+      if (useServerStorage && serverStatus === 'online') {
+        const serverInfo = await adminFileService.getStorageInfo();
+        setStorageInfo({ used: serverInfo.used, total: serverInfo.total });
+      } else {
+        calculateLocalStorageUsage();
+      }
+    } catch (error) {
+      console.error('Erreur calcul stockage serveur:', error);
+      calculateLocalStorageUsage();
+    }
+  };
+
+  // Calculer l'usage du stockage localStorage
+  const calculateLocalStorageUsage = () => {
     try {
       let used = 0;
       let total = 5 * 1024 * 1024; // 5MB approximatif pour localStorage
@@ -167,23 +265,7 @@ const AdminDashboard: React.FC = () => {
 
       setStorageInfo({ used, total });
     } catch (error) {
-      console.error('Erreur calcul stockage:', error);
-    }
-  };
-
-  const loadFiles = () => {
-    try {
-      const storedFiles = localStorage.getItem('admin-files-lm');
-      if (storedFiles) {
-        const parsedFiles = JSON.parse(storedFiles).map((file: any) => ({
-          ...file,
-          uploadDate: new Date(file.uploadDate),
-          lastModified: new Date(file.lastModified)
-        }));
-        setFiles(parsedFiles);
-      }
-    } catch (error) {
-      console.error('Erreur lors du chargement des fichiers:', error);
+      console.error('Erreur calcul stockage local:', error);
     }
   };
 
@@ -203,152 +285,95 @@ const AdminDashboard: React.FC = () => {
     setIsUploading(true);
     
     try {
-      // Vérifier la taille du fichier (limite 10MB pour localStorage)
-      const maxSize = 10 * 1024 * 1024; // 10MB
+      // Vérifier la taille du fichier
+      const maxSize = useServerStorage ? 50 * 1024 * 1024 : 10 * 1024 * 1024; // 50MB serveur, 10MB localStorage
       if (file.size > maxSize) {
-        alert('Fichier trop volumineux. Taille maximale : 10MB');
+        const maxSizeStr = formatFileSize(maxSize);
+        alert(`Fichier trop volumineux. Taille maximale : ${maxSizeStr}`);
         return;
       }
 
-      // Créer l'objet fichier
-      const newFile: AdminFile = {
-        id: `file-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        name: file.name,
-        type: file.type,
-        size: file.size,
-        uploadDate: new Date(),
-        lastModified: new Date(),
-        isEncrypted: true,
-        category: selectedCategory === 'all' ? 'other' : selectedCategory,
-        tags: []
-      };
+      const category = selectedCategory === 'all' ? 'other' : selectedCategory;
+      let newFile: AdminFile;
 
-      // Convertir le fichier en base64 de manière sécurisée
-      const fileData = await file.arrayBuffer();
-      
-      // Méthode plus robuste pour la conversion base64
-      let base64Data: string;
-      try {
-        const uint8Array = new Uint8Array(fileData);
-        const chunkSize = 8192; // Traiter par chunks pour éviter les erreurs de pile
-        const chunks: string[] = [];
-        
-        for (let i = 0; i < uint8Array.length; i += chunkSize) {
-          const chunk = uint8Array.subarray(i, i + chunkSize);
-          chunks.push(String.fromCharCode.apply(null, Array.from(chunk)));
+      if (useServerStorage && serverStatus === 'online') {
+        // Upload vers le serveur
+        try {
+          newFile = await adminFileService.uploadFile(file, category);
+          AdminAuthUtils.logSecurityEvent('file_upload', `Fichier ${file.name} uploadé sur serveur (${formatFileSize(file.size)})`);
+        } catch (serverError) {
+          console.warn('Échec upload serveur, fallback localStorage:', serverError);
+          newFile = await adminFileService.saveToLocalStorage(file, category);
+          AdminAuthUtils.logSecurityEvent('file_upload', `Fichier ${file.name} sauvé en local (${formatFileSize(file.size)})`);
         }
-        
-        base64Data = btoa(chunks.join(''));
-      } catch (conversionError) {
-        console.error('Erreur de conversion base64:', conversionError);
-        throw new Error('Erreur lors de la conversion du fichier');
+      } else {
+        // Sauvegarde localStorage
+        newFile = await adminFileService.saveToLocalStorage(file, category);
+        AdminAuthUtils.logSecurityEvent('file_upload', `Fichier ${file.name} sauvé en local (${formatFileSize(file.size)})`);
       }
 
-      // Vérifier que le localStorage peut stocker les données
-      try {
-        localStorage.setItem(`admin-file-data-${newFile.id}`, base64Data);
-      } catch (storageError) {
-        console.error('Erreur de stockage:', storageError);
-        throw new Error('Espace de stockage insuffisant');
-      }
-      
-      // Stocker les métadonnées
-      const updatedFiles = [...files, newFile];
-      setFiles(updatedFiles);
-      localStorage.setItem('admin-files-lm', JSON.stringify(updatedFiles));
-
-      // Log de sécurité
-      AdminAuthUtils.logSecurityEvent('file_upload', `Fichier ${file.name} uploadé (${formatFileSize(file.size)})`);
+      // Mettre à jour la liste des fichiers
+      setFiles(prev => [...prev, newFile]);
+      await calculateStorageUsage();
       loadSecurityLogs();
-      calculateStorageUsage(); // Recalculer l'usage du stockage
 
       alert(`Fichier "${file.name}" uploadé avec succès !`);
     } catch (error) {
       console.error('Erreur lors de l\'upload:', error);
       
-      // Message d'erreur plus spécifique
-      let errorMessage = 'Erreur lors de l\'upload du fichier';
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      }
-      
+      const errorMessage = error instanceof Error ? error.message : 'Erreur lors de l\'upload du fichier';
       alert(errorMessage);
       
-      // Log de l'erreur
       AdminAuthUtils.logSecurityEvent('file_upload', `Échec upload: ${file?.name} - ${errorMessage}`);
     } finally {
       setIsUploading(false);
-      // Réinitialiser l'input
       event.target.value = '';
     }
   };
 
   const handleFileDownload = async (file: AdminFile) => {
     try {
-      const base64Data = localStorage.getItem(`admin-file-data-${file.id}`);
-      if (!base64Data) {
-        alert('Fichier non trouvé dans le stockage');
-        return;
+      if (useServerStorage && serverStatus === 'online' && file.filePath) {
+        // Télécharger depuis le serveur
+        await adminFileService.downloadFile(file.id, file.name);
+      } else {
+        // Télécharger depuis localStorage
+        adminFileService.downloadFromLocalStorage(file.id, file.name);
       }
-
-      // Décoder le base64 de manière sécurisée
-      let binaryString: string;
-      try {
-        binaryString = atob(base64Data);
-      } catch (decodeError) {
-        console.error('Erreur de décodage base64:', decodeError);
-        alert('Erreur lors du décodage du fichier');
-        return;
-      }
-
-      // Convertir en Uint8Array
-      const bytes = new Uint8Array(binaryString.length);
-      for (let i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-      }
-
-      // Créer un blob et le télécharger
-      const blob = new Blob([bytes], { type: file.type || 'application/octet-stream' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = file.name;
-      a.style.display = 'none';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
 
       // Log de sécurité
       AdminAuthUtils.logSecurityEvent('file_download', `Fichier ${file.name} téléchargé`);
       loadSecurityLogs();
     } catch (error) {
       console.error('Erreur lors du téléchargement:', error);
-      alert('Erreur lors du téléchargement du fichier');
+      alert('Erreur lors du téléchargement du fichier: ' + (error instanceof Error ? error.message : 'Erreur inconnue'));
     }
   };
 
-  const handleFileDelete = (file: AdminFile) => {
+  const handleFileDelete = async (file: AdminFile) => {
     if (confirm(`Êtes-vous sûr de vouloir supprimer "${file.name}" ?`)) {
       try {
-        // Supprimer les métadonnées
-        const updatedFiles = files.filter(f => f.id !== file.id);
-        setFiles(updatedFiles);
-        localStorage.setItem('admin-files-lm', JSON.stringify(updatedFiles));
+        if (useServerStorage && serverStatus === 'online' && file.filePath) {
+          // Supprimer du serveur
+          await adminFileService.deleteFile(file.id);
+        } else {
+          // Supprimer de localStorage
+          adminFileService.deleteFromLocalStorage(file.id);
+        }
 
-        // Supprimer les données du fichier
-        localStorage.removeItem(`admin-file-data-${file.id}`);
+        // Mettre à jour la liste des fichiers
+        setFiles(prev => prev.filter(f => f.id !== file.id));
+        await calculateStorageUsage();
+        setSelectedFile(null);
 
         // Log de sécurité
         AdminAuthUtils.logSecurityEvent('file_delete', `Fichier ${file.name} supprimé`);
         loadSecurityLogs();
-        calculateStorageUsage(); // Recalculer l'usage du stockage
 
-        setSelectedFile(null);
         alert('Fichier supprimé avec succès');
       } catch (error) {
         console.error('Erreur lors de la suppression:', error);
-        alert('Erreur lors de la suppression');
+        alert('Erreur lors de la suppression: ' + (error instanceof Error ? error.message : 'Erreur inconnue'));
       }
     }
   };
@@ -360,37 +385,29 @@ const AdminDashboard: React.FC = () => {
     setRotation(0);
 
     try {
-      const base64Data = localStorage.getItem(`admin-file-data-${file.id}`);
-      if (!base64Data) {
-        alert('Fichier non trouvé dans le stockage');
-        setPreviewFile(null);
-        return;
+      let previewUrl: string | null = null;
+
+      if (useServerStorage && serverStatus === 'online' && file.filePath) {
+        // Aperçu depuis le serveur
+        const isImage = file.type.startsWith('image/');
+        const isPdf = file.type === 'application/pdf';
+        const isText = file.type.startsWith('text/') || file.name.toLowerCase().endsWith('.txt');
+
+        if (isImage || isPdf) {
+          previewUrl = adminFileService.getPreviewUrl(file.id);
+        } else if (isText) {
+          // Pour les fichiers texte, on doit les télécharger et les lire
+          // Pour l'instant, on va utiliser l'URL de prévisualisation
+          previewUrl = adminFileService.getPreviewUrl(file.id);
+        }
+      } else {
+        // Aperçu depuis localStorage
+        previewUrl = adminFileService.getLocalStoragePreviewUrl(file.id, file.type);
       }
 
-      // Vérifier si le fichier est prévisualisable
-      const isImage = file.type.startsWith('image/');
-      const isPdf = file.type === 'application/pdf';
-      const isText = file.type.startsWith('text/') || file.name.toLowerCase().endsWith('.txt');
-
-      if (isImage) {
-        // Pour les images, créer un blob URL
-        const binaryString = atob(base64Data);
-        const bytes = new Uint8Array(binaryString.length);
-        for (let i = 0; i < binaryString.length; i++) {
-          bytes[i] = binaryString.charCodeAt(i);
-        }
-        const blob = new Blob([bytes], { type: file.type });
-        const url = URL.createObjectURL(blob);
-        setPreviewData(url);
-      } else if (isPdf) {
-        // Pour les PDFs, utiliser data URL
-        setPreviewData(`data:${file.type};base64,${base64Data}`);
-      } else if (isText) {
-        // Pour les fichiers texte, décoder le contenu
-        const binaryString = atob(base64Data);
-        setPreviewData(binaryString);
+      if (previewUrl) {
+        setPreviewData(previewUrl);
       } else {
-        // Type non supporté
         alert('Aperçu non disponible pour ce type de fichier');
         setPreviewFile(null);
         return;
@@ -400,7 +417,7 @@ const AdminDashboard: React.FC = () => {
       AdminAuthUtils.logSecurityEvent('file_preview', `Aperçu du fichier ${file.name}`);
     } catch (error) {
       console.error('Erreur lors de la prévisualisation:', error);
-      alert('Erreur lors de la prévisualisation du fichier');
+      alert('Erreur lors de la prévisualisation du fichier: ' + (error instanceof Error ? error.message : 'Erreur inconnue'));
       setPreviewFile(null);
     } finally {
       setPreviewLoading(false);
@@ -547,9 +564,59 @@ const AdminDashboard: React.FC = () => {
             <div className="text-sm text-gray-400">
               Connecté en tant que <span className="text-blue-400 font-medium">{user?.username}</span>
             </div>
+            
+            {/* Indicateur de statut serveur */}
+            <div className="flex items-center gap-2 px-3 py-1 bg-gray-700/50 rounded-lg">
+              {serverStatus === 'checking' ? (
+                <>
+                  <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
+                  <span className="text-xs text-yellow-400">Vérification...</span>
+                </>
+              ) : serverStatus === 'online' ? (
+                <>
+                  <Server className="w-4 h-4 text-green-500" />
+                  <span className="text-xs text-green-400">Serveur en ligne</span>
+                </>
+              ) : (
+                <>
+                  <Cloud className="w-4 h-4 text-orange-500" />
+                  <span className="text-xs text-orange-400">Mode local</span>
+                </>
+              )}
+              
+              {migrationStatus === 'in-progress' && (
+                <div className="flex items-center gap-1 ml-2">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-spin"></div>
+                  <span className="text-xs text-blue-400">Migration...</span>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="flex items-center gap-4">
+            {/* Bouton de migration manuelle */}
+            {serverStatus === 'online' && !useServerStorage && (
+              <button
+                onClick={performMigration}
+                disabled={migrationStatus === 'in-progress'}
+                className="flex items-center gap-2 px-3 py-2 text-sm bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 rounded-lg transition-colors"
+              >
+                <Server className="w-4 h-4" />
+                Migrer vers serveur
+              </button>
+            )}
+            
+            {/* Bouton de reconnexion serveur */}
+            {serverStatus === 'offline' && (
+              <button
+                onClick={initializeSystem}
+                className="flex items-center gap-2 px-3 py-2 text-sm bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
+              >
+                <Server className="w-4 h-4" />
+                Reconnecter
+              </button>
+            )}
+            
             <button
               onClick={() => setShowLogs(!showLogs)}
               className="flex items-center gap-2 px-3 py-2 text-sm bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
@@ -726,7 +793,14 @@ const AdminDashboard: React.FC = () => {
 
             {/* Storage Info */}
             <div className="pt-4 border-t border-gray-700">
-              <h3 className="text-sm font-medium text-gray-300 mb-2">Stockage</h3>
+              <div className="flex items-center gap-2 mb-2">
+                <h3 className="text-sm font-medium text-gray-300">Stockage</h3>
+                {useServerStorage ? (
+                  <Server className="w-3 h-3 text-green-500" />
+                ) : (
+                  <HardDrive className="w-3 h-3 text-orange-500" />
+                )}
+              </div>
               <div className="space-y-2">
                 <div className="flex justify-between text-xs text-gray-400">
                   <span>Utilisé</span>
@@ -734,12 +808,20 @@ const AdminDashboard: React.FC = () => {
                 </div>
                 <div className="w-full bg-gray-700 rounded-full h-2">
                   <div 
-                    className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300"
+                    className={`h-2 rounded-full transition-all duration-300 ${
+                      useServerStorage 
+                        ? 'bg-gradient-to-r from-green-500 to-blue-500' 
+                        : 'bg-gradient-to-r from-orange-500 to-red-500'
+                    }`}
                     style={{ width: `${Math.min((storageInfo.used / storageInfo.total) * 100, 100)}%` }}
                   ></div>
                 </div>
                 <div className="text-xs text-gray-500">
                   {files.length} document{files.length !== 1 ? 's' : ''} stocké{files.length !== 1 ? 's' : ''}
+                  <br />
+                  <span className={useServerStorage ? 'text-green-400' : 'text-orange-400'}>
+                    {useServerStorage ? 'Serveur' : 'Local'}
+                  </span>
                 </div>
               </div>
             </div>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API Admin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .test-section {
+            background: #2a2a2a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
+        }
+        .success { border-left-color: #10b981; }
+        .error { border-left-color: #ef4444; }
+        .warning { border-left-color: #f59e0b; }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #2563eb; }
+        .log {
+            background: #000;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test API Administration</h1>
+    
+    <div class="test-section">
+        <h2>🔌 Test de Connectivité</h2>
+        <button onclick="testConnection()">Tester la connexion API</button>
+        <button onclick="testAuth()">Tester l'authentification</button>
+        <button onclick="listFiles()">Lister les fichiers</button>
+        <div id="connectionResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>📤 Test d'Upload</h2>
+        <input type="file" id="fileInput" accept=".pdf,.jpg,.png,.txt">
+        <button onclick="uploadFile()">Upload fichier</button>
+        <div id="uploadResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>📋 État du Système</h2>
+        <div id="systemStatus"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>📝 Logs</h2>
+        <button onclick="clearLogs()">Effacer logs</button>
+        <div id="logs" class="log"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080/api';
+        const TOKEN = 'admin123';
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logDiv = document.getElementById('logs');
+            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+            logDiv.textContent += `${timestamp} ${prefix} ${message}\n`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function clearLogs() {
+            document.getElementById('logs').textContent = '';
+        }
+
+        async function testConnection() {
+            log('Test de connexion vers ' + API_BASE);
+            try {
+                const response = await fetch(`${API_BASE}/test`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    log('✅ API accessible: ' + data.message, 'success');
+                    document.getElementById('connectionResult').innerHTML = 
+                        '<div class="success">✅ API accessible</div>';
+                } else {
+                    throw new Error('Réponse API invalide');
+                }
+            } catch (error) {
+                log('❌ Erreur connexion: ' + error.message, 'error');
+                document.getElementById('connectionResult').innerHTML = 
+                    '<div class="error">❌ API inaccessible: ' + error.message + '</div>';
+            }
+        }
+
+        async function testAuth() {
+            log('Test d\'authentification...');
+            try {
+                const response = await fetch(`${API_BASE}/files`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${TOKEN}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    log(`✅ Authentification réussie. ${data.data.length} fichier(s) trouvé(s)`, 'success');
+                    document.getElementById('connectionResult').innerHTML = 
+                        '<div class="success">✅ Authentification OK</div>';
+                } else {
+                    throw new Error(data.error || 'Erreur authentification');
+                }
+            } catch (error) {
+                log('❌ Erreur auth: ' + error.message, 'error');
+                document.getElementById('connectionResult').innerHTML = 
+                    '<div class="error">❌ Authentification échouée: ' + error.message + '</div>';
+            }
+        }
+
+        async function listFiles() {
+            log('Récupération de la liste des fichiers...');
+            try {
+                const response = await fetch(`${API_BASE}/files`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${TOKEN}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    log(`📁 ${data.data.length} fichier(s) sur le serveur`, 'success');
+                    
+                    let html = '<div class="success"><h3>📁 Fichiers sur le serveur:</h3>';
+                    if (data.data.length === 0) {
+                        html += '<p>Aucun fichier trouvé</p>';
+                    } else {
+                        data.data.forEach(file => {
+                            html += `<p>📄 ${file.name} (${Math.round(file.size/1024)}KB)</p>`;
+                        });
+                    }
+                    html += '</div>';
+                    
+                    document.getElementById('systemStatus').innerHTML = html;
+                } else {
+                    throw new Error(data.error || 'Erreur récupération fichiers');
+                }
+            } catch (error) {
+                log('❌ Erreur liste: ' + error.message, 'error');
+            }
+        }
+
+        async function uploadFile() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                log('⚠️ Aucun fichier sélectionné', 'warning');
+                return;
+            }
+
+            log(`📤 Upload de ${file.name} (${Math.round(file.size/1024)}KB)...`);
+            
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('category', 'test');
+
+                const response = await fetch(`${API_BASE}/files`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${TOKEN}`
+                    },
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    log(`✅ Upload réussi: ${data.data.name}`, 'success');
+                    document.getElementById('uploadResult').innerHTML = 
+                        '<div class="success">✅ Fichier uploadé avec succès!</div>';
+                    
+                    // Actualiser la liste
+                    listFiles();
+                } else {
+                    throw new Error(data.error || 'Erreur upload');
+                }
+            } catch (error) {
+                log('❌ Erreur upload: ' + error.message, 'error');
+                document.getElementById('uploadResult').innerHTML = 
+                    '<div class="error">❌ Erreur upload: ' + error.message + '</div>';
+            }
+        }
+
+        // Test automatique au chargement
+        window.addEventListener('load', () => {
+            log('🚀 Démarrage des tests automatiques...');
+            setTimeout(testConnection, 500);
+            setTimeout(testAuth, 1000);
+            setTimeout(listFiles, 1500);
+        });
+    </script>
+</body>
+</html>
