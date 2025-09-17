@@ -33,6 +33,12 @@ const ADMIN_CONFIG = {
   ACTIVITY_KEY: 'admin-activity-lm'
 };
 
+// Debug temporaire
+console.log('🔍 [AdminContext] Configuration Debug:');
+console.log('   - import.meta.env.VITE_ADMIN_PASSWORD:', import.meta.env.VITE_ADMIN_PASSWORD ? '***défini***' : 'NON DÉFINI');
+console.log('   - PASSWORD_HASH utilisé:', ADMIN_CONFIG.PASSWORD_HASH);
+console.log('   - Mode:', import.meta.env.DEV ? 'développement' : 'production');
+
 export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);

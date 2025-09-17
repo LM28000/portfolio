@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Variables d'Environnement</title>
+</head>
+<body>
+    <h1>Test Variables d'Environnement</h1>
+    <div id="results"></div>
+    
+    <script type="module">
+        console.log('🔍 Test des variables d\'environnement:');
+        console.log('import.meta.env:', import.meta.env);
+        console.log('VITE_ADMIN_PASSWORD:', import.meta.env.VITE_ADMIN_PASSWORD);
+        
+        const results = document.getElementById('results');
+        results.innerHTML = `
+            <h2>Variables d'environnement</h2>
+            <p><strong>VITE_ADMIN_PASSWORD:</strong> ${import.meta.env.VITE_ADMIN_PASSWORD ? '***défini***' : 'NON DÉFINI'}</p>
+            <p><strong>VITE_EMAILJS_SERVICE_ID:</strong> ${import.meta.env.VITE_EMAILJS_SERVICE_ID || 'NON DÉFINI'}</p>
+            <p><strong>VITE_GA_TRACKING_ID:</strong> ${import.meta.env.VITE_GA_TRACKING_ID || 'NON DÉFINI'}</p>
+            <p><strong>Mode:</strong> ${import.meta.env.DEV ? 'développement' : 'production'}</p>
+            <h3>Mot de passe à utiliser pour l'admin:</h3>
+            <p style="background: #f0f0f0; padding: 10px; font-family: monospace;">
+                ${import.meta.env.VITE_ADMIN_PASSWORD || 'Variable non définie!'}
+            </p>
+        `;
+    </script>
+</body>
+</html>
