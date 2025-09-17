@@ -27,8 +27,8 @@ interface AdminProviderProps {
 const ADMIN_CONFIG = {
   // CHANGEZ CE MOT DE PASSE !
   PASSWORD_HASH: 'lm2025-admin-secure-key', // En production, utilisez un hash bcrypt
-  SESSION_DURATION: 2 * 60 * 60 * 1000, // 2 heures en millisecondes
-  INACTIVITY_TIMEOUT: 30 * 60 * 1000, // 30 minutes d'inactivité
+  SESSION_DURATION: 4 * 60 * 60 * 1000, // 4 heures en millisecondes
+  INACTIVITY_TIMEOUT: 60 * 60 * 1000, // 60 minutes d'inactivité (1 heure)
   STORAGE_KEY: 'admin-session-lm',
   ACTIVITY_KEY: 'admin-activity-lm'
 };

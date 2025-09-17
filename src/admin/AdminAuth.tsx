@@ -207,7 +207,7 @@ const AdminAuth: React.FC = () => {
             <div className="text-xs text-gray-500 space-y-1">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span>Session sécurisée (2h max)</span>
+                <span>Session sécurisée (4h max, 1h inactivité)</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-blue-500 rounded-full"></div>

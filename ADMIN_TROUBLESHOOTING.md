@@ -42,7 +42,7 @@
 - **Stockage :** localStorage du navigateur
 - **Chiffrement :** Base64 (prototype)
 - **Limite totale :** ~5MB pour tous les fichiers
-- **Session :** 2h max, 30min d'inactivité
+- **Session :** 4h max, 1h d'inactivité
 
 ### 🔍 Logs de sécurité :
 
