@@ -60,11 +60,14 @@ const AdminDashboard: React.FC = () => {
 
   const categories = [
     { id: 'all', name: 'Tous les documents', icon: FileText },
-    { id: 'identity', name: 'Pièces d\'identité', icon: User },
-    { id: 'finance', name: 'Documents financiers', icon: Shield },
-    { id: 'medical', name: 'Documents médicaux', icon: Activity },
+    { id: 'scolaire', name: 'Documents scolaires', icon: FileText },
+    { id: 'logement', name: 'Documents logement', icon: User },
+    { id: 'transport', name: 'Documents transport', icon: Shield },
+    { id: 'sante', name: 'Documents santé', icon: Activity },
     { id: 'legal', name: 'Documents légaux', icon: Lock },
-    { id: 'other', name: 'Autres', icon: FileText }
+     { id: 'micro-entreprise', name: 'Documents micro-entreprise', icon: Shield },
+    // { id: 'identity', name: 'Pièces d\'identité', icon: User },
+    { id: 'other', name: 'Documents divers', icon: FileText }
   ];
 
   // Charger les données au montage
