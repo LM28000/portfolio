@@ -643,6 +643,93 @@ class AdminFileService {
       throw error;
     }
   }
+
+  /**
+   * Renommer un fichier sur le serveur
+   */
+  async renameFile(fileId: string, newName: string): Promise<AdminFile> {
+    try {
+      // Test de connectivité d'abord
+      const isServerReachable = await this.testServerConnection();
+      if (!isServerReachable) {
+        throw new Error('Serveur non accessible, utilisez le mode localStorage');
+      }
+
+      const url = `${this.baseUrl}/files/${encodeURIComponent(fileId)}/rename`;
+      console.log('🔍 Debug renameFile:');
+      console.log('   - URL:', url);
+      console.log('   - fileId:', fileId);
+      console.log('   - newName:', newName);
+      
+      const response = await fetch(url, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.token}`
+        },
+        body: JSON.stringify({ newName })
+      });
+
+      console.log('   - Response status:', response.status);
+      console.log('   - Response ok:', response.ok);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.log('   - Error response:', errorText);
+        throw new Error(`Erreur HTTP: ${response.status} - ${errorText}`);
+      }
+
+      const result: ApiResponse<AdminFile> = await response.json();
+      
+      if (result.success && result.data) {
+        // Convertir les dates
+        const adminFile = {
+          ...result.data,
+          uploadDate: new Date(result.data.uploadDate),
+          lastModified: new Date(result.data.lastModified)
+        };
+        return adminFile;
+      } else {
+        throw new Error(result.error || 'Erreur lors du renommage du fichier');
+      }
+    } catch (error) {
+      console.error('Erreur renameFile:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Renommer un fichier dans localStorage
+   */
+  async renameLocalStorageFile(fileId: string, newName: string): Promise<AdminFile> {
+    try {
+      // Récupérer la liste des fichiers
+      const storedFiles = localStorage.getItem('admin-files-lm');
+      const files = storedFiles ? JSON.parse(storedFiles) : [];
+      
+      // Trouver le fichier
+      const fileIndex = files.findIndex((f: AdminFile) => f.id === fileId);
+      if (fileIndex === -1) {
+        throw new Error('Fichier non trouvé');
+      }
+
+      // Nettoyer le nom (enlever caractères dangereux)
+      const cleanName = newName.trim().replace(/[<>:"/\\|?*]/g, '_');
+
+      // Mettre à jour le nom
+      files[fileIndex].name = cleanName;
+      files[fileIndex].lastModified = new Date();
+
+      // Sauvegarder
+      localStorage.setItem('admin-files-lm', JSON.stringify(files));
+
+      // Retourner le fichier mis à jour
+      return files[fileIndex];
+    } catch (error) {
+      console.error('Erreur renameLocalStorageFile:', error);
+      throw error;
+    }
+  }
 }
 
 // Instance singleton

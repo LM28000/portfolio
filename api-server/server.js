@@ -387,6 +387,73 @@ app.patch('/api/files/:id/category', authenticateToken, (req, res) => {
   }
 });
 
+// PATCH /api/files/:id/rename - Renommer un fichier
+app.patch('/api/files/:id/rename', authenticateToken, (req, res) => {
+  try {
+    const fileId = req.params.id;
+    const { newName } = req.body;
+
+    console.log(`📝 PATCH /api/files/${fileId}/rename - Renommage de fichier`);
+    console.log(`   - fileId: ${fileId}`);
+    console.log(`   - newName: ${newName}`);
+
+    if (!fileId) {
+      return res.status(400).json({ success: false, error: 'ID fichier manquant' });
+    }
+
+    if (!newName || newName.trim() === '') {
+      return res.status(400).json({ success: false, error: 'Nouveau nom manquant' });
+    }
+
+    // Nettoyer le nom (enlever caractères dangereux)
+    const cleanName = newName.trim().replace(/[<>:"/\\|?*]/g, '_');
+    if (cleanName !== newName.trim()) {
+      console.log(`   - Nom nettoyé: "${newName.trim()}" -> "${cleanName}"`);
+    }
+
+    let files = loadMetadata();
+    console.log(`   - Nombre de fichiers total: ${files.length}`);
+    console.log(`   - IDs disponibles: ${files.map(f => `${f.id} (${f.name})`).join(', ')}`);
+    
+    const fileIndex = files.findIndex(f => f.id === fileId);
+    console.log(`   - Index trouvé: ${fileIndex}`);
+    
+    if (fileIndex === -1) {
+      console.log(`   - ❌ Fichier non trouvé avec ID: ${fileId}`);
+      return res.status(404).json({ 
+        success: false, 
+        error: 'Fichier non trouvé',
+        debug: {
+          requestedId: fileId,
+          availableIds: files.map(f => f.id),
+          totalFiles: files.length
+        }
+      });
+    }
+
+    const oldName = files[fileIndex].name;
+
+    // Mettre à jour le nom
+    files[fileIndex].name = cleanName;
+    files[fileIndex].lastModified = new Date().toISOString();
+
+    if (saveMetadata(files)) {
+      console.log(`📝 Fichier renommé: "${oldName}" -> "${cleanName}"`);
+      res.json({ 
+        success: true, 
+        data: files[fileIndex],
+        message: 'Fichier renommé avec succès'
+      });
+    } else {
+      throw new Error('Erreur sauvegarde métadonnées');
+    }
+
+  } catch (error) {
+    console.error('Erreur renommage fichier:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // Démarrage du serveur
 app.listen(PORT, () => {
   console.log(`🚀 Serveur API démarré sur http://localhost:${PORT}`);

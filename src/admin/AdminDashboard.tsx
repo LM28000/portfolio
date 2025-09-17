@@ -24,7 +24,9 @@ import {
   RotateCw,
   Server,
   Cloud,
-  Folder
+  Folder,
+  Edit,
+  Save
 } from 'lucide-react';
 import { useAdmin } from '../contexts/AdminContext';
 import { AdminAuthUtils, SecurityLog } from '../utils/adminAuth';
@@ -52,6 +54,8 @@ const AdminDashboard: React.FC = () => {
   const [rotation, setRotation] = useState(0);
   const [editingCategory, setEditingCategory] = useState<string | null>(null);
   const [newCategory, setNewCategory] = useState<string>('');
+  const [editingName, setEditingName] = useState<string | null>(null);
+  const [newName, setNewName] = useState<string>('');
   
   // Nouveaux états pour la gestion serveur/localStorage
   const [useServerStorage, setUseServerStorage] = useState(true);
@@ -587,6 +591,63 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
+  // Fonction pour renommer un fichier
+  const handleRenameFile = async (fileId: string, newNameValue: string) => {
+    if (!newNameValue || newNameValue.trim() === '') {
+      alert('Veuillez saisir un nom valide');
+      return;
+    }
+
+    try {
+      console.log('🔄 Renommage fichier:', { 
+        fileId, 
+        newNameValue, 
+        useServerStorage, 
+        serverStatus,
+        fileExists: files.find(f => f.id === fileId) ? 'oui' : 'non'
+      });
+      
+      // Afficher tous les IDs disponibles pour débugger
+      console.log('📋 IDs de fichiers disponibles:', files.map(f => ({ id: f.id, name: f.name })));
+      
+      // Renommer via le service approprié
+      if (useServerStorage && serverStatus === 'online') {
+        console.log('📡 Tentative de renommage via serveur...');
+        try {
+          await adminFileService.renameFile(fileId, newNameValue.trim());
+          console.log('✅ Renommage serveur réussi');
+        } catch (serverError) {
+          console.warn('❌ Échec serveur, fallback localStorage:', serverError);
+          await adminFileService.renameLocalStorageFile(fileId, newNameValue.trim());
+          console.log('✅ Renommage localStorage réussi');
+        }
+      } else {
+        console.log('💾 Renommage via localStorage...');
+        await adminFileService.renameLocalStorageFile(fileId, newNameValue.trim());
+        console.log('✅ Renommage localStorage réussi');
+      }
+
+      // Recharger la liste des fichiers
+      if (useServerStorage && serverStatus === 'online') {
+        await loadFilesFromServer();
+      } else {
+        loadFilesFromLocalStorage();
+      }
+
+      // Log de sécurité
+      AdminAuthUtils.logSecurityEvent('file_rename', `Fichier renommé vers: ${newNameValue.trim()}`);
+      
+      // Réinitialiser l'état d'édition
+      setEditingName(null);
+      setNewName('');
+
+      alert('Fichier renommé avec succès!');
+    } catch (error) {
+      console.error('Erreur lors du renommage du fichier:', error);
+      alert('Erreur lors du renommage du fichier: ' + (error instanceof Error ? error.message : 'Erreur inconnue'));
+    }
+  };
+
   const handleZoom = (delta: number) => {
     setZoom(prev => Math.max(25, Math.min(300, prev + delta)));
   };
@@ -1104,7 +1165,38 @@ const AdminDashboard: React.FC = () => {
                             <FileText className="w-5 h-5 text-blue-400" />
                           </div>
                           <div>
-                            <div className="font-medium">{file.name}</div>
+                            {editingName === file.id ? (
+                              <div className="flex items-center gap-2">
+                                <input
+                                  type="text"
+                                  value={newName}
+                                  onChange={(e) => setNewName(e.target.value)}
+                                  className="px-2 py-1 bg-gray-700 border border-gray-600 rounded text-white text-sm flex-1"
+                                  placeholder="Nouveau nom..."
+                                  autoFocus
+                                />
+                                <button
+                                  onClick={() => handleRenameFile(file.id, newName)}
+                                  className="px-2 py-1 bg-green-600 hover:bg-green-700 rounded text-xs text-white"
+                                  disabled={!newName.trim()}
+                                  title="Confirmer"
+                                >
+                                  <Save className="w-3 h-3" />
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setEditingName(null);
+                                    setNewName('');
+                                  }}
+                                  className="px-2 py-1 bg-red-600 hover:bg-red-700 rounded text-xs text-white"
+                                  title="Annuler"
+                                >
+                                  ✗
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="font-medium">{file.name}</div>
+                            )}
                             <div className="text-sm text-gray-400">
                               {formatFileSize(file.size)} • {formatDate(file.uploadDate)}
                               {file.isEncrypted && (
@@ -1131,6 +1223,16 @@ const AdminDashboard: React.FC = () => {
                             title="Télécharger"
                           >
                             <Download className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => {
+                              setEditingName(file.id);
+                              setNewName(file.name);
+                            }}
+                            className="p-2 text-gray-400 hover:text-yellow-400 hover:bg-yellow-600/20 rounded-lg transition-colors"
+                            title="Renommer"
+                          >
+                            <Edit className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => setSelectedFile(selectedFile?.id === file.id ? null : file)}
@@ -1345,7 +1447,50 @@ const AdminDashboard: React.FC = () => {
                           <span className="text-white text-sm font-bold">PDF</span>
                         </div>
                         <div>
-                          <h3 className="text-lg font-semibold text-white mb-1">{previewFile.name}</h3>
+                          {editingName === previewFile.id ? (
+                            <div className="flex items-center gap-2 mb-1">
+                              <input
+                                type="text"
+                                value={newName}
+                                onChange={(e) => setNewName(e.target.value)}
+                                className="px-2 py-1 bg-gray-700 border border-gray-600 rounded text-white text-sm flex-1"
+                                placeholder="Nouveau nom..."
+                                autoFocus
+                              />
+                              <button
+                                onClick={() => handleRenameFile(previewFile.id, newName)}
+                                className="px-2 py-1 bg-green-600 hover:bg-green-700 rounded text-xs text-white"
+                                disabled={!newName.trim()}
+                                title="Confirmer"
+                              >
+                                <Save className="w-3 h-3" />
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setEditingName(null);
+                                  setNewName('');
+                                }}
+                                className="px-2 py-1 bg-red-600 hover:bg-red-700 rounded text-xs text-white"
+                                title="Annuler"
+                              >
+                                ✗
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="text-lg font-semibold text-white">{previewFile.name}</h3>
+                              <button
+                                onClick={() => {
+                                  setEditingName(previewFile.id);
+                                  setNewName(previewFile.name);
+                                }}
+                                className="p-1 text-gray-400 hover:text-yellow-400 hover:bg-yellow-600/20 rounded transition-colors"
+                                title="Renommer"
+                              >
+                                <Edit className="w-3 h-3" />
+                              </button>
+                            </div>
+                          )}
                           <p className="text-sm text-gray-400">Document PDF</p>
                         </div>
                       </div>
