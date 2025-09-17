@@ -11,6 +11,8 @@ services:
         - VITE_EMAILJS_TEMPLATE_ID=${VITE_EMAILJS_TEMPLATE_ID}
         - VITE_EMAILJS_PUBLIC_KEY=${VITE_EMAILJS_PUBLIC_KEY}
         - VITE_GA_TRACKING_ID=${VITE_GA_TRACKING_ID}
+        - VITE_ADMIN_PASSWORD=${VITE_ADMIN_PASSWORD}
+        - VITE_ADMIN_TOKEN=${VITE_ADMIN_TOKEN}
         - VITE_API_URL=/api
     container_name: portfolio-production
     ports:
