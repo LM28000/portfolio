@@ -27,8 +27,8 @@ interface AdminProviderProps {
 const ADMIN_CONFIG = {
   // Mot de passe récupéré depuis les variables d'environnement ou fallback dev
   PASSWORD_HASH: import.meta.env.VITE_ADMIN_PASSWORD || 'default-dev-password',
-  SESSION_DURATION: 4 * 60 * 60 * 1000, // 4 heures en millisecondes
-  INACTIVITY_TIMEOUT: 60 * 60 * 1000, // 60 minutes d'inactivité (1 heure)
+  SESSION_DURATION: 30 * 24 * 60 * 60 * 1000, // 30 jours en millisecondes (session très longue)
+  INACTIVITY_TIMEOUT: 7 * 24 * 60 * 60 * 1000, // 7 jours d'inactivité (très tolérant)
   STORAGE_KEY: 'admin-session-lm',
   ACTIVITY_KEY: 'admin-activity-lm'
 };
@@ -48,12 +48,12 @@ export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
   useEffect(() => {
     checkExistingSession();
     
-    // Nettoyage automatique des sessions expirées
+    // Nettoyage automatique des sessions expirées (vérification moins fréquente)
     const interval = setInterval(() => {
       if (isSessionExpired()) {
         logout();
       }
-    }, 60000); // Vérifier toutes les minutes
+    }, 10 * 60000); // Vérifier toutes les 10 minutes au lieu de chaque minute
 
     return () => clearInterval(interval);
   }, []);
@@ -174,6 +174,12 @@ export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
   const isSessionExpired = (): boolean => {
     if (!isAuthenticated || !user) return true;
 
+    // Pour éviter les déconnexions automatiques fréquentes, on désactive l'expiration
+    // La session ne peut expirer que si l'utilisateur ferme le navigateur ou clique sur déconnexion
+    return false;
+
+    /*
+    // Code d'expiration désactivé - peut être réactivé si nécessaire
     try {
       const lastActivityStr = localStorage.getItem(ADMIN_CONFIG.ACTIVITY_KEY);
       if (!lastActivityStr) return true;
@@ -198,6 +204,7 @@ export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
       console.error('Erreur lors de la vérification d\'expiration:', error);
       return true;
     }
+    */
   };
 
   const value: AdminContextType = {
