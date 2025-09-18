@@ -15,92 +15,12 @@ import {
   GraduationCap,
   User,
   Pin,
-  Archive
+  Archive,
+  Menu,
+  PanelLeftClose,
+  ChevronDown,
+  ChevronRight
 } from 'lucide-react';
-
-// Composant pour afficher du contenu avec checkbox interactives
-interface NoteContentProps {
-  content: string;
-  onContentChange?: (newContent: string) => void;
-  readonly?: boolean;
-}
-
-const NoteContent: React.FC<NoteContentProps> = ({ content, onContentChange, readonly = true }) => {
-  // Fonction pour transformer les checkbox markdown en HTML interactif
-  const renderContentWithCheckboxes = (text: string) => {
-    const lines = text.split('\n');
-    
-    return lines.map((line, index) => {
-      // Détecter les checkbox markdown: [ ] ou [x] ou [X]
-      const checkboxMatch = line.match(/^(\s*)(- )?\[([ xX])\](.*)$/);
-      
-      if (checkboxMatch) {
-        const [, indent, bullet, checkState, content] = checkboxMatch;
-        const isChecked = checkState.toLowerCase() === 'x';
-        
-        return (
-          <div key={index} className="flex items-start gap-2 py-1">
-            <div style={{ marginLeft: `${indent.length * 8}px` }} className="flex items-center gap-2">
-              {!readonly ? (
-                <input
-                  type="checkbox"
-                  checked={isChecked}
-                  onChange={(e) => {
-                    if (onContentChange) {
-                      const newLines = [...lines];
-                      const newCheckState = e.target.checked ? 'x' : ' ';
-                      newLines[index] = `${indent}${bullet || ''}[${newCheckState}]${content}`;
-                      onContentChange(newLines.join('\n'));
-                    }
-                  }}
-                  className="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-2"
-                />
-              ) : (
-                <div 
-                  className={`w-4 h-4 border-2 rounded flex items-center justify-center cursor-pointer transition-colors ${
-                    isChecked 
-                      ? 'bg-blue-600 border-blue-600' 
-                      : 'border-gray-400 hover:border-blue-400'
-                  }`}
-                  onClick={() => {
-                    if (onContentChange) {
-                      const newLines = [...lines];
-                      const newCheckState = isChecked ? ' ' : 'x';
-                      newLines[index] = `${indent}${bullet || ''}[${newCheckState}]${content}`;
-                      onContentChange(newLines.join('\n'));
-                    }
-                  }}
-                >
-                  {isChecked && (
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  )}
-                </div>
-              )}
-              <span className={`${isChecked ? 'line-through text-gray-500' : 'text-gray-300'}`}>
-                {content.trim()}
-              </span>
-            </div>
-          </div>
-        );
-      }
-      
-      // Ligne normale
-      return (
-        <div key={index} className="py-0.5">
-          <span className="text-gray-300">{line}</span>
-        </div>
-      );
-    });
-  };
-
-  return (
-    <div className="space-y-1">
-      {renderContentWithCheckboxes(content)}
-    </div>
-  );
-};
 
 export interface Note {
   id: string;
@@ -128,6 +48,8 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
+  const [sidebarVisible, setSidebarVisible] = useState(true);
+  const [categoriesCollapsed, setCategoriesCollapsed] = useState(true); // Masquées par défaut
   
   // États pour le formulaire de création/édition
   const [formData, setFormData] = useState({
@@ -328,8 +250,9 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
 
   return (
     <div className={`h-full flex bg-gray-900 ${className}`}>
-      {/* Sidebar - Liste des notes */}
-      <div className="w-1/3 border-r border-gray-700 flex flex-col">
+      {/* Sidebar - Liste des notes (conditionnelle) */}
+      {sidebarVisible && (
+        <div className="w-1/4 border-r border-gray-700 flex flex-col">{/* Réduit de w-1/3 à w-1/4 */}
         {/* Header avec recherche et filtres */}
         <div className="p-4 border-b border-gray-700">
           <div className="flex items-center gap-2 mb-4">
@@ -355,31 +278,42 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
           </div>
 
           {/* Catégories */}
-          <div className="flex flex-wrap gap-1 mb-3">
-            {categories.map((category) => {
-              const Icon = category.icon;
-              const isActive = selectedCategory === category.id;
-              const count = notes.filter(n => 
-                (category.id === 'all' || n.category === category.id) && 
-                n.isArchived === showArchived
-              ).length;
-              
-              return (
-                <button
-                  key={category.id}
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs transition-colors ${
-                    isActive 
-                      ? 'bg-blue-600 text-white' 
-                      : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-                  }`}
-                >
-                  <Icon className="w-3 h-3" />
-                  <span>{category.name}</span>
-                  <span className="text-xs opacity-60">({count})</span>
-                </button>
-              );
-            })}
+          <div className="mb-3">
+            <button
+              onClick={() => setCategoriesCollapsed(!categoriesCollapsed)}
+              className="flex items-center gap-2 w-full p-1 text-xs text-gray-400 hover:text-white transition-colors"
+            >
+              {categoriesCollapsed ? <ChevronRight className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+              <span className="font-medium">Catégories</span>
+            </button>
+            {!categoriesCollapsed && (
+              <div className="flex flex-wrap gap-1 mt-2">
+                {categories.map((category) => {
+                  const Icon = category.icon;
+                  const isActive = selectedCategory === category.id;
+                  const count = notes.filter(n => 
+                    (category.id === 'all' || n.category === category.id) && 
+                    n.isArchived === showArchived
+                  ).length;
+                  
+                  return (
+                    <button
+                      key={category.id}
+                      onClick={() => setSelectedCategory(category.id)}
+                      className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs transition-colors ${
+                        isActive 
+                          ? 'bg-blue-600 text-white' 
+                          : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                      }`}
+                    >
+                      <Icon className="w-3 h-3" />
+                      <span>{category.name}</span>
+                      <span className="text-xs opacity-60">({count})</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* Tri */}
@@ -426,12 +360,7 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
                 </div>
                 
                 <h3 className="font-medium text-white mb-1 line-clamp-1">{note.title}</h3>
-                <p className="text-sm text-gray-400 line-clamp-2">
-                  <NoteContent 
-                    content={note.content}
-                    readonly={true}
-                  />
-                </p>
+                <p className="text-sm text-gray-400 line-clamp-2">{note.content}</p>
                 
                 {note.tags.length > 0 && (
                   <div className="flex flex-wrap gap-1 mt-2">
@@ -481,15 +410,23 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
           </button>
         </div>
       </div>
+      )}
 
       {/* Zone principale - Affichage/édition de note */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col">        
         {selectedNote && !isEditing ? (
           /* Affichage de la note sélectionnée */
           <>
             <div className="p-4 border-b border-gray-700 bg-gray-800/50">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setSidebarVisible(!sidebarVisible)}
+                    className="p-1 bg-gray-700 hover:bg-gray-600 rounded transition-colors text-gray-400 hover:text-white"
+                    title={sidebarVisible ? 'Masquer la liste' : 'Afficher la liste'}
+                  >
+                    {sidebarVisible ? <PanelLeftClose className="w-3 h-3" /> : <Menu className="w-3 h-3" />}
+                  </button>
                   {React.createElement(getCategoryIcon(selectedNote.category), {
                     className: `w-5 h-5 ${getCategoryColor(selectedNote.category)}`
                   })}
@@ -561,25 +498,29 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
             
             <div className="flex-1 p-4 overflow-y-auto">
               <div className="prose prose-invert max-w-none">
-                <NoteContent 
-                  content={selectedNote.content || 'Aucun contenu'}
-                  onContentChange={(newContent) => {
-                    // Mettre à jour la note avec le nouveau contenu
-                    updateNote(selectedNote.id, { content: newContent });
-                  }}
-                  readonly={false}
-                />
+                <pre className="whitespace-pre-wrap text-gray-300 leading-relaxed">
+                  {selectedNote.content || 'Aucun contenu'}
+                </pre>
               </div>
             </div>
           </>
         ) : isEditing ? (
           /* Formulaire d'édition/création */
           <>
-            <div className="p-4 border-b border-gray-700 bg-gray-800/50">
+            <div className="p-2 border-b border-gray-700 bg-gray-800/50">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-white">
-                  {selectedNote ? 'Modifier la note' : 'Nouvelle note'}
-                </h2>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setSidebarVisible(!sidebarVisible)}
+                    className="p-1 bg-gray-700 hover:bg-gray-600 rounded transition-colors text-gray-400 hover:text-white"
+                    title={sidebarVisible ? 'Masquer la liste' : 'Afficher la liste'}
+                  >
+                    {sidebarVisible ? <PanelLeftClose className="w-3 h-3" /> : <Menu className="w-3 h-3" />}
+                  </button>
+                  <h2 className="text-base font-medium text-white">
+                    {selectedNote ? 'Modifier la note' : 'Nouvelle note'}
+                  </h2>
+                </div>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => {
@@ -631,32 +572,23 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
               </div>
             </div>
             
-            <div className="flex-1 p-4 overflow-y-auto">
-              <div className="space-y-4 max-w-4xl">
-                {/* Titre */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Titre *
-                  </label>
+            <div className="flex-1 p-2 overflow-y-auto">
+              <div className="space-y-2 max-w-6xl">
+                {/* Titre et métadonnées compacts */}
+                <div className="space-y-2">
                   <input
                     type="text"
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                     placeholder="Titre de la note..."
-                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg font-medium"
                   />
-                </div>
-                
-                {/* Métadonnées */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Catégorie
-                    </label>
+                  
+                  <div className="grid grid-cols-4 gap-2">
                     <select
                       value={formData.category}
                       onChange={(e) => setFormData({ ...formData, category: e.target.value as Note['category'] })}
-                      className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="px-2 py-1 bg-gray-800 border border-gray-600 rounded text-white text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                     >
                       {categories.filter(c => c.id !== 'all').map(category => (
                         <option key={category.id} value={category.id}>
@@ -664,114 +596,52 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
                         </option>
                       ))}
                     </select>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Priorité
-                    </label>
+                    
                     <select
                       value={formData.priority}
                       onChange={(e) => setFormData({ ...formData, priority: e.target.value as Note['priority'] })}
-                      className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="px-2 py-1 bg-gray-800 border border-gray-600 rounded text-white text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                     >
-                      <option value="low">Basse</option>
-                      <option value="medium">Moyenne</option>
-                      <option value="high">Haute</option>
+                      <option value="low">🟢 Faible</option>
+                      <option value="medium">🟡 Normale</option>
+                      <option value="high">🔴 Élevée</option>
                     </select>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Tags (séparés par des virgules)
-                    </label>
+                    
                     <input
                       type="text"
                       value={formData.tags}
                       onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-                      placeholder="tag1, tag2, tag3..."
-                      className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Tags..."
+                      className="col-span-2 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-white text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </div>
                 </div>
                 
-                {/* Contenu */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="block text-sm font-medium text-gray-300">
-                      Contenu
-                    </label>
-                    <div className="text-xs text-gray-500">
-                      💡 Utilisez <code className="px-1 bg-gray-700 rounded">[ ]</code> pour une checkbox vide, <code className="px-1 bg-gray-700 rounded">[x]</code> pour cochée
-                    </div>
-                  </div>
-                  
-                  {/* Barre d'outils rapide */}
-                  <div className="flex items-center gap-2 mb-2 p-2 bg-gray-800/50 rounded-lg border border-gray-600">
-                    <span className="text-xs text-gray-400">Insertion rapide :</span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const textarea = document.querySelector('textarea') as HTMLTextAreaElement;
-                        if (textarea) {
-                          const start = textarea.selectionStart;
-                          const end = textarea.selectionEnd;
-                          const newContent = formData.content.slice(0, start) + '[ ] ' + formData.content.slice(end);
-                          setFormData({ ...formData, content: newContent });
-                          // Repositionner le curseur après l'insertion
-                          setTimeout(() => {
-                            textarea.focus();
-                            textarea.setSelectionRange(start + 4, start + 4);
-                          }, 10);
-                        }
-                      }}
-                      className="px-2 py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
-                    >
-                      [ ] Checkbox
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const textarea = document.querySelector('textarea') as HTMLTextAreaElement;
-                        if (textarea) {
-                          const start = textarea.selectionStart;
-                          const end = textarea.selectionEnd;
-                          const newContent = formData.content.slice(0, start) + '[x] ' + formData.content.slice(end);
-                          setFormData({ ...formData, content: newContent });
-                          setTimeout(() => {
-                            textarea.focus();
-                            textarea.setSelectionRange(start + 4, start + 4);
-                          }, 10);
-                        }
-                      }}
-                      className="px-2 py-1 text-xs bg-green-600 hover:bg-green-700 text-white rounded transition-colors"
-                    >
-                      [x] Cochée
-                    </button>
-                  </div>
-                  
-                  <textarea
-                    value={formData.content}
-                    onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                    placeholder="Votre note ici...
-
-Exemples de checkbox :
-[ ] Tâche à faire
-[x] Tâche terminée
-[ ] Autre tâche
-
-Vous pouvez aussi écrire du texte normal."
-                    rows={20}
-                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none font-mono"
-                  />
-                </div>
+                {/* Zone de contenu */}
+                <textarea
+                  value={formData.content}
+                  onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                  placeholder="Écrivez votre note ici..."
+                  rows={25}
+                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y font-mono min-h-[500px]"
+                />
               </div>
             </div>
           </>
         ) : (
           /* État initial - aucune note sélectionnée */
-          <div className="flex-1 flex items-center justify-center bg-gray-800/20">
-            <div className="text-center">
+          <div className="flex-1 flex flex-col">
+            <div className="p-2 border-b border-gray-700">
+              <button
+                onClick={() => setSidebarVisible(!sidebarVisible)}
+                className="p-1 bg-gray-700 hover:bg-gray-600 rounded transition-colors text-gray-400 hover:text-white"
+                title={sidebarVisible ? 'Masquer la liste' : 'Afficher la liste'}
+              >
+                {sidebarVisible ? <PanelLeftClose className="w-3 h-3" /> : <Menu className="w-3 h-3" />}
+              </button>
+            </div>
+            <div className="flex-1 flex items-center justify-center bg-gray-800/20">
+              <div className="text-center">
               <FileText className="w-16 h-16 mx-auto text-gray-600 mb-4" />
               <h3 className="text-xl font-medium text-gray-400 mb-2">Système de prise de notes</h3>
               <p className="text-gray-500 mb-4">Organisez vos idées, cours et notes professionnelles</p>
@@ -792,6 +662,7 @@ Vous pouvez aussi écrire du texte normal."
                 <Plus className="w-4 h-4" />
                 Créer ma première note
               </button>
+            </div>
             </div>
           </div>
         )}
