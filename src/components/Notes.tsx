@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { 
   Search, 
   Plus, 
-  Edit, 
   Trash2, 
   Archive, 
   Pin, 
@@ -16,7 +15,9 @@ import {
   Lightbulb,
   SortAsc,
   SortDesc,
-  Users
+  Users,
+  Save,
+  Check
 } from 'lucide-react';
 import { notesService } from '../utils/notesService';
 import { Note } from '../types/Note';
@@ -45,6 +46,13 @@ const Notes: React.FC = () => {
     tags: '',
     priority: 'medium' as Note['priority']
   });
+
+  // États pour la sauvegarde automatique
+  const [isAutoSaving, setIsAutoSaving] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const previousFormDataRef = useRef(formData);
 
   // Catégories
   const categories = [
@@ -169,15 +177,19 @@ const Notes: React.FC = () => {
   };
 
   const updateNote = async (id: string, updates: Partial<Note>) => {
+    console.log('updateNote appelée:', { id, updates });
     try {
       let updatedNote: Note;
       
       // Essayer d'abord le serveur
       try {
+        console.log('Tentative de sauvegarde sur le serveur...');
         updatedNote = await notesService.updateNoteOnServer(id, updates);
+        console.log('Sauvegarde serveur réussie:', updatedNote);
       } catch (serverError) {
         console.warn('Échec serveur, utilisation du localStorage:', serverError);
         updatedNote = notesService.updateNoteInLocalStorage(id, updates);
+        console.log('Sauvegarde localStorage réussie:', updatedNote);
       }
       
       setNotes(notes.map(note => note.id === id ? updatedNote : note));
@@ -185,6 +197,8 @@ const Notes: React.FC = () => {
       if (selectedNote?.id === id) {
         setSelectedNote(updatedNote);
       }
+      
+      console.log('updateNote terminée avec succès');
     } catch (error) {
       console.error('Erreur lors de la mise à jour:', error);
     }
@@ -226,6 +240,94 @@ const Notes: React.FC = () => {
     
     await updateNote(id, { isArchived: !note.isArchived });
   };
+
+  // Fonction de sauvegarde automatique
+  const autoSaveNote = useCallback(async () => {
+    console.log('autoSaveNote appelée:', {
+      selectedNote: !!selectedNote,
+      hasUnsavedChanges,
+      titleNotEmpty: !!formData.title.trim(),
+      formData
+    });
+
+    if (!selectedNote || !hasUnsavedChanges || !formData.title.trim()) {
+      console.log('Sauvegarde annulée:', {
+        selectedNote: !!selectedNote,
+        hasUnsavedChanges,
+        titleNotEmpty: !!formData.title.trim()
+      });
+      return;
+    }
+
+    try {
+      console.log('Début sauvegarde automatique...');
+      setIsAutoSaving(true);
+      
+      const updates = {
+        title: formData.title,
+        content: formData.content,
+        category: formData.category,
+        tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
+        priority: formData.priority
+      };
+
+      console.log('Données à sauvegarder:', updates);
+      await updateNote(selectedNote.id, updates);
+      
+      // Mettre à jour la référence seulement après sauvegarde réussie
+      previousFormDataRef.current = { ...formData };
+      
+      setHasUnsavedChanges(false);
+      setLastSaved(new Date());
+      console.log('Sauvegarde automatique réussie');
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde automatique:', error);
+    } finally {
+      setIsAutoSaving(false);
+    }
+  }, [selectedNote, hasUnsavedChanges, formData, updateNote]);
+
+  // Détecter les changements dans le formulaire
+  useEffect(() => {
+    if (!selectedNote || !isEditing) return;
+
+    const currentFormDataString = JSON.stringify(formData);
+    const previousFormDataString = JSON.stringify(previousFormDataRef.current);
+    
+    console.log('Détection changement:', {
+      current: formData,
+      previous: previousFormDataRef.current,
+      areEqual: currentFormDataString === previousFormDataString
+    });
+    
+    if (currentFormDataString !== previousFormDataString) {
+      console.log('Changement détecté, programmation sauvegarde...');
+      setHasUnsavedChanges(true);
+      
+      // Nettoyer le timeout précédent
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+        autoSaveTimeoutRef.current = null;
+      }
+      
+      // Programmer la sauvegarde automatique dans 2 secondes
+      // NE PAS mettre à jour previousFormDataRef ici, seulement après sauvegarde réussie
+      autoSaveTimeoutRef.current = setTimeout(() => {
+        console.log('Déclenchement sauvegarde automatique');
+        autoSaveNote();
+        autoSaveTimeoutRef.current = null;
+      }, 2000);
+    }
+  }, [formData.title, formData.content, formData.category, formData.tags, formData.priority, selectedNote, isEditing, autoSaveNote]);
+
+  // Nettoyer les timeouts au démontage
+  useEffect(() => {
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Filtrage et tri des notes
   const filteredNotes = notes
@@ -285,14 +387,18 @@ const Notes: React.FC = () => {
               onClick={() => {
                 setSelectedNote(null);
                 setIsEditing(true);
-                setIsModalOpen(true);
-                setFormData({
+                const newFormData = {
                   title: '',
                   content: '',
-                  category: 'personnel',
+                  category: 'personnel' as Note['category'],
                   tags: '',
-                  priority: 'medium'
-                });
+                  priority: 'medium' as Note['priority']
+                };
+                setFormData(newFormData);
+                previousFormDataRef.current = newFormData;
+                setHasUnsavedChanges(false);
+                setLastSaved(null);
+                setIsModalOpen(true);
               }}
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors text-white font-medium"
             >
@@ -397,14 +503,18 @@ const Notes: React.FC = () => {
                 onClick={() => {
                   setSelectedNote(null);
                   setIsEditing(true);
-                  setIsModalOpen(true);
-                  setFormData({
+                  const newFormData = {
                     title: '',
                     content: '',
-                    category: 'personnel',
+                    category: 'personnel' as Note['category'],
                     tags: '',
-                    priority: 'medium'
-                  });
+                    priority: 'medium' as Note['priority']
+                  };
+                  setFormData(newFormData);
+                  previousFormDataRef.current = newFormData;
+                  setHasUnsavedChanges(false);
+                  setLastSaved(null);
+                  setIsModalOpen(true);
                 }}
                 className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors text-white font-medium mx-auto"
               >
@@ -421,13 +531,17 @@ const Notes: React.FC = () => {
                 onClick={() => {
                   setSelectedNote(note);
                   setIsEditing(true);
-                  setFormData({
+                  const newFormData = {
                     title: note.title,
                     content: note.content,
                     category: note.category,
                     tags: note.tags.join(', '),
                     priority: note.priority
-                  });
+                  };
+                  setFormData(newFormData);
+                  previousFormDataRef.current = newFormData;
+                  setHasUnsavedChanges(false);
+                  setLastSaved(null);
                   setIsModalOpen(true);
                 }}
                 className={`group cursor-pointer rounded-xl border p-6 transition-all duration-200 hover:shadow-lg hover:-translate-y-1 ${
@@ -528,9 +642,34 @@ const Notes: React.FC = () => {
             <div className={`flex items-center justify-between p-6 border-b ${
               isDark ? 'border-gray-700' : 'border-gray-200'
             }`}>
-              <h2 className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                {isEditing ? (selectedNote ? 'Modifier la note' : 'Nouvelle note') : selectedNote?.title}
-              </h2>
+              <div className="flex items-center gap-3">
+                <h2 className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                  {isEditing ? (selectedNote ? 'Modifier la note' : 'Nouvelle note') : selectedNote?.title}
+                </h2>
+                
+                {/* Indicateur de sauvegarde */}
+                {isEditing && selectedNote && (
+                  <div className="flex items-center gap-2 text-sm">
+                    {isAutoSaving ? (
+                      <div className="flex items-center gap-1 text-blue-500">
+                        <Save className="w-4 h-4 animate-pulse" />
+                        <span>Sauvegarde...</span>
+                      </div>
+                    ) : hasUnsavedChanges ? (
+                      <div className="flex items-center gap-1 text-yellow-500">
+                        <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                        <span>Non sauvegardé</span>
+                      </div>
+                    ) : lastSaved ? (
+                      <div className="flex items-center gap-1 text-green-500">
+                        <Check className="w-4 h-4" />
+                        <span>Sauvegardé à {lastSaved.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
+                      </div>
+                    ) : null}
+                  </div>
+                )}
+              </div>
+              
               <div className="flex items-center gap-2">
                 {selectedNote && (
                   <button
@@ -543,17 +682,27 @@ const Notes: React.FC = () => {
                 )}
                 <button
                   onClick={() => {
+                    // Nettoyer le timeout de sauvegarde automatique
+                    if (autoSaveTimeoutRef.current) {
+                      clearTimeout(autoSaveTimeoutRef.current);
+                    }
+                    
                     setIsModalOpen(false);
                     setIsEditing(false);
                     setSelectedNote(null);
+                    setHasUnsavedChanges(false);
+                    setLastSaved(null);
+                    
                     // Réinitialiser le formulaire
-                    setFormData({
+                    const resetFormData = {
                       title: '',
                       content: '',
-                      category: 'personnel',
+                      category: 'personnel' as Note['category'],
                       tags: '',
-                      priority: 'medium'
-                    });
+                      priority: 'medium' as Note['priority']
+                    };
+                    setFormData(resetFormData);
+                    previousFormDataRef.current = resetFormData;
                   }}
                   className={`p-2 rounded-lg transition-colors ${
                     isDark 
@@ -667,27 +816,28 @@ const Notes: React.FC = () => {
                 }`}>
                   <button
                     onClick={() => {
-                      setIsEditing(false);
-                      if (!selectedNote) {
-                        setIsModalOpen(false);
-                        // Réinitialiser le formulaire pour nouvelle note
-                        setFormData({
-                          title: '',
-                          content: '',
-                          category: 'personnel',
-                          tags: '',
-                          priority: 'medium'
-                        });
-                      } else {
-                        // Restaurer les données originales de la note
-                        setFormData({
-                          title: selectedNote.title,
-                          content: selectedNote.content,
-                          category: selectedNote.category,
-                          tags: selectedNote.tags.join(', '),
-                          priority: selectedNote.priority
-                        });
+                      // Nettoyer le timeout de sauvegarde automatique
+                      if (autoSaveTimeoutRef.current) {
+                        clearTimeout(autoSaveTimeoutRef.current);
                       }
+                      
+                      // Fermer directement la modale
+                      setIsModalOpen(false);
+                      setIsEditing(false);
+                      setSelectedNote(null);
+                      setHasUnsavedChanges(false);
+                      setLastSaved(null);
+                      
+                      // Réinitialiser le formulaire
+                      const resetFormData = {
+                        title: '',
+                        content: '',
+                        category: 'personnel' as Note['category'],
+                        tags: '',
+                        priority: 'medium' as Note['priority']
+                      };
+                      setFormData(resetFormData);
+                      previousFormDataRef.current = resetFormData;
                     }}
                     className={`px-4 py-2 rounded-lg transition-colors ${
                       isDark 
@@ -697,26 +847,24 @@ const Notes: React.FC = () => {
                   >
                     Annuler
                   </button>
-                  <button
-                    onClick={async () => {
-                      if (selectedNote) {
-                        await updateNote(selectedNote.id, {
-                          title: formData.title,
-                          content: formData.content,
-                          category: formData.category,
-                          tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
-                          priority: formData.priority
-                        });
-                        setIsEditing(false);
-                      } else {
+                  {/* Bouton Créer uniquement pour les nouvelles notes */}
+                  {!selectedNote && (
+                    <button
+                      onClick={async () => {
+                        // Nettoyer le timeout de sauvegarde automatique
+                        if (autoSaveTimeoutRef.current) {
+                          clearTimeout(autoSaveTimeoutRef.current);
+                        }
+                        
                         await createNote();
                         setIsModalOpen(false);
-                      }
-                    }}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors text-white font-medium"
-                  >
-                    {selectedNote ? 'Sauvegarder' : 'Créer'}
-                  </button>
+                      }}
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors text-white font-medium"
+                      disabled={!formData.title.trim()}
+                    >
+                      Créer
+                    </button>
+                  )}
                 </div>
               </>
               ) : selectedNote && (
