@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
+import { notesService } from '../utils/notesService';
 import {
   Plus,
   Search,
@@ -84,87 +85,129 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
     setIsEditing(false);
   }, [selectedNote]);
 
-  const loadNotes = () => {
+  const loadNotes = async () => {
     try {
-      const savedNotes = localStorage.getItem('admin-notes-lm');
-      if (savedNotes) {
-        const parsedNotes = JSON.parse(savedNotes).map((note: any) => ({
-          ...note,
-          createdAt: new Date(note.createdAt),
-          updatedAt: new Date(note.updatedAt)
-        }));
-        setNotes(parsedNotes);
-      }
+      // Essayer de charger depuis le serveur d'abord
+      const serverNotes = await notesService.getNotesFromServer();
+      setNotes(serverNotes);
+      console.log('📖 Notes chargées depuis le serveur:', serverNotes.length);
     } catch (error) {
-      console.error('Erreur lors du chargement des notes:', error);
+      console.warn('Serveur non accessible, chargement depuis localStorage:', error);
+      // Fallback vers localStorage
+      const localNotes = notesService.getNotesFromLocalStorage();
+      setNotes(localNotes);
+      console.log('📖 Notes chargées depuis localStorage:', localNotes.length);
     }
   };
 
-  const saveNotes = (newNotes: Note[]) => {
-    try {
-      localStorage.setItem('admin-notes-lm', JSON.stringify(newNotes));
-      setNotes(newNotes);
-    } catch (error) {
-      console.error('Erreur lors de la sauvegarde des notes:', error);
-    }
-  };
-
-  const createNote = () => {
+  const createNote = async () => {
     if (!formData.title.trim()) {
       alert('Le titre est obligatoire');
       return;
     }
 
-    const newNote: Note = {
-      id: Date.now() + '-' + Math.random().toString(36).substr(2, 9),
-      title: formData.title.trim(),
-      content: formData.content.trim(),
-      category: formData.category,
-      tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      isPinned: false,
-      isArchived: false,
-      priority: formData.priority
-    };
+    try {
+      const noteData = {
+        title: formData.title.trim(),
+        content: formData.content.trim(),
+        category: formData.category,
+        tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
+        isPinned: false,
+        isArchived: false,
+        priority: formData.priority
+      };
 
-    const updatedNotes = [newNote, ...notes];
-    saveNotes(updatedNotes);
-    
-    // Réinitialiser le formulaire
-    setFormData({
-      title: '',
-      content: '',
-      category: 'personnel',
-      tags: '',
-      priority: 'medium'
-    });
+      // Essayer de sauvegarder sur le serveur d'abord
+      try {
+        const newNote = await notesService.saveNoteToServer(noteData);
+        const updatedNotes = [newNote, ...notes];
+        setNotes(updatedNotes);
+        console.log('✅ Note créée sur le serveur:', newNote.id);
+      } catch (serverError) {
+        console.warn('Serveur non accessible, sauvegarde locale:', serverError);
+        // Fallback vers localStorage
+        const newNote = notesService.saveNoteToLocalStorage(noteData);
+        const updatedNotes = [newNote, ...notes];
+        setNotes(updatedNotes);
+        console.log('✅ Note créée localement:', newNote.id);
+      }
 
-    // Sélectionner la nouvelle note
-    setSelectedNote(newNote);
-    setIsEditing(false);
-  };
+      // Réinitialiser le formulaire
+      setFormData({
+        title: '',
+        content: '',
+        category: 'personnel',
+        tags: '',
+        priority: 'medium'
+      });
 
-  const updateNote = (noteId: string, updates: Partial<Note>) => {
-    const updatedNotes = notes.map(note =>
-      note.id === noteId
-        ? { ...note, ...updates, updatedAt: new Date() }
-        : note
-    );
-    saveNotes(updatedNotes);
-    
-    if (selectedNote && selectedNote.id === noteId) {
-      setSelectedNote({ ...selectedNote, ...updates, updatedAt: new Date() });
+      // Sélectionner la nouvelle note et sortir du mode édition
+      setSelectedNote(null);
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Erreur lors de la création de la note:', error);
+      alert('Erreur lors de la création de la note');
     }
   };
 
-  const deleteNote = (noteId: string) => {
+  const updateNote = async (noteId: string, updates: Partial<Note>) => {
+    try {
+      // Essayer de mettre à jour sur le serveur d'abord
+      try {
+        const updatedNote = await notesService.updateNoteOnServer(noteId, updates);
+        const updatedNotes = notes.map(note =>
+          note.id === noteId ? updatedNote : note
+        );
+        setNotes(updatedNotes);
+        
+        if (selectedNote && selectedNote.id === noteId) {
+          setSelectedNote(updatedNote);
+        }
+        console.log('✅ Note mise à jour sur le serveur:', noteId);
+      } catch (serverError) {
+        console.warn('Serveur non accessible, mise à jour locale:', serverError);
+        // Fallback vers localStorage
+        const updatedNote = notesService.updateNoteInLocalStorage(noteId, updates);
+        const updatedNotes = notes.map(note =>
+          note.id === noteId ? updatedNote : note
+        );
+        setNotes(updatedNotes);
+        
+        if (selectedNote && selectedNote.id === noteId) {
+          setSelectedNote(updatedNote);
+        }
+        console.log('✅ Note mise à jour localement:', noteId);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour de la note:', error);
+      alert('Erreur lors de la mise à jour de la note');
+    }
+  };
+
+  const deleteNote = async (noteId: string) => {
     if (confirm('Êtes-vous sûr de vouloir supprimer cette note ?')) {
-      const updatedNotes = notes.filter(note => note.id !== noteId);
-      saveNotes(updatedNotes);
-      
-      if (selectedNote && selectedNote.id === noteId) {
-        setSelectedNote(null);
+      try {
+        // Essayer de supprimer sur le serveur d'abord
+        try {
+          await notesService.deleteNoteFromServer(noteId);
+          const updatedNotes = notes.filter(note => note.id !== noteId);
+          setNotes(updatedNotes);
+          console.log('✅ Note supprimée du serveur:', noteId);
+        } catch (serverError) {
+          console.warn('Serveur non accessible, suppression locale:', serverError);
+          // Fallback vers localStorage
+          notesService.deleteNoteFromLocalStorage(noteId);
+          const updatedNotes = notes.filter(note => note.id !== noteId);
+          setNotes(updatedNotes);
+          console.log('✅ Note supprimée localement:', noteId);
+        }
+        
+        if (selectedNote && selectedNote.id === noteId) {
+          setSelectedNote(null);
+        }
+      } catch (error) {
+        console.error('Erreur lors de la suppression de la note:', error);
+        alert('Erreur lors de la suppression de la note');
       }
     }
   };
@@ -586,7 +629,7 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
                 </div>
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => {
+                    onClick={async () => {
                       if (selectedNote) {
                         updateNote(selectedNote.id, {
                           title: formData.title,
@@ -597,7 +640,7 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
                         });
                         setIsEditing(false);
                       } else {
-                        createNote();
+                        await createNote();
                       }
                     }}
                     className="flex items-center gap-2 px-3 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition-colors text-white"
