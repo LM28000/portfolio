@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Plus, X, Trash2, Star, Calendar, Tag, Filter, Search,
+  Plus, X, Trash2, Star, Search,
   CheckCircle2, Circle, Clock, AlertCircle, User, Briefcase,
   ShoppingCart, Heart, GraduationCap, Code, Home
 } from 'lucide-react';
@@ -91,10 +91,12 @@ const TodoList: React.FC = () => {
   const loadTodos = async () => {
     try {
       setLoading(true);
+      console.log('🔵 Chargement des todos...');
       const allTodos = await todoService.getAllTodos();
+      console.log('📋 Todos chargés:', allTodos.length, 'éléments');
       setTodos(allTodos);
     } catch (error) {
-      console.error('Erreur lors du chargement des todos:', error);
+      console.error('❌ Erreur lors du chargement des todos:', error);
     } finally {
       setLoading(false);
     }
@@ -102,6 +104,7 @@ const TodoList: React.FC = () => {
 
   const createTodo = async () => {
     try {
+      console.log('🟡 Création du todo avec les données:', formData);
       const newTodo = await todoService.createTodo({
         title: formData.title,
         description: formData.description,
@@ -113,10 +116,11 @@ const TodoList: React.FC = () => {
         isImportant: formData.isImportant
       });
       
+      console.log('✅ Todo créé avec succès:', newTodo);
       setTodos(prev => [...prev, newTodo]);
       resetForm();
     } catch (error) {
-      console.error('Erreur lors de la création du todo:', error);
+      console.error('❌ Erreur lors de la création du todo:', error);
     }
   };
 
