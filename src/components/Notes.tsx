@@ -29,7 +29,7 @@ const Notes: React.FC = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [sortBy, setSortBy] = useState<'date' | 'title' | 'priority'>('date');
+  const [sortBy, setSortBy] = useState<'date' | 'title' | 'priority'>('priority');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [showArchived, setShowArchived] = useState(false);
   
@@ -454,9 +454,9 @@ const Notes: React.FC = () => {
                     : 'bg-white border-gray-300 text-gray-900'
                 }`}
               >
+                <option value="priority">Priorité</option>
                 <option value="date">Date</option>
                 <option value="title">Titre</option>
-                <option value="priority">Priorité</option>
               </select>
 
               <button
