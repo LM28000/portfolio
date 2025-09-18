@@ -522,6 +522,88 @@ app.patch('/api/files/:id/category', authenticateToken, (req, res) => {
   }
 });
 
+// PUT /api/files/bulk-category - Mettre à jour la catégorie de plusieurs fichiers
+app.put('/api/files/bulk-category', authenticateToken, (req, res) => {
+  try {
+    const { fileIds, category } = req.body;
+
+    console.log(`📝 PUT /api/files/bulk-category - Mise à jour de catégorie en lot`);
+    console.log(`   - fileIds: ${fileIds?.join(', ')}`);
+    console.log(`   - category: ${category}`);
+
+    if (!fileIds || !Array.isArray(fileIds) || fileIds.length === 0) {
+      return res.status(400).json({ success: false, error: 'Liste des IDs de fichiers manquante ou vide' });
+    }
+
+    if (!category) {
+      return res.status(400).json({ success: false, error: 'Catégorie manquante' });
+    }
+
+    // Vérifier que la catégorie est valide
+    const validCategories = [
+      'identity', 'finance', 'medical', 'legal', 'other', 
+      'scolaire', 'logement', 'transport', 'sante', 'micro-entreprise'
+    ];
+    if (!validCategories.includes(category)) {
+      console.log(`   - ❌ Catégorie invalide: ${category}. Catégories valides: ${validCategories.join(', ')}`);
+      return res.status(400).json({ success: false, error: 'Catégorie invalide' });
+    }
+
+    let files = loadMetadata();
+    console.log(`   - Nombre de fichiers total: ${files.length}`);
+    
+    const updatedFiles = [];
+    const notFoundIds = [];
+    
+    // Traiter chaque fichier
+    for (const fileId of fileIds) {
+      const fileIndex = files.findIndex(f => f.id === fileId);
+      
+      if (fileIndex === -1) {
+        notFoundIds.push(fileId);
+        console.log(`   - ❌ Fichier non trouvé avec ID: ${fileId}`);
+      } else {
+        // Mettre à jour la catégorie
+        files[fileIndex].category = category;
+        files[fileIndex].lastModified = new Date().toISOString();
+        updatedFiles.push(files[fileIndex]);
+        console.log(`   - ✅ Fichier mis à jour: ${files[fileIndex].name} -> ${category}`);
+      }
+    }
+
+    if (notFoundIds.length > 0) {
+      console.log(`   - ⚠️ Fichiers non trouvés: ${notFoundIds.join(', ')}`);
+    }
+
+    if (updatedFiles.length === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        error: 'Aucun fichier trouvé pour les IDs fournis',
+        debug: {
+          requestedIds: fileIds,
+          notFoundIds: notFoundIds
+        }
+      });
+    }
+
+    if (saveMetadata(files)) {
+      console.log(`📝 ${updatedFiles.length} catégorie(s) mise(s) à jour vers ${category}`);
+      res.json({ 
+        success: true, 
+        data: updatedFiles,
+        message: `${updatedFiles.length} fichier(s) mis à jour avec succès`,
+        warning: notFoundIds.length > 0 ? `${notFoundIds.length} fichier(s) non trouvé(s)` : null
+      });
+    } else {
+      throw new Error('Erreur sauvegarde métadonnées');
+    }
+
+  } catch (error) {
+    console.error('Erreur mise à jour catégories en lot:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // PATCH /api/files/:id/rename - Renommer un fichier
 app.patch('/api/files/:id/rename', authenticateToken, (req, res) => {
   try {

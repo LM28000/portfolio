@@ -61,6 +61,7 @@ const AdminDashboard: React.FC = () => {
   // États pour la sélection multiple
   const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
   const [selectionMode, setSelectionMode] = useState(false);
+  const [bulkCategory, setBulkCategory] = useState('');
   
   // Nouveaux états pour la gestion serveur/localStorage
   const [useServerStorage, setUseServerStorage] = useState(true);
@@ -313,21 +314,20 @@ const AdminDashboard: React.FC = () => {
       }
 
       const category = selectedCategory === 'all' ? 'other' : selectedCategory;
-      let newFile: AdminFile;
 
       if (useServerStorage && serverStatus === 'online') {
         // Upload vers le serveur
         try {
-          newFile = await adminFileService.uploadFile(file, category);
+          await adminFileService.uploadFile(file, category);
           AdminAuthUtils.logSecurityEvent('file_upload', `Fichier ${file.name} uploadé sur serveur (${formatFileSize(file.size)})`);
         } catch (serverError) {
           console.warn('Échec upload serveur, fallback localStorage:', serverError);
-          newFile = await adminFileService.saveToLocalStorage(file, category);
+          await adminFileService.saveToLocalStorage(file, category);
           AdminAuthUtils.logSecurityEvent('file_upload', `Fichier ${file.name} sauvé en local (${formatFileSize(file.size)})`);
         }
       } else {
         // Sauvegarde localStorage
-        newFile = await adminFileService.saveToLocalStorage(file, category);
+        await adminFileService.saveToLocalStorage(file, category);
         AdminAuthUtils.logSecurityEvent('file_upload', `Fichier ${file.name} sauvé en local (${formatFileSize(file.size)})`);
       }
 
@@ -724,6 +724,52 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
+  const handleBulkCategoryChange = async () => {
+    if (selectedFiles.size === 0) {
+      alert('Aucun fichier sélectionné');
+      return;
+    }
+
+    if (!bulkCategory) {
+      alert('Veuillez sélectionner une catégorie');
+      return;
+    }
+
+    const confirmMessage = `Êtes-vous sûr de vouloir changer la catégorie de ${selectedFiles.size} fichier(s) vers "${bulkCategory}" ?`;
+    if (!confirm(confirmMessage)) {
+      return;
+    }
+
+    try {
+      const selectedFilesList = Array.from(selectedFiles);
+      
+      if (useServerStorage) {
+        // Utiliser le service pour le changement en lot
+        await adminFileService.updateMultipleFileCategories(selectedFilesList, bulkCategory);
+      } else {
+        // Mettre à jour localement
+        for (const fileId of selectedFilesList) {
+          await adminFileService.updateLocalStorageFileCategory(fileId, bulkCategory);
+        }
+      }
+
+      // Recharger la liste des fichiers
+      await initializeSystem();
+      
+      // Réinitialiser la sélection et la catégorie
+      setSelectedFiles(new Set());
+      setBulkCategory('');
+      
+      // Log de sécurité
+      AdminAuthUtils.logSecurityEvent('file_update', `Changement de catégorie groupé de ${selectedFiles.size} fichiers vers ${bulkCategory}`);
+      
+      alert(`Catégorie de ${selectedFilesList.length} fichier(s) changée vers "${bulkCategory}" avec succès!`);
+    } catch (error) {
+      console.error('Erreur lors du changement de catégorie:', error);
+      alert('Erreur lors du changement de catégorie: ' + (error instanceof Error ? error.message : 'Erreur inconnue'));
+    }
+  };
+
   const handleDownloadCategory = async (category: string) => {
     try {
       const categoryFiles = files.filter(file => file.category === category);
@@ -1035,6 +1081,33 @@ const AdminDashboard: React.FC = () => {
                       <div className="text-xs text-amber-300 text-center">
                         {selectedFiles.size} fichier(s) sélectionné(s)
                       </div>
+                      
+                      {/* Changement de catégorie en lot */}
+                      <div className="space-y-2">
+                        <select
+                          value={bulkCategory}
+                          onChange={(e) => setBulkCategory(e.target.value)}
+                          className="w-full py-2 px-3 bg-slate-700 border border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="">Changer catégorie</option>
+                          <option value="scolaire">Scolaire</option>
+                          <option value="logement">Logement</option>
+                          <option value="transport">Transport</option>
+                          <option value="sante">Santé</option>
+                          <option value="legal">Légal</option>
+                          <option value="micro-entreprise">Micro-entreprise</option>
+                          <option value="other">Autre</option>
+                        </select>
+                        <button
+                          onClick={handleBulkCategoryChange}
+                          disabled={!bulkCategory}
+                          className="flex items-center justify-center gap-2 w-full py-2 px-3 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg transition-colors text-sm font-medium"
+                        >
+                          <Edit className="w-4 h-4" />
+                          Changer catégorie
+                        </button>
+                      </div>
+                      
                       <button
                         onClick={handleDeleteSelected}
                         className="flex items-center justify-center gap-2 w-full py-2 px-3 bg-red-600 hover:bg-red-700 rounded-lg transition-colors text-sm font-medium"
