@@ -15,7 +15,8 @@ import {
   Home,
   Lightbulb,
   SortAsc,
-  SortDesc
+  SortDesc,
+  Users
 } from 'lucide-react';
 import { notesService } from '../utils/notesService';
 import { Note } from '../types/Note';
@@ -52,7 +53,8 @@ const Notes: React.FC = () => {
     { id: 'travail', name: 'Travail', icon: Briefcase },
     { id: 'cours', name: 'Cours', icon: BookOpen },
     { id: 'idees', name: 'Idées', icon: Lightbulb },
-    { id: 'projets', name: 'Projets', icon: FileText }
+    { id: 'projets', name: 'Projets', icon: FileText },
+    { id: 'reunion', name: 'Réunion', icon: Users }
   ];
 
   // Charger les notes au démarrage
@@ -83,7 +85,8 @@ const Notes: React.FC = () => {
       travail: Briefcase,
       cours: BookOpen,
       idees: Lightbulb,
-      projets: FileText
+      projets: FileText,
+      reunion: Users
     };
     return categoryMap[category] || FileText;
   };
@@ -94,7 +97,8 @@ const Notes: React.FC = () => {
       travail: 'text-green-500',
       cours: 'text-purple-500',
       idees: 'text-yellow-500',
-      projets: 'text-red-500'
+      projets: 'text-red-500',
+      reunion: 'text-orange-500'
     };
     return colorMap[category] || 'text-gray-500';
   };
@@ -416,7 +420,14 @@ const Notes: React.FC = () => {
                 key={note.id}
                 onClick={() => {
                   setSelectedNote(note);
-                  setIsEditing(false);
+                  setIsEditing(true);
+                  setFormData({
+                    title: note.title,
+                    content: note.content,
+                    category: note.category,
+                    tags: note.tags.join(', '),
+                    priority: note.priority
+                  });
                   setIsModalOpen(true);
                 }}
                 className={`group cursor-pointer rounded-xl border p-6 transition-all duration-200 hover:shadow-lg hover:-translate-y-1 ${
@@ -521,36 +532,14 @@ const Notes: React.FC = () => {
                 {isEditing ? (selectedNote ? 'Modifier la note' : 'Nouvelle note') : selectedNote?.title}
               </h2>
               <div className="flex items-center gap-2">
-                {!isEditing && selectedNote && (
-                  <>
-                    <button
-                      onClick={() => {
-                        setIsEditing(true);
-                        setFormData({
-                          title: selectedNote.title,
-                          content: selectedNote.content,
-                          category: selectedNote.category,
-                          tags: selectedNote.tags.join(', '),
-                          priority: selectedNote.priority
-                        });
-                      }}
-                      className={`p-2 rounded-lg transition-colors ${
-                        isDark 
-                          ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' 
-                          : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                      }`}
-                      title="Modifier"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => deleteNote(selectedNote.id)}
-                      className="p-2 bg-red-600 hover:bg-red-700 rounded-lg transition-colors text-white"
-                      title="Supprimer"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </>
+                {selectedNote && (
+                  <button
+                    onClick={() => deleteNote(selectedNote.id)}
+                    className="p-2 bg-red-600 hover:bg-red-700 rounded-lg transition-colors text-white"
+                    title="Supprimer"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 )}
                 <button
                   onClick={() => {
@@ -578,137 +567,158 @@ const Notes: React.FC = () => {
             </div>
 
             {/* Contenu de la modale */}
-            <div className="flex-1 overflow-hidden h-[calc(95vh-80px)]">
+            <div className="flex flex-col h-[calc(95vh-80px)]">
               {isEditing ? (
                 /* Mode édition */
-                <div className="p-6 space-y-4 h-full overflow-y-auto">
-                  {/* Titre */}
-                  <input
-                    type="text"
-                    value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    placeholder="Titre de la note..."
-                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg font-medium ${
-                      isDark 
-                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
-                        : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'
-                    }`}
-                  />
-                  
-                  {/* Métadonnées */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <select
-                      value={formData.category}
-                      onChange={(e) => setFormData({ ...formData, category: e.target.value as Note['category'] })}
-                      className={`px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        isDark 
-                          ? 'bg-gray-700 border-gray-600 text-white' 
-                          : 'bg-gray-50 border-gray-300 text-gray-900'
+                <>
+                  <div className="flex-1 p-6 overflow-y-auto">
+                    {/* Titre éditable */}
+                    <input
+                      type="text"
+                      value={formData.title}
+                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                      placeholder="Titre de la note..."
+                      className={`text-xl font-semibold mb-6 w-full bg-transparent border-none outline-none resize-none ${
+                        isDark ? 'text-white placeholder-gray-400' : 'text-gray-900 placeholder-gray-500'
                       }`}
-                    >
-                      {categories.filter(c => c.id !== 'all').map(category => (
-                        <option key={category.id} value={category.id}>
-                          {category.name}
-                        </option>
-                      ))}
-                    </select>
+                    />
+
+                    {/* Métadonnées dans le style prévisualisation */}
+                    <div className="flex flex-wrap items-center gap-4 mb-6 text-sm">
+                      <div className="flex items-center gap-2">
+                        {React.createElement(getCategoryIcon(formData.category), {
+                          className: `w-5 h-5 ${getCategoryColor(formData.category)}`
+                        })}
+                      <select
+                        value={formData.category}
+                        onChange={(e) => setFormData({ ...formData, category: e.target.value as Note['category'] })}
+                        className={`bg-transparent border-none outline-none cursor-pointer ${
+                          isDark ? 'text-gray-300' : 'text-gray-700'
+                        }`}
+                      >
+                        {categories.filter(c => c.id !== 'all').map(category => (
+                          <option key={category.id} value={category.id} className={isDark ? 'bg-gray-800' : 'bg-white'}>
+                            {category.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                     
                     <select
                       value={formData.priority}
                       onChange={(e) => setFormData({ ...formData, priority: e.target.value as Note['priority'] })}
-                      className={`px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        isDark 
-                          ? 'bg-gray-700 border-gray-600 text-white' 
-                          : 'bg-gray-50 border-gray-300 text-gray-900'
-                      }`}
+                      className={`px-2 py-1 rounded cursor-pointer ${getPriorityColor(formData.priority)}`}
                     >
-                      <option value="low">🟢 Faible</option>
-                      <option value="medium">🟡 Normale</option>
-                      <option value="high">🔴 Élevée</option>
+                      <option value="low" className={isDark ? 'bg-gray-800' : 'bg-white'}>Priorité faible</option>
+                      <option value="medium" className={isDark ? 'bg-gray-800' : 'bg-white'}>Priorité normale</option>
+                      <option value="high" className={isDark ? 'bg-gray-800' : 'bg-white'}>Priorité élevée</option>
                     </select>
                     
+                    <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>
+                      {selectedNote ? `Modifié ${formatDate(selectedNote.updatedAt)}` : 'Nouvelle note'}
+                    </span>
+                  </div>
+
+                  {/* Tags éditables */}
+                  <div className="mb-6">
                     <input
                       type="text"
                       value={formData.tags}
                       onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-                      placeholder="Tags séparés par des virgules..."
-                      className={`px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        isDark 
-                          ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
-                          : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'
+                      placeholder="Ajouter des tags séparés par des virgules..."
+                      className={`w-full bg-transparent border-none outline-none text-sm ${
+                        isDark ? 'text-gray-300 placeholder-gray-500' : 'text-gray-700 placeholder-gray-400'
                       }`}
                     />
+                    {formData.tags && (
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {formData.tags.split(',').map((tag, index) => {
+                          const trimmedTag = tag.trim();
+                          if (!trimmedTag) return null;
+                          return (
+                            <span key={index} className={`px-3 py-1 rounded-full text-sm ${
+                              isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
+                            }`}>
+                              #{trimmedTag}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
 
-                  {/* Zone de contenu */}
-                  <textarea
-                    value={formData.content}
-                    onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                    placeholder="Écrivez votre note ici..."
-                    rows={20}
-                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none font-mono ${
-                      isDark 
-                        ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
-                        : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'
-                    }`}
-                  />
-
-                  {/* Boutons d'action */}
-                  <div className="flex items-center justify-end gap-3 pt-4">
-                    <button
-                      onClick={() => {
-                        setIsEditing(false);
-                        if (!selectedNote) {
-                          setIsModalOpen(false);
-                          // Réinitialiser le formulaire pour nouvelle note
-                          setFormData({
-                            title: '',
-                            content: '',
-                            category: 'personnel',
-                            tags: '',
-                            priority: 'medium'
-                          });
-                        } else {
-                          // Restaurer les données originales de la note
-                          setFormData({
-                            title: selectedNote.title,
-                            content: selectedNote.content,
-                            category: selectedNote.category,
-                            tags: selectedNote.tags.join(', '),
-                            priority: selectedNote.priority
-                          });
-                        }
-                      }}
-                      className={`px-4 py-2 rounded-lg transition-colors ${
-                        isDark 
-                          ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' 
-                          : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                  {/* Contenu éditable */}
+                  <div className="mb-6">
+                    <textarea
+                      value={formData.content}
+                      onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                      placeholder="Écrivez votre note ici..."
+                      className={`w-full bg-transparent border-none outline-none resize-none leading-relaxed font-sans ${
+                        isDark ? 'text-gray-300 placeholder-gray-500' : 'text-gray-700 placeholder-gray-400'
                       }`}
-                    >
-                      Annuler
-                    </button>
-                    <button
-                      onClick={async () => {
-                        if (selectedNote) {
-                          await updateNote(selectedNote.id, {
-                            title: formData.title,
-                            content: formData.content,
-                            category: formData.category,
-                            tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
-                            priority: formData.priority
-                          });
-                          setIsEditing(false);
-                        } else {
-                          await createNote();
-                          setIsModalOpen(false);
-                        }
-                      }}
-                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors text-white font-medium"
-                    >
-                      {selectedNote ? 'Sauvegarder' : 'Créer'}
-                    </button>
+                      style={{ minHeight: '300px' }}
+                    />
                   </div>
                 </div>
+
+                {/* Boutons d'action fixes en bas */}
+                <div className={`flex-shrink-0 flex items-center justify-end gap-3 p-6 border-t ${
+                  isDark ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-gray-50'
+                }`}>
+                  <button
+                    onClick={() => {
+                      setIsEditing(false);
+                      if (!selectedNote) {
+                        setIsModalOpen(false);
+                        // Réinitialiser le formulaire pour nouvelle note
+                        setFormData({
+                          title: '',
+                          content: '',
+                          category: 'personnel',
+                          tags: '',
+                          priority: 'medium'
+                        });
+                      } else {
+                        // Restaurer les données originales de la note
+                        setFormData({
+                          title: selectedNote.title,
+                          content: selectedNote.content,
+                          category: selectedNote.category,
+                          tags: selectedNote.tags.join(', '),
+                          priority: selectedNote.priority
+                        });
+                      }
+                    }}
+                    className={`px-4 py-2 rounded-lg transition-colors ${
+                      isDark 
+                        ? 'text-gray-400 hover:text-gray-300 hover:bg-gray-700' 
+                        : 'text-gray-600 hover:text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    onClick={async () => {
+                      if (selectedNote) {
+                        await updateNote(selectedNote.id, {
+                          title: formData.title,
+                          content: formData.content,
+                          category: formData.category,
+                          tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
+                          priority: formData.priority
+                        });
+                        setIsEditing(false);
+                      } else {
+                        await createNote();
+                        setIsModalOpen(false);
+                      }
+                    }}
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors text-white font-medium"
+                  >
+                    {selectedNote ? 'Sauvegarder' : 'Créer'}
+                  </button>
+                </div>
+              </>
               ) : selectedNote && (
                 /* Mode lecture */
                 <div className="p-6 h-full overflow-y-auto">
