@@ -5,6 +5,7 @@ import { AdminProvider } from './contexts/AdminContext';
 import Portfolio from './Portfolio';
 import AdminRoute from './admin/AdminRoute';
 import AdminDashboard from './admin/AdminDashboard';
+import NotesPage from './pages/NotesPage';
 
 function App() {
   return (
@@ -22,6 +23,16 @@ function App() {
                 element={
                   <AdminRoute>
                     <AdminDashboard />
+                  </AdminRoute>
+                } 
+              />
+              
+              {/* Système de notes sécurisé */}
+              <Route 
+                path="/admin/notes" 
+                element={
+                  <AdminRoute>
+                    <NotesPage />
                   </AdminRoute>
                 } 
               />

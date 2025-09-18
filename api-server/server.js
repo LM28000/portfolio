@@ -671,6 +671,233 @@ app.patch('/api/files/:id/rename', authenticateToken, (req, res) => {
   }
 });
 
+// ========================
+// ENDPOINTS POUR LES NOTES
+// ========================
+
+// Chemin pour le fichier des notes
+const notesFile = path.join(__dirname, '../admin-files/notes.json');
+
+// Fonction pour charger les notes
+function loadNotes() {
+  try {
+    if (fs.existsSync(notesFile)) {
+      const data = fs.readFileSync(notesFile, 'utf8');
+      return JSON.parse(data);
+    }
+    return [];
+  } catch (error) {
+    console.error('Erreur chargement notes:', error);
+    return [];
+  }
+}
+
+// Fonction pour sauvegarder les notes
+function saveNotes(notes) {
+  try {
+    fs.writeFileSync(notesFile, JSON.stringify(notes, null, 2));
+    return true;
+  } catch (error) {
+    console.error('Erreur sauvegarde notes:', error);
+    return false;
+  }
+}
+
+// GET /api/notes - Récupérer toutes les notes
+app.get('/api/notes', authenticateToken, (req, res) => {
+  try {
+    const notes = loadNotes();
+    console.log(`📖 ${notes.length} notes récupérées`);
+    res.json({ success: true, data: notes });
+  } catch (error) {
+    console.error('Erreur récupération notes:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// POST /api/notes - Créer une nouvelle note
+app.post('/api/notes', authenticateToken, (req, res) => {
+  try {
+    const { title, content, category, tags, priority, isPrivate } = req.body;
+
+    if (!title || !content) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Le titre et le contenu sont obligatoires' 
+      });
+    }
+
+    const notes = loadNotes();
+    const newNote = {
+      id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+      title: title.trim(),
+      content: content.trim(),
+      category: category || 'général',
+      tags: tags || [],
+      priority: priority || 'normal',
+      isPrivate: isPrivate || false,
+      isPinned: false,
+      isArchived: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    notes.push(newNote);
+
+    if (saveNotes(notes)) {
+      console.log(`📝 Nouvelle note créée: "${title}"`);
+      res.status(201).json({ success: true, data: newNote });
+    } else {
+      throw new Error('Erreur sauvegarde de la note');
+    }
+
+  } catch (error) {
+    console.error('Erreur création note:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// PUT /api/notes/:id - Mettre à jour une note
+app.put('/api/notes/:id', authenticateToken, (req, res) => {
+  try {
+    const { id } = req.params;
+    const updates = req.body;
+
+    const notes = loadNotes();
+    const noteIndex = notes.findIndex(note => note.id === id);
+
+    if (noteIndex === -1) {
+      return res.status(404).json({ 
+        success: false, 
+        error: 'Note non trouvée' 
+      });
+    }
+
+    // Mettre à jour les champs fournis
+    const updatedNote = {
+      ...notes[noteIndex],
+      ...updates,
+      id, // Garder l'ID original
+      updatedAt: new Date().toISOString()
+    };
+
+    notes[noteIndex] = updatedNote;
+
+    if (saveNotes(notes)) {
+      console.log(`📝 Note mise à jour: "${updatedNote.title}"`);
+      res.json({ success: true, data: updatedNote });
+    } else {
+      throw new Error('Erreur sauvegarde de la note');
+    }
+
+  } catch (error) {
+    console.error('Erreur mise à jour note:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// DELETE /api/notes/:id - Supprimer une note
+app.delete('/api/notes/:id', authenticateToken, (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const notes = loadNotes();
+    const noteIndex = notes.findIndex(note => note.id === id);
+
+    if (noteIndex === -1) {
+      return res.status(404).json({ 
+        success: false, 
+        error: 'Note non trouvée' 
+      });
+    }
+
+    const deletedNote = notes[noteIndex];
+    notes.splice(noteIndex, 1);
+
+    if (saveNotes(notes)) {
+      console.log(`🗑️ Note supprimée: "${deletedNote.title}"`);
+      res.json({ success: true, message: 'Note supprimée avec succès' });
+    } else {
+      throw new Error('Erreur sauvegarde des notes');
+    }
+
+  } catch (error) {
+    console.error('Erreur suppression note:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// POST /api/notes/import - Importer des notes depuis un fichier JSON
+app.post('/api/notes/import', authenticateToken, (req, res) => {
+  try {
+    const { notes: importedNotes } = req.body;
+
+    if (!Array.isArray(importedNotes)) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Format d\'import invalide' 
+      });
+    }
+
+    const currentNotes = loadNotes();
+    let addedCount = 0;
+
+    importedNotes.forEach(noteData => {
+      if (noteData.title && noteData.content) {
+        const newNote = {
+          id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+          title: noteData.title.trim(),
+          content: noteData.content.trim(),
+          category: noteData.category || 'général',
+          tags: noteData.tags || [],
+          priority: noteData.priority || 'normal',
+          isPrivate: noteData.isPrivate || false,
+          isPinned: false,
+          isArchived: false,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        currentNotes.push(newNote);
+        addedCount++;
+      }
+    });
+
+    if (saveNotes(currentNotes)) {
+      console.log(`📥 ${addedCount} notes importées`);
+      res.json({ 
+        success: true, 
+        message: `${addedCount} notes importées avec succès`,
+        data: { imported: addedCount }
+      });
+    } else {
+      throw new Error('Erreur sauvegarde des notes importées');
+    }
+
+  } catch (error) {
+    console.error('Erreur import notes:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// GET /api/notes/export - Exporter toutes les notes
+app.get('/api/notes/export', authenticateToken, (req, res) => {
+  try {
+    const notes = loadNotes();
+    const exportData = {
+      exportDate: new Date().toISOString(),
+      notesCount: notes.length,
+      notes: notes
+    };
+
+    console.log(`📤 ${notes.length} notes exportées`);
+    res.json({ success: true, data: exportData });
+
+  } catch (error) {
+    console.error('Erreur export notes:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // Démarrage du serveur
 app.listen(PORT, () => {
   console.log(`🚀 Serveur API démarré sur http://localhost:${PORT}`);

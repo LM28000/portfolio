@@ -36,6 +36,7 @@ import { adminFileService, AdminFile } from '../utils/adminFileService';
 
 const AdminDashboard: React.FC = () => {
   const { user, logout, updateActivity } = useAdmin();
+  
   const [files, setFiles] = useState<AdminFile[]>([]);
   const [securityLogs, setSecurityLogs] = useState<SecurityLog[]>([]);
   const [selectedFile, setSelectedFile] = useState<AdminFile | null>(null);
@@ -1025,6 +1026,13 @@ const AdminDashboard: React.FC = () => {
               </button>
             )}
             
+            <button
+              onClick={() => window.location.href = '/admin/notes'}
+              className="flex items-center gap-2 px-3 py-2 text-sm bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors"
+            >
+              <FileText className="w-4 h-4" />
+              Système de Notes
+            </button>
             <button
               onClick={() => setShowLogs(!showLogs)}
               className="flex items-center gap-2 px-3 py-2 text-sm bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
