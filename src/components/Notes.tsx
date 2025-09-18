@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTheme } from '../contexts/ThemeContext';
 import {
   Plus,
   Search,
@@ -19,7 +20,9 @@ import {
   Menu,
   PanelLeftClose,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 export interface Note {
@@ -40,6 +43,7 @@ interface NotesProps {
 }
 
 const Notes: React.FC<NotesProps> = ({ className = '' }) => {
+  const { isDark, toggleTheme } = useTheme();
   const [notes, setNotes] = useState<Note[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -249,27 +253,46 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
   };
 
   return (
-    <div className={`h-full flex bg-gray-900 ${className}`}>
+    <div className={`h-full flex ${isDark ? 'bg-gray-900' : 'bg-gray-50'} ${className}`}>
       {/* Sidebar - Liste des notes (conditionnelle) */}
       {sidebarVisible && (
-        <div className="w-1/4 border-r border-gray-700 flex flex-col">{/* Réduit de w-1/3 à w-1/4 */}
+        <div className={`w-1/4 border-r flex flex-col ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>{/* Réduit de w-1/3 à w-1/4 */}
         {/* Header avec recherche et filtres */}
-        <div className="p-4 border-b border-gray-700">
+        <div className={`p-4 border-b ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
           <div className="flex items-center gap-2 mb-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${isDark ? 'text-gray-400' : 'text-gray-500'}`} />
               <input
                 type="text"
                 placeholder="Rechercher dans les notes..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  isDark 
+                    ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400' 
+                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
+                }`}
               />
             </div>
             <button
+              onClick={toggleTheme}
+              className={`p-2 rounded-lg transition-colors ${
+                isDark 
+                  ? 'bg-gray-700 hover:bg-gray-600 text-yellow-400 hover:text-yellow-300' 
+                  : 'bg-gray-200 hover:bg-gray-300 text-blue-600 hover:text-blue-700'
+              }`}
+              title={isDark ? 'Mode clair' : 'Mode sombre'}
+            >
+              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
+            <button
               onClick={() => setShowArchived(!showArchived)}
               className={`p-2 rounded-lg transition-colors ${
-                showArchived ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                showArchived 
+                  ? 'bg-blue-600 text-white' 
+                  : isDark 
+                    ? 'bg-gray-700 text-gray-400 hover:bg-gray-600' 
+                    : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
               }`}
               title={showArchived ? 'Voir les notes actives' : 'Voir les archives'}
             >
@@ -281,7 +304,9 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
           <div className="mb-3">
             <button
               onClick={() => setCategoriesCollapsed(!categoriesCollapsed)}
-              className="flex items-center gap-2 w-full p-1 text-xs text-gray-400 hover:text-white transition-colors"
+              className={`flex items-center gap-2 w-full p-1 text-xs transition-colors ${
+                isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
+              }`}
             >
               {categoriesCollapsed ? <ChevronRight className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
               <span className="font-medium">Catégories</span>
@@ -303,7 +328,9 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
                       className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs transition-colors ${
                         isActive 
                           ? 'bg-blue-600 text-white' 
-                          : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                          : isDark 
+                            ? 'bg-gray-800 text-gray-400 hover:bg-gray-700' 
+                            : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
                       }`}
                     >
                       <Icon className="w-3 h-3" />
@@ -321,7 +348,11 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="flex-1 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-white text-xs"
+              className={`flex-1 px-2 py-1 border rounded text-xs ${
+                isDark 
+                  ? 'bg-gray-800 border-gray-600 text-white' 
+                  : 'bg-white border-gray-300 text-gray-900'
+              }`}
             >
               <option value="date">Date</option>
               <option value="title">Titre</option>
@@ -329,7 +360,11 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
             </select>
             <button
               onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-              className="p-1 bg-gray-800 border border-gray-600 rounded text-gray-400 hover:text-white"
+              className={`p-1 border rounded transition-colors ${
+                isDark 
+                  ? 'bg-gray-800 border-gray-600 text-gray-400 hover:text-white' 
+                  : 'bg-white border-gray-300 text-gray-600 hover:text-gray-900'
+              }`}
             >
               {sortOrder === 'asc' ? <SortAsc className="w-3 h-3" /> : <SortDesc className="w-3 h-3" />}
             </button>
@@ -344,8 +379,14 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
               <div
                 key={note.id}
                 onClick={() => setSelectedNote(note)}
-                className={`p-3 border-b border-gray-700 cursor-pointer transition-colors hover:bg-gray-800 ${
-                  selectedNote?.id === note.id ? 'bg-gray-800 border-l-4 border-l-blue-500' : ''
+                className={`p-3 cursor-pointer transition-colors ${
+                  isDark 
+                    ? `border-b border-gray-700 hover:bg-gray-800 ${
+                        selectedNote?.id === note.id ? 'bg-gray-800 border-l-4 border-l-blue-500' : ''
+                      }`
+                    : `border-b border-gray-200 hover:bg-gray-50 ${
+                        selectedNote?.id === note.id ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
+                      }`
                 }`}
               >
                 <div className="flex items-start justify-between mb-2">
@@ -356,16 +397,18 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
                       {note.priority}
                     </span>
                   </div>
-                  <span className="text-xs text-gray-500">{formatDate(note.updatedAt)}</span>
+                  <span className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>{formatDate(note.updatedAt)}</span>
                 </div>
                 
-                <h3 className="font-medium text-white mb-1 line-clamp-1">{note.title}</h3>
-                <p className="text-sm text-gray-400 line-clamp-2">{note.content}</p>
+                <h3 className={`font-medium mb-1 line-clamp-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>{note.title}</h3>
+                <p className={`text-sm line-clamp-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{note.content}</p>
                 
                 {note.tags.length > 0 && (
                   <div className="flex flex-wrap gap-1 mt-2">
                     {note.tags.slice(0, 3).map((tag, index) => (
-                      <span key={index} className="px-2 py-0.5 bg-gray-700 text-gray-300 text-xs rounded">
+                      <span key={index} className={`px-2 py-0.5 text-xs rounded ${
+                        isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-700'
+                      }`}>
                         #{tag}
                       </span>
                     ))}
@@ -417,12 +460,16 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
         {selectedNote && !isEditing ? (
           /* Affichage de la note sélectionnée */
           <>
-            <div className="p-4 border-b border-gray-700 bg-gray-800/50">
+            <div className={`p-4 border-b ${isDark ? 'border-gray-700 bg-gray-800/50' : 'border-gray-200 bg-gray-50/50'}`}>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => setSidebarVisible(!sidebarVisible)}
-                    className="p-1 bg-gray-700 hover:bg-gray-600 rounded transition-colors text-gray-400 hover:text-white"
+                    className={`p-1 rounded transition-colors ${
+                      isDark 
+                        ? 'bg-gray-700 hover:bg-gray-600 text-gray-400 hover:text-white' 
+                        : 'bg-gray-200 hover:bg-gray-300 text-gray-600 hover:text-gray-900'
+                    }`}
                     title={sidebarVisible ? 'Masquer la liste' : 'Afficher la liste'}
                   >
                     {sidebarVisible ? <PanelLeftClose className="w-3 h-3" /> : <Menu className="w-3 h-3" />}
@@ -430,14 +477,18 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
                   {React.createElement(getCategoryIcon(selectedNote.category), {
                     className: `w-5 h-5 ${getCategoryColor(selectedNote.category)}`
                   })}
-                  <h1 className="text-xl font-semibold text-white">{selectedNote.title}</h1>
+                  <h1 className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>{selectedNote.title}</h1>
                   {selectedNote.isPinned && <Pin className="w-4 h-4 text-yellow-400" />}
                 </div>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => togglePin(selectedNote.id)}
                     className={`p-2 rounded-lg transition-colors ${
-                      selectedNote.isPinned ? 'bg-yellow-600 text-white' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                      selectedNote.isPinned 
+                        ? 'bg-yellow-600 text-white' 
+                        : isDark 
+                          ? 'bg-gray-700 text-gray-400 hover:bg-gray-600' 
+                          : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
                     }`}
                     title={selectedNote.isPinned ? 'Désépingler' : 'Épingler'}
                   >
@@ -455,14 +506,22 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
                         priority: selectedNote.priority
                       });
                     }}
-                    className="p-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors text-gray-400 hover:text-white"
+                    className={`p-2 rounded-lg transition-colors ${
+                      isDark 
+                        ? 'bg-gray-700 hover:bg-gray-600 text-gray-400 hover:text-white' 
+                        : 'bg-gray-200 hover:bg-gray-300 text-gray-600 hover:text-gray-900'
+                    }`}
                     title="Modifier"
                   >
                     <Edit className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => toggleArchive(selectedNote.id)}
-                    className="p-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors text-gray-400 hover:text-white"
+                    className={`p-2 rounded-lg transition-colors ${
+                      isDark 
+                        ? 'bg-gray-700 hover:bg-gray-600 text-gray-400 hover:text-white' 
+                        : 'bg-gray-200 hover:bg-gray-300 text-gray-600 hover:text-gray-900'
+                    }`}
                     title={selectedNote.isArchived ? 'Désarchiver' : 'Archiver'}
                   >
                     <Archive className="w-4 h-4" />
@@ -477,7 +536,7 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
                 </div>
               </div>
               
-              <div className="flex items-center gap-4 text-sm text-gray-400">
+              <div className={`flex items-center gap-4 text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                 <span className={`px-2 py-1 rounded ${getPriorityColor(selectedNote.priority)}`}>
                   Priorité {selectedNote.priority}
                 </span>
@@ -488,7 +547,9 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
               {selectedNote.tags.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-3">
                   {selectedNote.tags.map((tag, index) => (
-                    <span key={index} className="px-2 py-1 bg-gray-700 text-gray-300 text-sm rounded">
+                    <span key={index} className={`px-2 py-1 text-sm rounded ${
+                      isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-700'
+                    }`}>
                       #{tag}
                     </span>
                   ))}
@@ -498,7 +559,9 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
             
             <div className="flex-1 p-4 overflow-y-auto">
               <div className="prose prose-invert max-w-none">
-                <pre className="whitespace-pre-wrap text-gray-300 leading-relaxed">
+                <pre className={`whitespace-pre-wrap leading-relaxed ${
+                  isDark ? 'text-gray-300' : 'text-gray-700'
+                }`}>
                   {selectedNote.content || 'Aucun contenu'}
                 </pre>
               </div>
@@ -507,7 +570,7 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
         ) : isEditing ? (
           /* Formulaire d'édition/création */
           <>
-            <div className="p-2 border-b border-gray-700 bg-gray-800/50">
+            <div className={`p-2 border-b ${isDark ? 'border-gray-700 bg-gray-800/50' : 'border-gray-200 bg-gray-50/50'}`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <button
@@ -517,7 +580,7 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
                   >
                     {sidebarVisible ? <PanelLeftClose className="w-3 h-3" /> : <Menu className="w-3 h-3" />}
                   </button>
-                  <h2 className="text-base font-medium text-white">
+                  <h2 className={`text-base font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
                     {selectedNote ? 'Modifier la note' : 'Nouvelle note'}
                   </h2>
                 </div>
@@ -563,7 +626,9 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
                         });
                       }
                     }}
-                    className="flex items-center gap-2 px-3 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg transition-colors text-white"
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors text-white ${
+                      isDark ? 'bg-gray-600 hover:bg-gray-700' : 'bg-gray-500 hover:bg-gray-600'
+                    }`}
                   >
                     <X className="w-4 h-4" />
                     Annuler
@@ -581,14 +646,22 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                     placeholder="Titre de la note..."
-                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg font-medium"
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg font-medium ${
+                      isDark 
+                        ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400' 
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
+                    }`}
                   />
                   
                   <div className="grid grid-cols-4 gap-2">
                     <select
                       value={formData.category}
                       onChange={(e) => setFormData({ ...formData, category: e.target.value as Note['category'] })}
-                      className="px-2 py-1 bg-gray-800 border border-gray-600 rounded text-white text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className={`px-2 py-1 border rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+                        isDark 
+                          ? 'bg-gray-800 border-gray-600 text-white' 
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
                     >
                       {categories.filter(c => c.id !== 'all').map(category => (
                         <option key={category.id} value={category.id}>
@@ -600,7 +673,11 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
                     <select
                       value={formData.priority}
                       onChange={(e) => setFormData({ ...formData, priority: e.target.value as Note['priority'] })}
-                      className="px-2 py-1 bg-gray-800 border border-gray-600 rounded text-white text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className={`px-2 py-1 border rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+                        isDark 
+                          ? 'bg-gray-800 border-gray-600 text-white' 
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
                     >
                       <option value="low">🟢 Faible</option>
                       <option value="medium">🟡 Normale</option>
@@ -612,7 +689,11 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
                       value={formData.tags}
                       onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
                       placeholder="Tags..."
-                      className="col-span-2 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-white text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className={`col-span-2 px-2 py-1 border rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+                        isDark 
+                          ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400' 
+                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
+                      }`}
                     />
                   </div>
                 </div>
@@ -623,7 +704,11 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
                   onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                   placeholder="Écrivez votre note ici..."
                   rows={25}
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y font-mono min-h-[500px]"
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y font-mono min-h-[500px] ${
+                    isDark 
+                      ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400' 
+                      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
+                  }`}
                 />
               </div>
             </div>
@@ -631,20 +716,24 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
         ) : (
           /* État initial - aucune note sélectionnée */
           <div className="flex-1 flex flex-col">
-            <div className="p-2 border-b border-gray-700">
+            <div className={`p-2 ${isDark ? 'border-b border-gray-700' : 'border-b border-gray-200'}`}>
               <button
                 onClick={() => setSidebarVisible(!sidebarVisible)}
-                className="p-1 bg-gray-700 hover:bg-gray-600 rounded transition-colors text-gray-400 hover:text-white"
+                className={`p-1 rounded transition-colors ${
+                  isDark 
+                    ? 'bg-gray-700 hover:bg-gray-600 text-gray-400 hover:text-white' 
+                    : 'bg-gray-200 hover:bg-gray-300 text-gray-600 hover:text-gray-900'
+                }`}
                 title={sidebarVisible ? 'Masquer la liste' : 'Afficher la liste'}
               >
                 {sidebarVisible ? <PanelLeftClose className="w-3 h-3" /> : <Menu className="w-3 h-3" />}
               </button>
             </div>
-            <div className="flex-1 flex items-center justify-center bg-gray-800/20">
+            <div className={`flex-1 flex items-center justify-center ${isDark ? 'bg-gray-800/20' : 'bg-gray-100/50'}`}>
               <div className="text-center">
-              <FileText className="w-16 h-16 mx-auto text-gray-600 mb-4" />
-              <h3 className="text-xl font-medium text-gray-400 mb-2">Système de prise de notes</h3>
-              <p className="text-gray-500 mb-4">Organisez vos idées, cours et notes professionnelles</p>
+              <FileText className={`w-16 h-16 mx-auto mb-4 ${isDark ? 'text-gray-600' : 'text-gray-400'}`} />
+              <h3 className={`text-xl font-medium mb-2 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>Système de prise de notes</h3>
+              <p className={`mb-4 ${isDark ? 'text-gray-500' : 'text-gray-600'}`}>Organisez vos idées, cours et notes professionnelles</p>
               <button
                 onClick={() => {
                   setSelectedNote(null);
