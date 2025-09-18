@@ -26,7 +26,8 @@ import {
   Cloud,
   Folder,
   Edit,
-  Save
+  Save,
+  Archive
 } from 'lucide-react';
 import { useAdmin } from '../contexts/AdminContext';
 import { AdminAuthUtils, SecurityLog } from '../utils/adminAuth';
@@ -723,6 +724,76 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
+  const handleDownloadCategory = async (category: string) => {
+    try {
+      const categoryFiles = files.filter(file => file.category === category);
+      
+      if (categoryFiles.length === 0) {
+        alert('Aucun fichier trouvé dans cette catégorie');
+        return;
+      }
+
+      const confirmMessage = `Télécharger ${categoryFiles.length} fichier(s) de la catégorie "${category}" en archive ZIP ?`;
+      if (!confirm(confirmMessage)) {
+        return;
+      }
+
+      // Utiliser la nouvelle méthode ZIP
+      if (useServerStorage) {
+        await adminFileService.downloadCategoryAsZip(category);
+      } else {
+        // Fallback: téléchargement séquentiel pour localStorage
+        let downloadedCount = 0;
+        for (const file of categoryFiles) {
+          try {
+            adminFileService.downloadFromLocalStorage(file.id, file.name);
+            downloadedCount++;
+          } catch (error) {
+            console.error(`Erreur lors du téléchargement de ${file.name}:`, error);
+          }
+        }
+        alert(`${downloadedCount}/${categoryFiles.length} fichier(s) téléchargé(s) individuellement!`);
+        AdminAuthUtils.logSecurityEvent('file_download', `Téléchargement localStorage catégorie ${category}: ${downloadedCount}/${categoryFiles.length} fichiers`);
+        return;
+      }
+
+      AdminAuthUtils.logSecurityEvent('file_download', `Téléchargement ZIP catégorie ${category}: ${categoryFiles.length} fichiers`);
+      alert(`Archive ZIP téléchargée avec succès! (${categoryFiles.length} fichier(s))`);
+    } catch (error) {
+      console.error('Erreur lors du téléchargement de la catégorie:', error);
+      alert('Erreur lors du téléchargement de la catégorie: ' + (error instanceof Error ? error.message : 'Erreur inconnue'));
+    }
+  };
+
+  const handleDownloadAllCategories = async () => {
+    try {
+      const totalFiles = files.length;
+      
+      if (totalFiles === 0) {
+        alert('Aucun fichier à télécharger');
+        return;
+      }
+
+      const confirmMessage = `Télécharger tous vos documents (${totalFiles} fichiers) organisés par dossiers dans une archive ZIP ?`;
+      if (!confirm(confirmMessage)) {
+        return;
+      }
+
+      // Utiliser la nouvelle méthode pour télécharger tout organisé par dossiers
+      if (useServerStorage) {
+        await adminFileService.downloadAllCategoriesAsZip();
+        AdminAuthUtils.logSecurityEvent('file_download', `Téléchargement ZIP complet: ${totalFiles} fichiers`);
+        alert(`Archive complète téléchargée avec succès: ${totalFiles} fichier(s) organisés par dossiers`);
+      } else {
+        // Fallback: créer une structure organisée en localStorage
+        alert('Téléchargement organisé disponible uniquement en mode serveur. Téléchargement individuel par catégorie recommandé.');
+      }
+    } catch (error) {
+      console.error('Erreur lors du téléchargement complet:', error);
+      alert('Erreur lors du téléchargement complet: ' + (error instanceof Error ? error.message : 'Erreur inconnue'));
+    }
+  };
+
   const handleZoom = (delta: number) => {
     setZoom(prev => Math.max(25, Math.min(300, prev + delta)));
   };
@@ -1137,23 +1208,55 @@ const AdminDashboard: React.FC = () => {
             {/* Categories */}
             <div>
               <h3 className="text-sm font-medium text-gray-300 mb-3">Catégories</h3>
+              
+              {/* Bouton téléchargement complet */}
+              <div className="mb-4">
+                <button
+                  onClick={handleDownloadAllCategories}
+                  className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 rounded-lg transition-all duration-200 font-medium shadow-lg text-white"
+                  title="Télécharger tous les documents organisés par dossiers"
+                >
+                  <Archive className="w-4 h-4" />
+                  Télécharger tout en ZIP
+                </button>
+              </div>
+              
               <div className="space-y-1">
                 {categories.map((category) => {
                   const Icon = category.icon;
                   const isActive = selectedCategory === category.id;
+                  const categoryFilesCount = files.filter(f => f.category === category.id).length;
+                  
                   return (
-                    <button
-                      key={category.id}
-                      onClick={() => setSelectedCategory(category.id)}
-                      className={`flex items-center gap-3 w-full px-3 py-2 text-sm rounded-lg transition-colors ${
-                        isActive 
-                          ? 'bg-blue-600 text-white' 
-                          : 'text-gray-400 hover:text-white hover:bg-gray-700'
-                      }`}
-                    >
-                      <Icon className="w-4 h-4" />
-                      {category.name}
-                    </button>
+                    <div key={category.id} className="flex items-center gap-1">
+                      <button
+                        onClick={() => setSelectedCategory(category.id)}
+                        className={`flex items-center gap-3 flex-1 px-3 py-2 text-sm rounded-lg transition-colors ${
+                          isActive 
+                            ? 'bg-blue-600 text-white' 
+                            : 'text-gray-400 hover:text-white hover:bg-gray-700'
+                        }`}
+                      >
+                        <Icon className="w-4 h-4" />
+                        <span className="flex-1 text-left">{category.name}</span>
+                        {categoryFilesCount > 0 && (
+                          <span className="text-xs bg-gray-600 px-1.5 py-0.5 rounded">
+                            {categoryFilesCount}
+                          </span>
+                        )}
+                      </button>
+                      
+                      {/* Bouton ZIP pour télécharger toute la catégorie */}
+                      {category.id !== 'all' && categoryFilesCount > 0 && (
+                        <button
+                          onClick={() => handleDownloadCategory(category.id)}
+                          className="p-2 text-gray-400 hover:text-blue-400 hover:bg-gray-700 rounded-lg transition-colors"
+                          title={`Télécharger tous les fichiers de ${category.name} en ZIP`}
+                        >
+                          <Archive className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
                   );
                 })}
               </div>

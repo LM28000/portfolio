@@ -19,6 +19,7 @@ if (fs.existsSync(envLocalPath)) {
 const express = require('express');
 const multer = require('multer');
 const cors = require('cors');
+const archiver = require('archiver');
 
 const app = express();
 const PORT = process.env.API_PORT || 8080;
@@ -320,6 +321,134 @@ app.get('/api/preview', (req, res) => {
     res.sendFile(filePath);
 
   } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// GET /api/download/category/:category - Télécharger tous les fichiers d'une catégorie en ZIP
+app.get('/api/download/category/:category', authenticateToken, async (req, res) => {
+  try {
+    const category = req.params.category;
+    console.log(`📦 Téléchargement ZIP catégorie: ${category}`);
+    
+    const files = loadMetadata();
+    const categoryFiles = files.filter(f => f.category === category);
+    
+    if (categoryFiles.length === 0) {
+      return res.status(404).json({ success: false, error: 'Aucun fichier trouvé dans cette catégorie' });
+    }
+
+    console.log(`📁 ${categoryFiles.length} fichier(s) trouvé(s) dans la catégorie ${category}`);
+
+    // Créer l'archive ZIP
+    const archive = archiver('zip', {
+      zlib: { level: 9 } // Compression maximale
+    });
+
+    // Headers pour le téléchargement du ZIP
+    const zipFileName = `${category}_documents_${new Date().toISOString().split('T')[0]}.zip`;
+    res.setHeader('Content-Type', 'application/zip');
+    res.setHeader('Content-Disposition', `attachment; filename="${zipFileName}"`);
+
+    // Pipe l'archive vers la réponse
+    archive.pipe(res);
+
+    // Ajouter chaque fichier à l'archive
+    let addedFiles = 0;
+    for (const file of categoryFiles) {
+      const filePath = path.join(__dirname, '../admin-files', file.filePath);
+      
+      if (fs.existsSync(filePath)) {
+        archive.file(filePath, { name: file.name });
+        addedFiles++;
+        console.log(`  ✅ Ajouté: ${file.name}`);
+      } else {
+        console.log(`  ❌ Fichier manquant: ${file.name} (${filePath})`);
+      }
+    }
+
+    if (addedFiles === 0) {
+      return res.status(404).json({ success: false, error: 'Aucun fichier physique trouvé' });
+    }
+
+    // Finaliser l'archive
+    archive.finalize();
+    
+    console.log(`📦 ZIP créé avec succès: ${addedFiles}/${categoryFiles.length} fichiers`);
+
+  } catch (error) {
+    console.error('Erreur lors de la création du ZIP:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// GET /api/download/all-organized - Télécharger tous les fichiers organisés par dossiers en ZIP
+app.get('/api/download/all-organized', authenticateToken, async (req, res) => {
+  try {
+    console.log(`📦 Téléchargement ZIP organisé complet`);
+    
+    const files = loadMetadata();
+    
+    if (files.length === 0) {
+      return res.status(404).json({ success: false, error: 'Aucun fichier trouvé' });
+    }
+
+    console.log(`📁 ${files.length} fichier(s) trouvé(s) pour l'archive organisée`);
+
+    // Créer l'archive ZIP
+    const archive = archiver('zip', {
+      zlib: { level: 9 } // Compression maximale
+    });
+
+    // Headers pour le téléchargement du ZIP
+    const zipFileName = `documents_organises_${new Date().toISOString().split('T')[0]}.zip`;
+    res.setHeader('Content-Type', 'application/zip');
+    res.setHeader('Content-Disposition', `attachment; filename="${zipFileName}"`);
+
+    // Pipe l'archive vers la réponse
+    archive.pipe(res);
+
+    // Grouper les fichiers par catégorie
+    const filesByCategory = {};
+    files.forEach(file => {
+      const category = file.category || 'other';
+      if (!filesByCategory[category]) {
+        filesByCategory[category] = [];
+      }
+      filesByCategory[category].push(file);
+    });
+
+    // Ajouter chaque fichier à l'archive organisé par dossier
+    let addedFiles = 0;
+    for (const [category, categoryFiles] of Object.entries(filesByCategory)) {
+      console.log(`📂 Dossier ${category}: ${categoryFiles.length} fichier(s)`);
+      
+      for (const file of categoryFiles) {
+        const filePath = path.join(__dirname, '../admin-files', file.filePath);
+        
+        if (fs.existsSync(filePath)) {
+          // Ajouter le fichier dans le bon dossier de catégorie
+          const archivePath = `${category}/${file.name}`;
+          archive.file(filePath, { name: archivePath });
+          addedFiles++;
+          console.log(`  ✅ Ajouté: ${archivePath}`);
+        } else {
+          console.log(`  ❌ Fichier manquant: ${category}/${file.name} (${filePath})`);
+        }
+      }
+    }
+
+    if (addedFiles === 0) {
+      return res.status(404).json({ success: false, error: 'Aucun fichier physique trouvé' });
+    }
+
+    // Finaliser l'archive
+    archive.finalize();
+    
+    console.log(`📦 ZIP organisé créé avec succès: ${addedFiles}/${files.length} fichiers dans ${Object.keys(filesByCategory).length} dossiers`);
+
+  } catch (error) {
+    console.error('Erreur lors de la création du ZIP organisé:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 });

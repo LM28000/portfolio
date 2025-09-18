@@ -239,6 +239,102 @@ class AdminFileService {
   }
 
   /**
+   * Télécharger tous les fichiers d'une catégorie sous forme de ZIP
+   */
+  async downloadCategoryAsZip(category: string): Promise<void> {
+    try {
+      const response = await fetch(`${this.baseUrl}/download/category/${encodeURIComponent(category)}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${this.token}`
+        }
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Erreur HTTP: ${response.status}`);
+      }
+
+      // Créer un blob à partir de la réponse
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      
+      // Déclencher le téléchargement
+      const link = document.createElement('a');
+      link.href = url;
+      
+      // Extraire le nom du fichier des headers ou utiliser un nom par défaut
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let fileName = `${category}_documents.zip`;
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename="(.+)"/);
+        if (match) {
+          fileName = match[1];
+        }
+      }
+      
+      document.body.appendChild(link);
+      link.download = fileName;
+      link.click();
+      document.body.removeChild(link);
+      
+      // Nettoyer l'URL
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Erreur downloadCategoryAsZip:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Télécharger tous les fichiers organisés par dossiers de catégories en ZIP
+   */
+  async downloadAllCategoriesAsZip(): Promise<void> {
+    try {
+      const response = await fetch(`${this.baseUrl}/download/all-organized`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${this.token}`
+        }
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Erreur HTTP: ${response.status}`);
+      }
+
+      // Créer un blob à partir de la réponse
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      
+      // Déclencher le téléchargement
+      const link = document.createElement('a');
+      link.href = url;
+      
+      // Extraire le nom du fichier des headers ou utiliser un nom par défaut
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let fileName = `documents_organises_${new Date().toISOString().split('T')[0]}.zip`;
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename="(.+)"/);
+        if (match) {
+          fileName = match[1];
+        }
+      }
+      
+      document.body.appendChild(link);
+      link.download = fileName;
+      link.click();
+      document.body.removeChild(link);
+      
+      // Nettoyer l'URL
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Erreur downloadAllCategoriesAsZip:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Tester la connectivité avec l'API serveur
    */
   async testConnection(): Promise<boolean> {
