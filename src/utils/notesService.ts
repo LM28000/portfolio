@@ -2,7 +2,7 @@
  * Service pour la gestion des notes avec support serveur et localStorage
  */
 
-import { Note } from '../components/Notes';
+import { Note } from '../types/Note';
 
 export interface ApiResponse<T = any> {
   success: boolean;
@@ -300,7 +300,7 @@ class NotesService {
     return notes.filter(note =>
       note.title.toLowerCase().includes(term) ||
       note.content.toLowerCase().includes(term) ||
-      note.tags.some(tag => tag.toLowerCase().includes(term)) ||
+      note.tags.some((tag: string) => tag.toLowerCase().includes(term)) ||
       note.category.toLowerCase().includes(term)
     );
   }
@@ -329,7 +329,7 @@ class NotesService {
           comparison = a.title.localeCompare(b.title);
           break;
         case 'priority':
-          const priorityOrder = { high: 3, medium: 2, low: 1 };
+          const priorityOrder: Record<Note['priority'], number> = { high: 3, medium: 2, low: 1 };
           comparison = priorityOrder[b.priority] - priorityOrder[a.priority];
           break;
         case 'date':
