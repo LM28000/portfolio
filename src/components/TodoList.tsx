@@ -263,9 +263,15 @@ const TodoList: React.FC = () => {
           </div>
           <button
             onClick={() => {
+              console.log('🔵 Clic sur Nouvelle tâche');
               setIsEditing(true);
               setIsModalOpen(true);
               resetFormForNewTodo();
+              console.log('🔵 État après clic:', {
+                isModalOpen: true,
+                isEditing: true,
+                selectedTodo: null
+              });
             }}
             className="mt-4 md:mt-0 flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors text-white font-medium"
           >
@@ -464,13 +470,17 @@ const TodoList: React.FC = () => {
       </div>
 
       {/* Modal d'édition */}
+      {(() => {
+        console.log('🟢 Vérification modale:', { isModalOpen, selectedTodo, isEditing });
+        return null;
+      })()}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className={`w-full max-w-4xl h-[90vh] rounded-xl shadow-2xl flex flex-col ${
+          <div className={`w-full max-w-4xl max-h-[95vh] rounded-xl shadow-2xl flex flex-col ${
             isDark ? 'bg-gray-800' : 'bg-white'
           }`}>
             {/* Header de la modal */}
-            <div className={`flex items-center justify-between p-6 border-b ${
+            <div className={`flex items-center justify-between p-6 border-b flex-shrink-0 ${
               isDark ? 'border-gray-700' : 'border-gray-200'
             }`}>
               <h2 className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
@@ -500,7 +510,7 @@ const TodoList: React.FC = () => {
             </div>
 
             {/* Contenu de la modal */}
-            <div className="flex flex-col flex-1">
+            <div className="flex-1 flex flex-col min-h-0">
               <div className="flex-1 p-6 overflow-y-auto">
                 {/* Titre */}
                 <div className="mb-6">
@@ -682,7 +692,7 @@ const TodoList: React.FC = () => {
                   onClick={async () => {
                     if (selectedTodo) {
                       await updateTodo(selectedTodo.id, {
-                        title: formData.title,
+                        title: formData.title || 'Tâche sans titre',
                         description: formData.description,
                         status: formData.status,
                         priority: formData.priority,
@@ -692,12 +702,15 @@ const TodoList: React.FC = () => {
                         isImportant: formData.isImportant
                       });
                     } else {
+                      // Pour les nouvelles tâches, utiliser un titre par défaut si vide
+                      const taskTitle = formData.title.trim() || 'Nouvelle tâche';
+                      const newFormData = { ...formData, title: taskTitle };
+                      setFormData(newFormData);
                       await createTodo();
                     }
                     closeModal();
                   }}
                   className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors text-white font-medium"
-                  disabled={!formData.title.trim()}
                 >
                   {selectedTodo ? 'Sauvegarder' : 'Créer'}
                 </button>

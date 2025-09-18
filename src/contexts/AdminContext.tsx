@@ -27,8 +27,8 @@ interface AdminProviderProps {
 const ADMIN_CONFIG = {
   // Mot de passe récupéré depuis les variables d'environnement ou fallback dev
   PASSWORD_HASH: import.meta.env.VITE_ADMIN_PASSWORD || 'default-dev-password',
-  SESSION_DURATION: 30 * 24 * 60 * 60 * 1000, // 30 jours en millisecondes (session très longue)
-  INACTIVITY_TIMEOUT: 7 * 24 * 60 * 60 * 1000, // 7 jours d'inactivité (très tolérant)
+  SESSION_DURATION: 365 * 24 * 60 * 60 * 1000, // 1 an - session quasi permanente
+  INACTIVITY_TIMEOUT: 365 * 24 * 60 * 60 * 1000, // 1 an - pas d'expiration par inactivité
   STORAGE_KEY: 'admin-session-lm',
   ACTIVITY_KEY: 'admin-activity-lm'
 };
@@ -48,14 +48,9 @@ export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
   useEffect(() => {
     checkExistingSession();
     
-    // Nettoyage automatique des sessions expirées (vérification moins fréquente)
-    const interval = setInterval(() => {
-      if (isSessionExpired()) {
-        logout();
-      }
-    }, 10 * 60000); // Vérifier toutes les 10 minutes au lieu de chaque minute
-
-    return () => clearInterval(interval);
+    // SUPPRIMÉ: Nettoyage automatique des sessions expirées 
+    // Pour éviter les déconnexions automatiques, nous ne vérifions plus l'expiration
+    // La session ne se termine que lors d'une déconnexion manuelle
   }, []);
 
   // Vérifier s'il existe une session valide
@@ -70,26 +65,24 @@ export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
 
       const session = JSON.parse(sessionData);
       const loginTime = new Date(session.loginTime);
-      const now = new Date();
 
-      // Vérifier si la session n'est pas expirée
-      if (now.getTime() - loginTime.getTime() < ADMIN_CONFIG.SESSION_DURATION) {
-        setUser({
-          id: session.id,
-          username: session.username,
-          loginTime: loginTime,
-          lastActivity: new Date(session.lastActivity || session.loginTime)
-        });
-        setIsAuthenticated(true);
-        updateActivity();
-      } else {
-        // Session expirée, nettoyer
-        localStorage.removeItem(ADMIN_CONFIG.STORAGE_KEY);
-        localStorage.removeItem(ADMIN_CONFIG.ACTIVITY_KEY);
-      }
+      // Session valide trouvée - pas de vérification d'expiration
+      // La session reste active jusqu'à déconnexion manuelle
+      setUser({
+        id: session.id,
+        username: session.username,
+        loginTime: loginTime,
+        lastActivity: new Date(session.lastActivity || session.loginTime)
+      });
+      setIsAuthenticated(true);
+      updateActivity();
+      
+      console.log(`[ADMIN] Session restaurée pour ${session.username}`);
     } catch (error) {
       console.error('Erreur lors de la vérification de session:', error);
-      logout();
+      // En cas d'erreur, nettoyer et redemander connexion
+      localStorage.removeItem(ADMIN_CONFIG.STORAGE_KEY);
+      localStorage.removeItem(ADMIN_CONFIG.ACTIVITY_KEY);
     } finally {
       setIsLoading(false);
     }
