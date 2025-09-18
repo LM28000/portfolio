@@ -27,6 +27,7 @@ export interface FileMetadata {
 export type DocumentCategory = 
   | 'administratif'
   | 'financier' 
+  | 'finance'
   | 'certificat'
   | 'contrat'
   | 'personnel'

@@ -27,7 +27,8 @@ import {
   Folder,
   Edit,
   Save,
-  Archive
+  Archive,
+  DollarSign
 } from 'lucide-react';
 import { useAdmin } from '../contexts/AdminContext';
 import { AdminAuthUtils, SecurityLog } from '../utils/adminAuth';
@@ -74,6 +75,7 @@ const AdminDashboard: React.FC = () => {
     { id: 'logement', name: 'Documents logement', icon: User },
     { id: 'transport', name: 'Documents transport', icon: Shield },
     { id: 'sante', name: 'Documents santé', icon: Activity },
+    { id: 'finance', name: 'Documents financiers', icon: DollarSign },
     { id: 'legal', name: 'Documents légaux', icon: Lock },
      { id: 'micro-entreprise', name: 'Documents micro-entreprise', icon: Shield },
     // { id: 'identity', name: 'Pièces d\'identité', icon: User },
@@ -1094,6 +1096,7 @@ const AdminDashboard: React.FC = () => {
                           <option value="logement">Logement</option>
                           <option value="transport">Transport</option>
                           <option value="sante">Santé</option>
+                          <option value="finance">Finance</option>
                           <option value="legal">Légal</option>
                           <option value="micro-entreprise">Micro-entreprise</option>
                           <option value="other">Autre</option>
