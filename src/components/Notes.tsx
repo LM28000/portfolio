@@ -811,7 +811,7 @@ const Notes: React.FC = () => {
                 </div>
 
                 {/* Boutons d'action fixes en bas */}
-                <div className={`flex-shrink-0 flex items-center justify-end gap-3 p-6 border-t ${
+                <div className={`flex-shrink-0 flex items-center justify-end gap-3 p-6 py-2 border-t ${
                   isDark ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-gray-50'
                 }`}>
                   <button
