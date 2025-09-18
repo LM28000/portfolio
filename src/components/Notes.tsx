@@ -316,7 +316,7 @@ const Notes: React.FC = () => {
         console.log('Déclenchement sauvegarde automatique');
         autoSaveNote();
         autoSaveTimeoutRef.current = null;
-      }, 2000);
+      }, 500);
     }
   }, [formData.title, formData.content, formData.category, formData.tags, formData.priority, selectedNote, isEditing, autoSaveNote]);
 
@@ -845,7 +845,7 @@ const Notes: React.FC = () => {
                         : 'text-gray-600 hover:text-gray-700 hover:bg-gray-100'
                     }`}
                   >
-                    Annuler
+                    Fermer
                   </button>
                   {/* Bouton Créer uniquement pour les nouvelles notes */}
                   {!selectedNote && (
