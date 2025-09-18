@@ -6,6 +6,7 @@ import Portfolio from './Portfolio';
 import AdminRoute from './admin/AdminRoute';
 import AdminDashboard from './admin/AdminDashboard';
 import NotesPage from './pages/NotesPage';
+import TodoPage from './pages/TodoPage';
 
 function App() {
   return (
@@ -33,6 +34,16 @@ function App() {
                 element={
                   <AdminRoute>
                     <NotesPage />
+                  </AdminRoute>
+                } 
+              />
+              
+              {/* Système de todos sécurisé */}
+              <Route 
+                path="/admin/todos" 
+                element={
+                  <AdminRoute>
+                    <TodoPage />
                   </AdminRoute>
                 } 
               />

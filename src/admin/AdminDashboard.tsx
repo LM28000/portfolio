@@ -1034,6 +1034,13 @@ const AdminDashboard: React.FC = () => {
               Système de Notes
             </button>
             <button
+              onClick={() => window.location.href = '/admin/todos'}
+              className="flex items-center gap-2 px-3 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors"
+            >
+              <CheckCircle className="w-4 h-4" />
+              Gestionnaire de Tâches
+            </button>
+            <button
               onClick={() => setShowLogs(!showLogs)}
               className="flex items-center gap-2 px-3 py-2 text-sm bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
             >
