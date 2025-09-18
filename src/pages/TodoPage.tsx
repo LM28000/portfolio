@@ -20,13 +20,13 @@ const TodoPage: React.FC = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <button
-                onClick={() => navigate('/')}
+                onClick={() => navigate('/admin')}
                 className={`p-2 rounded-lg transition-colors ${
                   isDark 
                     ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' 
                     : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
                 }`}
-                title="Retour à l'accueil"
+                title="Retour à l'admin"
               >
                 <ArrowLeft className="w-5 h-5" />
               </button>
