@@ -18,6 +18,90 @@ import {
   Archive
 } from 'lucide-react';
 
+// Composant pour afficher du contenu avec checkbox interactives
+interface NoteContentProps {
+  content: string;
+  onContentChange?: (newContent: string) => void;
+  readonly?: boolean;
+}
+
+const NoteContent: React.FC<NoteContentProps> = ({ content, onContentChange, readonly = true }) => {
+  // Fonction pour transformer les checkbox markdown en HTML interactif
+  const renderContentWithCheckboxes = (text: string) => {
+    const lines = text.split('\n');
+    
+    return lines.map((line, index) => {
+      // Détecter les checkbox markdown: [ ] ou [x] ou [X]
+      const checkboxMatch = line.match(/^(\s*)(- )?\[([ xX])\](.*)$/);
+      
+      if (checkboxMatch) {
+        const [, indent, bullet, checkState, content] = checkboxMatch;
+        const isChecked = checkState.toLowerCase() === 'x';
+        
+        return (
+          <div key={index} className="flex items-start gap-2 py-1">
+            <div style={{ marginLeft: `${indent.length * 8}px` }} className="flex items-center gap-2">
+              {!readonly ? (
+                <input
+                  type="checkbox"
+                  checked={isChecked}
+                  onChange={(e) => {
+                    if (onContentChange) {
+                      const newLines = [...lines];
+                      const newCheckState = e.target.checked ? 'x' : ' ';
+                      newLines[index] = `${indent}${bullet || ''}[${newCheckState}]${content}`;
+                      onContentChange(newLines.join('\n'));
+                    }
+                  }}
+                  className="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-2"
+                />
+              ) : (
+                <div 
+                  className={`w-4 h-4 border-2 rounded flex items-center justify-center cursor-pointer transition-colors ${
+                    isChecked 
+                      ? 'bg-blue-600 border-blue-600' 
+                      : 'border-gray-400 hover:border-blue-400'
+                  }`}
+                  onClick={() => {
+                    if (onContentChange) {
+                      const newLines = [...lines];
+                      const newCheckState = isChecked ? ' ' : 'x';
+                      newLines[index] = `${indent}${bullet || ''}[${newCheckState}]${content}`;
+                      onContentChange(newLines.join('\n'));
+                    }
+                  }}
+                >
+                  {isChecked && (
+                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  )}
+                </div>
+              )}
+              <span className={`${isChecked ? 'line-through text-gray-500' : 'text-gray-300'}`}>
+                {content.trim()}
+              </span>
+            </div>
+          </div>
+        );
+      }
+      
+      // Ligne normale
+      return (
+        <div key={index} className="py-0.5">
+          <span className="text-gray-300">{line}</span>
+        </div>
+      );
+    });
+  };
+
+  return (
+    <div className="space-y-1">
+      {renderContentWithCheckboxes(content)}
+    </div>
+  );
+};
+
 export interface Note {
   id: string;
   title: string;
@@ -68,6 +152,11 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
   useEffect(() => {
     loadNotes();
   }, []);
+
+  // Fermer le mode édition quand on change de note sélectionnée
+  useEffect(() => {
+    setIsEditing(false);
+  }, [selectedNote]);
 
   const loadNotes = () => {
     try {
@@ -337,7 +426,12 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
                 </div>
                 
                 <h3 className="font-medium text-white mb-1 line-clamp-1">{note.title}</h3>
-                <p className="text-sm text-gray-400 line-clamp-2">{note.content}</p>
+                <p className="text-sm text-gray-400 line-clamp-2">
+                  <NoteContent 
+                    content={note.content}
+                    readonly={true}
+                  />
+                </p>
                 
                 {note.tags.length > 0 && (
                   <div className="flex flex-wrap gap-1 mt-2">
@@ -413,7 +507,17 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
                     <Pin className="w-4 h-4" />
                   </button>
                   <button
-                    onClick={() => setIsEditing(true)}
+                    onClick={() => {
+                      setIsEditing(true);
+                      // Charger les données de la note dans le formulaire
+                      setFormData({
+                        title: selectedNote.title,
+                        content: selectedNote.content,
+                        category: selectedNote.category,
+                        tags: selectedNote.tags.join(', '),
+                        priority: selectedNote.priority
+                      });
+                    }}
                     className="p-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors text-gray-400 hover:text-white"
                     title="Modifier"
                   >
@@ -457,9 +561,14 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
             
             <div className="flex-1 p-4 overflow-y-auto">
               <div className="prose prose-invert max-w-none">
-                <pre className="whitespace-pre-wrap text-gray-300 leading-relaxed">
-                  {selectedNote.content || 'Aucun contenu'}
-                </pre>
+                <NoteContent 
+                  content={selectedNote.content || 'Aucun contenu'}
+                  onContentChange={(newContent) => {
+                    // Mettre à jour la note avec le nouveau contenu
+                    updateNote(selectedNote.id, { content: newContent });
+                  }}
+                  readonly={false}
+                />
               </div>
             </div>
           </>
@@ -588,13 +697,70 @@ const Notes: React.FC<NotesProps> = ({ className = '' }) => {
                 
                 {/* Contenu */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Contenu
-                  </label>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-sm font-medium text-gray-300">
+                      Contenu
+                    </label>
+                    <div className="text-xs text-gray-500">
+                      💡 Utilisez <code className="px-1 bg-gray-700 rounded">[ ]</code> pour une checkbox vide, <code className="px-1 bg-gray-700 rounded">[x]</code> pour cochée
+                    </div>
+                  </div>
+                  
+                  {/* Barre d'outils rapide */}
+                  <div className="flex items-center gap-2 mb-2 p-2 bg-gray-800/50 rounded-lg border border-gray-600">
+                    <span className="text-xs text-gray-400">Insertion rapide :</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const textarea = document.querySelector('textarea') as HTMLTextAreaElement;
+                        if (textarea) {
+                          const start = textarea.selectionStart;
+                          const end = textarea.selectionEnd;
+                          const newContent = formData.content.slice(0, start) + '[ ] ' + formData.content.slice(end);
+                          setFormData({ ...formData, content: newContent });
+                          // Repositionner le curseur après l'insertion
+                          setTimeout(() => {
+                            textarea.focus();
+                            textarea.setSelectionRange(start + 4, start + 4);
+                          }, 10);
+                        }
+                      }}
+                      className="px-2 py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
+                    >
+                      [ ] Checkbox
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const textarea = document.querySelector('textarea') as HTMLTextAreaElement;
+                        if (textarea) {
+                          const start = textarea.selectionStart;
+                          const end = textarea.selectionEnd;
+                          const newContent = formData.content.slice(0, start) + '[x] ' + formData.content.slice(end);
+                          setFormData({ ...formData, content: newContent });
+                          setTimeout(() => {
+                            textarea.focus();
+                            textarea.setSelectionRange(start + 4, start + 4);
+                          }, 10);
+                        }
+                      }}
+                      className="px-2 py-1 text-xs bg-green-600 hover:bg-green-700 text-white rounded transition-colors"
+                    >
+                      [x] Cochée
+                    </button>
+                  </div>
+                  
                   <textarea
                     value={formData.content}
                     onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                    placeholder="Votre note ici..."
+                    placeholder="Votre note ici...
+
+Exemples de checkbox :
+[ ] Tâche à faire
+[x] Tâche terminée
+[ ] Autre tâche
+
+Vous pouvez aussi écrire du texte normal."
                     rows={20}
                     className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none font-mono"
                   />
