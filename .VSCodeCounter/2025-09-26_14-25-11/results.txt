@@ -1,0 +1,152 @@
+Date : 2025-09-26 14:25:11
+Directory : c:\Users\louis-marie.perret.d\Portfolio\portfolio
+Total : 98 files,  19362 codes, 987 comments, 1992 blanks, all 22341 lines
+
+Languages
++--------------------+------------+------------+------------+------------+------------+
+| language           | files      | code       | comment    | blank      | total      |
++--------------------+------------+------------+------------+------------+------------+
+| JSON               |          9 |      6,919 |          4 |         12 |      6,935 |
+| TypeScript JSX     |         35 |      6,646 |        429 |        668 |      7,743 |
+| TypeScript         |         13 |      1,911 |        322 |        392 |      2,625 |
+| Markdown           |         15 |      1,065 |          0 |        386 |      1,451 |
+| PostCSS            |          2 |        885 |         50 |        168 |      1,103 |
+| JavaScript         |          5 |        763 |         64 |        166 |        993 |
+| HTML               |          5 |        599 |          4 |         74 |        677 |
+| PHP                |          4 |        271 |         69 |         67 |        407 |
+| PowerShell         |          4 |        127 |         24 |         32 |        183 |
+| Properties         |          2 |         72 |         10 |         16 |         98 |
+| YAML               |          2 |         72 |          7 |          5 |         84 |
+| Docker             |          1 |         25 |          4 |          5 |         34 |
+| JSON with Comments |          1 |          7 |          0 |          1 |          8 |
++--------------------+------------+------------+------------+------------+------------+
+
+Directories
++------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                     | files      | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                        |         98 |     19,362 |        987 |      1,992 |     22,341 |
+| . (Files)                                                                                |         34 |      6,550 |         54 |        482 |      7,086 |
+| .bolt                                                                                    |          1 |          3 |          0 |          1 |          4 |
+| admin-files                                                                              |          1 |          1 |          0 |          0 |          1 |
+| api                                                                                      |          4 |        271 |         69 |         67 |        407 |
+| api-server                                                                               |          3 |      2,679 |         62 |        161 |      2,902 |
+| public                                                                                   |          6 |        424 |          2 |         55 |        481 |
+| public (Files)                                                                           |          5 |        411 |          2 |         49 |        462 |
+| public\cv                                                                                |          1 |         13 |          0 |          6 |         19 |
+| src                                                                                      |         49 |      9,434 |        800 |      1,226 |     11,460 |
+| src (Files)                                                                              |          5 |        939 |         54 |        173 |      1,166 |
+| src\admin                                                                                |          5 |      2,214 |        181 |        234 |      2,629 |
+| src\components                                                                           |         23 |      3,525 |        154 |        338 |      4,017 |
+| src\contexts                                                                             |          3 |        731 |         86 |         81 |        898 |
+| src\hooks                                                                                |          3 |        162 |          2 |         42 |        206 |
+| src\pages                                                                                |          2 |        122 |          5 |         11 |        138 |
+| src\services                                                                             |          2 |        460 |         95 |        101 |        656 |
+| src\types                                                                                |          2 |         35 |          0 |          1 |         36 |
+| src\utils                                                                                |          4 |      1,246 |        223 |        245 |      1,714 |
++------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| filename                                                                                 | language           | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\.bolt\config.json                      | JSON               |          3 |          0 |          1 |          4 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\ADMIN_FILTERS_GUIDE.md                 | Markdown           |         67 |          0 |         22 |         89 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\ADMIN_PDF_VIEWER.md                    | Markdown           |         71 |          0 |         24 |         95 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\ADMIN_PREVIEW_GUIDE.md                 | Markdown           |         98 |          0 |         30 |        128 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\ADMIN_TROUBLESHOOTING.md               | Markdown           |         41 |          0 |         17 |         58 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\CHANGELOG_ADMIN.md                     | Markdown           |        120 |          0 |         33 |        153 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\DEPLOYMENT_ADMIN.md                    | Markdown           |        100 |          0 |         46 |        146 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\Dockerfile                             | Docker             |         25 |          4 |          5 |         34 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\EMAILJS_SETUP.md                       | Markdown           |         71 |          0 |         23 |         94 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\GOOGLE_ANALYTICS_SETUP.md              | Markdown           |         53 |          0 |         23 |         76 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\PORTAINER_ENV_GUIDE.md                 | Markdown           |         35 |          0 |         15 |         50 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\PORTAINER_IMPORT.md                    | Markdown           |         45 |          0 |         17 |         62 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\PORTAINER_SETUP.md                     | Markdown           |        146 |          0 |         60 |        206 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\PORTAINER_VARIABLES.md                 | Markdown           |        123 |          0 |         36 |        159 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\README.md                              | Markdown           |          1 |          0 |          1 |          2 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\SECURITY_ADMIN.md                      | Markdown           |         81 |          0 |         33 |        114 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\admin-files\metadata.json              | JSON               |          1 |          0 |          0 |          1 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\api-server\package-lock.json           | JSON               |      1,963 |          0 |          1 |      1,964 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\api-server\package.json                | JSON               |         17 |          0 |          1 |         18 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\api-server\server.js                   | JavaScript         |        699 |         62 |        159 |        920 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\api\config.php                         | PHP                |         73 |         29 |         17 |        119 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\api\download.php                       | PHP                |         37 |          7 |         10 |         54 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\api\files.php                          | PHP                |        110 |         24 |         29 |        163 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\api\preview.php                        | PHP                |         51 |          9 |         11 |         71 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\docker-compose.production.yml          | YAML               |         34 |          3 |          2 |         39 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\docker-compose.yml                     | YAML               |         38 |          4 |          3 |         45 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\eslint.config.js                       | JavaScript         |         27 |          0 |          2 |         29 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\index.html                             | HTML               |         37 |          3 |          3 |         43 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\install-php.ps1                        | PowerShell         |         42 |          8 |         12 |         62 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\nginx.conf                             | Properties         |         13 |          0 |          4 |         17 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\nginx.production.conf                  | Properties         |         59 |         10 |         12 |         81 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\package-lock.json                      | JSON               |      4,827 |          0 |          1 |      4,828 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\package.json                           | JSON               |         43 |          0 |          1 |         44 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\postcss.config.js                      | JavaScript         |          6 |          0 |          1 |          7 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\public\cv\README.md                    | Markdown           |         13 |          0 |          6 |         19 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\public\manifest.json                   | JSON               |         27 |          0 |          1 |         28 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\public\sw.js                           | JavaScript         |         23 |          1 |          3 |         27 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\public\test-api.html                   | HTML               |        201 |          0 |         26 |        227 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\public\test-env.html                   | HTML               |         27 |          0 |          2 |         29 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\public\test-preview.html               | HTML               |        133 |          1 |         17 |        151 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\setup-xampp.ps1                        | PowerShell         |         12 |          2 |          1 |         15 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\App.tsx                            | TypeScript JSX     |         50 |          5 |          6 |         61 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\Portfolio.tsx                      | TypeScript JSX     |         29 |          0 |          2 |         31 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\admin\AdminAuth.tsx                | TypeScript JSX     |        200 |         53 |         25 |        278 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\admin\AdminDashboard.tsx           | TypeScript JSX     |      1,727 |        109 |        170 |      2,006 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\admin\AdminRoute.tsx               | TypeScript JSX     |         24 |          3 |          6 |         33 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\admin\CustomPDFViewer.tsx          | TypeScript JSX     |        227 |         13 |         26 |        266 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\admin\pdf-viewer.css               | PostCSS            |         36 |          3 |          7 |         46 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\About.tsx               | TypeScript JSX     |         88 |          2 |          7 |         97 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\AnimatedSkillsChart.tsx | TypeScript JSX     |          0 |          0 |          1 |          1 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\CVDownload.tsx          | TypeScript JSX     |        209 |         14 |         21 |        244 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\CalendlyWidget.tsx      | TypeScript JSX     |        121 |          2 |         14 |        137 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\Certifications.tsx      | TypeScript JSX     |        138 |          4 |         12 |        154 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\Contact.tsx             | TypeScript JSX     |        286 |         10 |         33 |        329 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\Education.tsx           | TypeScript JSX     |          0 |          0 |          1 |          1 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\Experience.tsx          | TypeScript JSX     |          0 |          0 |          1 |          1 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\Footer.tsx              | TypeScript JSX     |         51 |          2 |          8 |         61 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\Header.tsx              | TypeScript JSX     |        101 |          4 |         10 |        115 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\Hero.tsx                | TypeScript JSX     |        133 |         12 |         16 |        161 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\InteractiveMap.tsx      | TypeScript JSX     |          0 |          0 |          1 |          1 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\Interests.tsx           | TypeScript JSX     |         97 |          1 |          7 |        105 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\LanguageSwitch.tsx      | TypeScript JSX     |         25 |          1 |          5 |         31 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\Notes.tsx               | TypeScript JSX     |        795 |         52 |         78 |        925 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\Projects.tsx            | TypeScript JSX     |        122 |          4 |          9 |        135 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\QRCodeGenerator.tsx     | TypeScript JSX     |        218 |          9 |         25 |        252 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\Skills.tsx              | TypeScript JSX     |        128 |          2 |          8 |        138 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\Statistics.tsx          | TypeScript JSX     |          0 |          0 |          1 |          1 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\ThemeToggle.tsx         | TypeScript JSX     |         80 |          1 |          8 |         89 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\Timeline.tsx            | TypeScript JSX     |        138 |          2 |          9 |        149 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\TimelineCard.tsx        | TypeScript JSX     |        139 |          6 |         15 |        160 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\TodoList.tsx            | TypeScript JSX     |        656 |         26 |         48 |        730 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\contexts\AdminContext.tsx          | TypeScript JSX     |        146 |         51 |         31 |        228 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\contexts\LanguageContext.tsx       | TypeScript JSX     |        509 |         28 |         35 |        572 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\contexts\ThemeContext.tsx          | TypeScript JSX     |         76 |          7 |         15 |         98 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\hooks\useAdvancedAnimations.ts     | TypeScript         |         84 |          0 |         24 |        108 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\hooks\useIntersectionObserver.ts   | TypeScript         |          0 |          0 |          1 |          1 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\hooks\useScrollAnimation.ts        | TypeScript         |         78 |          2 |         17 |         97 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\index.css                          | PostCSS            |        849 |         47 |        161 |      1,057 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\main.tsx                           | TypeScript JSX     |         11 |          1 |          3 |         15 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\pages\NotesPage.tsx                | TypeScript JSX     |         59 |          3 |          6 |         68 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\pages\TodoPage.tsx                 | TypeScript JSX     |         63 |          2 |          5 |         70 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\services\adminFilesService.ts      | TypeScript         |        199 |         40 |         41 |        280 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\services\todoService.ts            | TypeScript         |        261 |         55 |         60 |        376 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\types\Note.ts                      | TypeScript         |         12 |          0 |          0 |         12 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\types\Todo.ts                      | TypeScript         |         23 |          0 |          1 |         24 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\utils\adminAuth.ts                 | TypeScript         |        232 |         14 |         43 |        289 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\utils\adminFileService.ts          | TypeScript         |        632 |        133 |        123 |        888 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\utils\analytics.ts                 | TypeScript         |         69 |         15 |         18 |        102 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\utils\notesService.ts              | TypeScript         |        313 |         61 |         61 |        435 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\vite-env.d.ts                      | TypeScript         |          0 |          1 |          1 |          2 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\start-php-portable.ps1                 | PowerShell         |         36 |          7 |         12 |         55 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\start-php-server.ps1                   | PowerShell         |         37 |          7 |          7 |         51 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\tailwind.config.js                     | JavaScript         |          8 |          1 |          1 |         10 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\test-api.html                          | HTML               |        201 |          0 |         26 |        227 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\tsconfig.app.json                      | JSON               |         20 |          2 |          3 |         25 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\tsconfig.json                          | JSON with Comments |          7 |          0 |          1 |          8 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\tsconfig.node.json                     | JSON               |         18 |          2 |          3 |         23 |
+| c:\Users\louis-marie.perret.d\Portfolio\portfolio\vite.config.ts                         | TypeScript         |          8 |          1 |          2 |         11 |
+| Total                                                                                    |                    |     19,362 |        987 |      1,992 |     22,341 |
++------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+

@@ -1,0 +1,100 @@
+"filename", "language", "PHP", "Markdown", "JSON", "Properties", "PowerShell", "Docker", "HTML", "JavaScript", "YAML", "JSON with Comments", "TypeScript", "PostCSS", "TypeScript JSX", "comment", "blank", "total"
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\.bolt\config.json", "JSON", 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\ADMIN_FILTERS_GUIDE.md", "Markdown", 0, 67, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 89
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\ADMIN_PDF_VIEWER.md", "Markdown", 0, 71, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 24, 95
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\ADMIN_PREVIEW_GUIDE.md", "Markdown", 0, 98, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30, 128
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\ADMIN_TROUBLESHOOTING.md", "Markdown", 0, 41, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 58
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\CHANGELOG_ADMIN.md", "Markdown", 0, 120, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 153
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\DEPLOYMENT_ADMIN.md", "Markdown", 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 46, 146
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\Dockerfile", "Docker", 0, 0, 0, 0, 0, 25, 0, 0, 0, 0, 0, 0, 0, 4, 5, 34
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\EMAILJS_SETUP.md", "Markdown", 0, 71, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 23, 94
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\GOOGLE_ANALYTICS_SETUP.md", "Markdown", 0, 53, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 23, 76
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\PORTAINER_ENV_GUIDE.md", "Markdown", 0, 35, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 50
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\PORTAINER_IMPORT.md", "Markdown", 0, 45, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 62
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\PORTAINER_SETUP.md", "Markdown", 0, 146, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 60, 206
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\PORTAINER_VARIABLES.md", "Markdown", 0, 123, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36, 159
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\README.md", "Markdown", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\SECURITY_ADMIN.md", "Markdown", 0, 81, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 114
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\admin-files\metadata.json", "JSON", 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\api-server\package-lock.json", "JSON", 0, 0, 1963, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1964
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\api-server\package.json", "JSON", 0, 0, 17, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 18
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\api-server\server.js", "JavaScript", 0, 0, 0, 0, 0, 0, 0, 699, 0, 0, 0, 0, 0, 62, 159, 920
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\api\config.php", "PHP", 73, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 29, 17, 119
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\api\download.php", "PHP", 37, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 10, 54
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\api\files.php", "PHP", 110, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 24, 29, 163
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\api\preview.php", "PHP", 51, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 11, 71
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\docker-compose.production.yml", "YAML", 0, 0, 0, 0, 0, 0, 0, 0, 34, 0, 0, 0, 0, 3, 2, 39
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\docker-compose.yml", "YAML", 0, 0, 0, 0, 0, 0, 0, 0, 38, 0, 0, 0, 0, 4, 3, 45
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\eslint.config.js", "JavaScript", 0, 0, 0, 0, 0, 0, 0, 27, 0, 0, 0, 0, 0, 0, 2, 29
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\index.html", "HTML", 0, 0, 0, 0, 0, 0, 37, 0, 0, 0, 0, 0, 0, 3, 3, 43
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\install-php.ps1", "PowerShell", 0, 0, 0, 0, 42, 0, 0, 0, 0, 0, 0, 0, 0, 8, 12, 62
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\nginx.conf", "Properties", 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 17
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\nginx.production.conf", "Properties", 0, 0, 0, 59, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 12, 81
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\package-lock.json", "JSON", 0, 0, 4827, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4828
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\package.json", "JSON", 0, 0, 43, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 44
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\postcss.config.js", "JavaScript", 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 1, 7
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\public\cv\README.md", "Markdown", 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 19
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\public\manifest.json", "JSON", 0, 0, 27, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 28
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\public\sw.js", "JavaScript", 0, 0, 0, 0, 0, 0, 0, 23, 0, 0, 0, 0, 0, 1, 3, 27
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\public\test-api.html", "HTML", 0, 0, 0, 0, 0, 0, 201, 0, 0, 0, 0, 0, 0, 0, 26, 227
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\public\test-env.html", "HTML", 0, 0, 0, 0, 0, 0, 27, 0, 0, 0, 0, 0, 0, 0, 2, 29
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\public\test-preview.html", "HTML", 0, 0, 0, 0, 0, 0, 133, 0, 0, 0, 0, 0, 0, 1, 17, 151
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\setup-xampp.ps1", "PowerShell", 0, 0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 15
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\App.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50, 5, 6, 61
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\Portfolio.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 29, 0, 2, 31
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\admin\AdminAuth.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 53, 25, 278
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\admin\AdminDashboard.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1727, 109, 170, 2006
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\admin\AdminRoute.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 24, 3, 6, 33
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\admin\CustomPDFViewer.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 227, 13, 26, 266
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\admin\pdf-viewer.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36, 0, 3, 7, 46
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\About.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 88, 2, 7, 97
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\AnimatedSkillsChart.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\CVDownload.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 209, 14, 21, 244
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\CalendlyWidget.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 121, 2, 14, 137
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\Certifications.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 138, 4, 12, 154
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\Contact.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 286, 10, 33, 329
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\Education.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\Experience.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\Footer.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 51, 2, 8, 61
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\Header.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 101, 4, 10, 115
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\Hero.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 133, 12, 16, 161
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\InteractiveMap.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\Interests.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 97, 1, 7, 105
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\LanguageSwitch.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25, 1, 5, 31
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\Notes.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 795, 52, 78, 925
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\Projects.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 122, 4, 9, 135
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\QRCodeGenerator.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 218, 9, 25, 252
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\Skills.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 2, 8, 138
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\Statistics.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\ThemeToggle.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 1, 8, 89
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\Timeline.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 138, 2, 9, 149
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\TimelineCard.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 139, 6, 15, 160
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\components\TodoList.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 656, 26, 48, 730
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\contexts\AdminContext.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 146, 51, 31, 228
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\contexts\LanguageContext.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 509, 28, 35, 572
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\contexts\ThemeContext.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 76, 7, 15, 98
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\hooks\useAdvancedAnimations.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 84, 0, 0, 0, 24, 108
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\hooks\useIntersectionObserver.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\hooks\useScrollAnimation.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 78, 0, 0, 2, 17, 97
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\index.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 849, 0, 47, 161, 1057
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\main.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 1, 3, 15
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\pages\NotesPage.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 59, 3, 6, 68
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\pages\TodoPage.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 63, 2, 5, 70
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\services\adminFilesService.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 199, 0, 0, 40, 41, 280
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\services\todoService.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 261, 0, 0, 55, 60, 376
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\types\Note.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 0, 0, 0, 0, 12
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\types\Todo.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 23, 0, 0, 0, 1, 24
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\utils\adminAuth.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 232, 0, 0, 14, 43, 289
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\utils\adminFileService.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 632, 0, 0, 133, 123, 888
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\utils\analytics.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 69, 0, 0, 15, 18, 102
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\utils\notesService.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 313, 0, 0, 61, 61, 435
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\src\vite-env.d.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\start-php-portable.ps1", "PowerShell", 0, 0, 0, 0, 36, 0, 0, 0, 0, 0, 0, 0, 0, 7, 12, 55
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\start-php-server.ps1", "PowerShell", 0, 0, 0, 0, 37, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 51
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\tailwind.config.js", "JavaScript", 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 1, 1, 10
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\test-api.html", "HTML", 0, 0, 0, 0, 0, 0, 201, 0, 0, 0, 0, 0, 0, 0, 26, 227
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\tsconfig.app.json", "JSON", 0, 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 25
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\tsconfig.json", "JSON with Comments", 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 1, 8
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\tsconfig.node.json", "JSON", 0, 0, 18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 23
+"c:\Users\louis-marie.perret.d\Portfolio\portfolio\vite.config.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 1, 2, 11
+"Total", "-", 271, 1065, 6919, 72, 127, 25, 599, 763, 72, 7, 1911, 885, 6646, 987, 1992, 22341
