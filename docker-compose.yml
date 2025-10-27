@@ -17,6 +17,8 @@ services:
     container_name: portfolio-production
     ports:
       - "2368:80"
+    networks:
+      - dmz_net
     volumes:
       # Volume persistant pour les fichiers d'administration
       - admin_files:/app/admin-files
