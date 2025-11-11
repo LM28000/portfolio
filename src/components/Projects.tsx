@@ -1,24 +1,52 @@
-import { Folder, ExternalLink, Github, Wrench, Server } from 'lucide-react';
+import { Folder, ExternalLink, Github, Wrench, Server, ClipboardList, Maximize2 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useScrollAnimation, useStaggeredAnimation } from '../hooks/useScrollAnimation';
+import { useState } from 'react';
+import { createPortal } from 'react-dom';
+
+interface Project {
+  title: string;
+  category: string;
+  description: string;
+  details: string[];
+  technologies: string[];
+  icon: any;
+  color: string;
+  architectureImage?: string; // Chemin vers l'image d'architecture
+}
 
 const Projects = () => {
   const { t } = useLanguage();
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const titleAnimation = useScrollAnimation({ delay: 200 });
   const projectsAnimation = useStaggeredAnimation(3, 300);
   const ctaAnimation = useScrollAnimation({ delay: 800 });
-  const projects = [
+  const projects: Project[] = [
     {
       title: t('projects.pix.title'),
       category: t('projects.pix.category'),
       description: t('projects.pix.description'),
       details: [
         t('projects.pix.detail1'),
-        t('projects.pix.detail2')
+        t('projects.pix.detail2'),
+        t('projects.pix.detail3')
       ],
-      technologies: ["Solidworks", t('projects.technologies.mechanics'), t('projects.technologies.electronics'), t('projects.technologies.programming')],
+      technologies: [t('projects.technologies.teamwork'), t('projects.technologies.modeling3d'), t('projects.technologies.projectManagement'), t('projects.technologies.communication'), t('projects.technologies.mechanics')],
       icon: Wrench,
       color: "blue"
+    },
+    {
+      title: t('projects.pix2.title'),
+      category: t('projects.pix2.category'),
+      description: t('projects.pix2.description'),
+      details: [
+        t('projects.pix2.detail1'),
+        t('projects.pix2.detail2'),
+        t('projects.pix2.detail3')
+      ],
+      technologies: [t('projects.technologies.projectManagement'), t('projects.technologies.moa'), t('projects.technologies.specifications'), t('projects.technologies.ideation'), t('projects.technologies.riskAnalysis')],
+      icon: ClipboardList,
+      color: "green"
     },
     {
       title: t('projects.multimedia.title'),
@@ -26,11 +54,14 @@ const Projects = () => {
       description: t('projects.multimedia.description'),
       details: [
         t('projects.multimedia.detail1'),
-        t('projects.multimedia.detail2')
+        t('projects.multimedia.detail2'),
+        t('projects.multimedia.detail3'),
+        t('projects.multimedia.detail4')
       ],
-      technologies: ["Debian", "Linux", t('projects.technologies.system'), t('projects.technologies.networks')],
+      technologies: [t('projects.technologies.unixAdmin'), t('projects.technologies.docker'), t('projects.technologies.devops'), t('projects.technologies.virtualization'), t('projects.technologies.containerization'), t('projects.technologies.monitoring')],
       icon: Server,
-      color: "teal"
+      color: "teal",
+      architectureImage: "/images/server-architecture.png" // Vous mettrez votre image ici
     }
   ];
 
@@ -55,6 +86,7 @@ const Projects = () => {
             const IconComponent = project.icon;
             const colorClasses = {
               blue: "from-blue-500 to-blue-600 shadow-blue-500/25",
+              green: "from-green-500 to-green-600 shadow-green-500/25",
               teal: "from-teal-500 to-teal-600 shadow-teal-500/25"
             };
 
@@ -108,6 +140,28 @@ const Projects = () => {
                       ))}
                     </div>
                   </div>
+
+                  {/* Architecture du projet (si disponible) */}
+                  {project.architectureImage && (
+                    <div className="space-y-3 mt-6">
+                      <h4 className="font-semibold text-gray-900 dark:text-white">{t('projects.architecture')}</h4>
+                      <div className="relative group cursor-pointer" onClick={() => setSelectedImage(project.architectureImage!)}>
+                        <img 
+                          src={project.architectureImage} 
+                          alt={t('projects.architecture')}
+                          className="w-full h-auto rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow duration-200"
+                        />
+                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-200 rounded-lg flex items-center justify-center">
+                          <div className="bg-white/90 dark:bg-gray-800/90 rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                            <Maximize2 size={16} className="text-gray-600 dark:text-gray-300" />
+                          </div>
+                        </div>
+                      </div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
+                        {t('projects.architecture.click')}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             );
@@ -128,6 +182,28 @@ const Projects = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal pour l'image d'architecture */}
+      {selectedImage && createPortal(
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4" style={{ zIndex: 9999 }}>
+          <div className="relative max-w-6xl max-h-[95vh] overflow-auto">
+            <button
+              onClick={() => setSelectedImage(null)}
+              className="absolute top-4 right-4 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800 rounded-full p-2 transition-colors z-10"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <img 
+              src={selectedImage} 
+              alt={t('projects.architecture.modal')}
+              className="w-full h-auto rounded-lg shadow-2xl"
+            />
+          </div>
+        </div>,
+        document.body
+      )}
     </section>
   );
 };

@@ -563,6 +563,157 @@
   .modal-overlay {
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
+    z-index: 9998; /* Force l'overlay au-dessus de tout */
+  }
+
+  /* Style spécial pour la modal CV avec z-index très élevé */
+  .cv-modal-overlay {
+    z-index: 999999 !important;
+    position: fixed !important;
+    inset: 0 !important;
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+  }
+
+  .cv-modal-content {
+    z-index: 1000000 !important;
+    position: fixed !important;
+    inset: 0 !important;
+  }
+
+  /* S'assurer que la modal CV apparaît au-dessus de tous les éléments */
+  .cv-modal-content > div {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Isoler la modal dans son propre contexte de stacking */
+  .cv-modal-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 999999;
+    pointer-events: none;
+  }
+
+  .cv-modal-container.active {
+    pointer-events: all;
+  }
+
+  /* ==================================== */
+  /* === STYLES MERMAID POUR PORTFOLIO === */
+  /* ==================================== */
+
+  /* Styles généraux */
+  .mermaid .edgeLabel {
+    /* En mode clair, label blanc avec texte sombre */
+    background-color: #ffffff !important;
+    color: #374151 !important;
+    opacity: 0.8;
+  }
+  .mermaid .node .icon {
+    /* Fait hériter la couleur du texte à l'icône */
+    color: inherit !important;
+  }
+
+  /* --- Palette mode CLAIR --- */
+  /* (Couleurs vives et claires) */
+  .mermaid .node.external rect { 
+    fill: #dbeafe !important; /* bleu-100 */
+    stroke: #3b82f6 !important; /* bleu-500 */
+    color: #1e40af !important; /* bleu-800 */
+  }
+  .mermaid .node.proxy rect { 
+    fill: #ccfbf1 !important; /* sarcelle-100 */
+    stroke: #0d9488 !important; /* sarcelle-600 */
+    color: #134e4a !important; /* sarcelle-900 */
+  }
+  .mermaid .node.dmz_service rect { 
+    fill: #e0f2fe !important; /* ciel-100 */
+    stroke: #0284c7 !important; /* ciel-600 */
+    color: #0c4a6e !important; /* ciel-900 */
+  }
+  .mermaid .node.internal_service rect { 
+    fill: #f3e8ff !important; /* violet-100 */
+    stroke: #9333ea !important; /* violet-600 */
+    color: #581c87 !important; /* violet-900 */
+  }
+  .mermaid .node.ops_service rect { 
+    fill: #dcfce7 !important; /* vert-100 */
+    stroke: #16a34a !important; /* vert-600 */
+    color: #166534 !important; /* vert-900 */
+  }
+  .mermaid .node.storage_hw rect { 
+    fill: #fef9c3 !important; /* jaune-100 */
+    stroke: #ca8a04 !important; /* jaune-600 */
+    color: #713f12 !important; /* jaune-900 */
+  }
+  .mermaid .node.docker_node rect { 
+    fill: #bfdbfe !important; /* Docker bleu clair */
+    stroke: #2563eb !important; /* Docker bleu */
+    color: #1e3a8a !important; /* Docker bleu sombre */
+  }
+
+  /* --- Palette mode SOMBRE --- */
+  /* (Couleurs plus riches et sombres) */
+  .dark .mermaid .edgeLabel {
+    /* En mode sombre, label sombre avec texte clair */
+    background-color: #374151 !important; /* gris-700 */
+    color: #f3f4f6 !important;
+  }
+
+  .dark .mermaid .node.external rect { 
+    fill: #1e3a8a !important; 
+    stroke: #60a5fa !important; 
+    color: #dbeafe !important;
+  }
+  .dark .mermaid .node.proxy rect { 
+    fill: #134e4a !important; 
+    stroke: #2dd4bf !important; 
+    color: #ccfbf1 !important;
+  }
+  .dark .mermaid .node.dmz_service rect { 
+    fill: #0c4a6e !important; 
+    stroke: #7dd3fc !important; 
+    color: #e0f2fe !important;
+  }
+  .dark .mermaid .node.internal_service rect { 
+    fill: #581c87 !important; 
+    stroke: #d8b4fe !important; 
+    color: #f3e8ff !important;
+  }
+  .dark .mermaid .node.ops_service rect { 
+    fill: #166534 !important; 
+    stroke: #4ade80 !important; 
+    color: #dcfce7 !important;
+  }
+  .dark .mermaid .node.storage_hw rect { 
+    fill: #713f12 !important; 
+    stroke: #facc15 !important; 
+    color: #fef9c3 !important;
+  }
+  .dark .mermaid .node.docker_node rect { 
+    fill: #1e3a8a !important; /* Docker bleu sombre */
+    stroke: #60a5fa !important; /* Docker bleu clair */
+    color: #bfdbfe !important;
+  }
+
+  /* Styles pour le conteneur du diagramme */
+  .mermaid-container {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+  }
+
+  .dark .mermaid-container {
+    background-color: #1f2937;
+    border-color: #374151;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
   }
   
   /* Animations améliorées pour les modales */

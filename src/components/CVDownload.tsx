@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Download, FileText, Calendar, Globe, Star, X } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { trackEvent } from '../utils/analytics';
@@ -115,19 +116,21 @@ const CVDownload = ({ variant = 'primary', className = '' }: CVDownloadProps) =>
         </button>
       </div>
 
-      {/* Modal */}
-      {isModalOpen && (
-        <>
+      {/* Modal rendue via Portal pour éviter les problèmes de z-index */}
+      {isModalOpen && createPortal(
+        <div className={`cv-modal-container ${isModalOpen ? 'active' : ''}`}>
           {/* Overlay */}
           <div 
-            className={`fixed inset-0 bg-black bg-opacity-50 modal-overlay z-40 ${isClosing ? 'animate-overlay-out' : 'animate-overlay-in'}`}
+            className={`fixed inset-0 bg-black bg-opacity-50 modal-overlay cv-modal-overlay ${isClosing ? 'animate-overlay-out' : 'animate-overlay-in'}`}
             onClick={handleClose}
+            style={{ zIndex: 999999 }}
           />
           
           {/* Modal Content */}
-          <div className="fixed z-50 inset-0 flex items-center justify-center p-4">
+          <div className="fixed inset-0 flex items-center justify-center p-4 cv-modal-content" style={{ zIndex: 1000000 }}>
             <div 
-              className={`bg-white dark:bg-gray-800 rounded-xl shadow-2xl modal-content max-w-4xl w-full max-h-[90vh] overflow-hidden ${isClosing ? 'animate-modal-out' : 'animate-modal-in'}`}
+              className={`bg-white dark:bg-gray-800 rounded-xl shadow-2xl modal-content max-w-4xl w-full overflow-hidden ${isClosing ? 'animate-modal-out' : 'animate-modal-in'}`}
+              style={{maxHeight: '90vh'}}
             >
               {/* Header */}
               <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
@@ -147,7 +150,7 @@ const CVDownload = ({ variant = 'primary', className = '' }: CVDownloadProps) =>
                 </button>
               </div>
 
-              <div className="flex flex-col lg:flex-row max-h-[calc(90vh-80px)]">
+              <div className="flex flex-col lg:flex-row" style={{maxHeight: 'calc(90vh - 80px)'}}>
                 {/* Options de CV */}
                 <div className="lg:w-1/2 p-6 border-r border-gray-200 dark:border-gray-700">
                   <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
@@ -216,7 +219,7 @@ const CVDownload = ({ variant = 'primary', className = '' }: CVDownloadProps) =>
                       <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
                         {t('cv.preview.title')}
                       </h4>
-                      <div className="bg-gray-100 dark:bg-gray-900 rounded-lg h-[400px] flex items-center justify-center">
+                      <div className="bg-gray-100 dark:bg-gray-900 rounded-lg flex items-center justify-center" style={{height: '400px'}}>
                         <iframe
                           src={`/cv/${selectedCV.filename}#toolbar=0&navpanes=0&scrollbar=0`}
                           className="w-full h-full rounded-lg"
@@ -235,7 +238,8 @@ const CVDownload = ({ variant = 'primary', className = '' }: CVDownloadProps) =>
               </div>
             </div>
           </div>
-        </>
+        </div>,
+        document.body
       )}
     </div>
   );
