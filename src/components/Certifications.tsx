@@ -19,6 +19,15 @@ const Certifications = () => {
 
   const certifications: Certification[] = [
     {
+      title: t('certifications.genai.title'),
+      issuer: 'Devoteam',
+      date: t('certifications.genai.date'),
+      level: 'Level 1',
+      description: t('certifications.genai.description'),
+      icon: '🧠',
+      color: 'from-cyan-500 to-blue-600'
+    },
+    {
       title: t('certifications.toefl.title'),
       issuer: 'ETS (Educational Testing Service)',
       date: t('certifications.toefl.date'),
@@ -51,6 +60,7 @@ const Certifications = () => {
       icon: '📝',
       color: 'from-orange-500 to-orange-600'
     }
+    
   ];
 
   return (
@@ -133,11 +143,11 @@ const Certifications = () => {
         {/* Statistics */}
         <div className={`mt-16 grid grid-cols-3 gap-6 max-w-3xl mx-auto ${isVisible ? 'animate-fade-in-up stagger-3' : 'opacity-0'}`}>
           <div className="text-center">
-            <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">4</div>
+            <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">5</div>
             <div className="text-sm text-gray-600 dark:text-gray-400">{t('certifications.stats.total')}</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">2024</div>
+            <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">2025</div>
             <div className="text-sm text-gray-600 dark:text-gray-400">{t('certifications.stats.recent')}</div>
           </div>
           <div className="text-center">
