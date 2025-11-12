@@ -12,7 +12,7 @@ interface Project {
   technologies: string[];
   icon: any;
   color: string;
-  architectureImage?: string; // Chemin vers l'image d'architecture
+  architectureImages?: { name: string; path: string }[]; // Support pour plusieurs images
 }
 
 const Projects = () => {
@@ -61,7 +61,10 @@ const Projects = () => {
       technologies: [t('projects.technologies.unixAdmin'), t('projects.technologies.docker'), t('projects.technologies.devops'), t('projects.technologies.virtualization'), t('projects.technologies.containerization'), t('projects.technologies.monitoring')],
       icon: Server,
       color: "teal",
-      architectureImage: "/images/server-architecture.png" // Vous mettrez votre image ici
+      architectureImages: [
+        { name: "Dataflow", path: "/images/Dataflow_server.png" },
+        { name: "Workflow", path: "/images/Workflow_server.png" }
+      ]
     }
   ];
 
@@ -142,20 +145,29 @@ const Projects = () => {
                   </div>
 
                   {/* Architecture du projet (si disponible) */}
-                  {project.architectureImage && (
+                  {project.architectureImages && project.architectureImages.length > 0 && (
                     <div className="space-y-3 mt-6">
                       <h4 className="font-semibold text-gray-900 dark:text-white">{t('projects.architecture')}</h4>
-                      <div className="relative group cursor-pointer" onClick={() => setSelectedImage(project.architectureImage!)}>
-                        <img 
-                          src={project.architectureImage} 
-                          alt={t('projects.architecture')}
-                          className="w-full h-auto rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow duration-200"
-                        />
-                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-200 rounded-lg flex items-center justify-center">
-                          <div className="bg-white/90 dark:bg-gray-800/90 rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                            <Maximize2 size={16} className="text-gray-600 dark:text-gray-300" />
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {project.architectureImages.map((image, index) => (
+                          <div key={index} className="space-y-2">
+                            <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300 text-center">
+                              {image.name}
+                            </h5>
+                            <div className="relative group cursor-pointer" onClick={() => setSelectedImage(image.path)}>
+                              <img 
+                                src={image.path} 
+                                alt={`${t('projects.architecture')} - ${image.name}`}
+                                className="w-full h-auto rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow duration-200"
+                              />
+                              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-200 rounded-lg flex items-center justify-center">
+                                <div className="bg-white/90 dark:bg-gray-800/90 rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                  <Maximize2 size={16} className="text-gray-600 dark:text-gray-300" />
+                                </div>
+                              </div>
+                            </div>
                           </div>
-                        </div>
+                        ))}
                       </div>
                       <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
                         {t('projects.architecture.click')}
