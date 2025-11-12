@@ -1,4 +1,4 @@
-import { Folder, ExternalLink, Github, Wrench, Server, ClipboardList, Maximize2 } from 'lucide-react';
+import { Folder, ExternalLink, Github, Wrench, Server, ClipboardList, Maximize2, Play } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useScrollAnimation, useStaggeredAnimation } from '../hooks/useScrollAnimation';
 import { useState } from 'react';
@@ -13,6 +13,7 @@ interface Project {
   icon: any;
   color: string;
   architectureImages?: { name: string; path: string }[]; // Support pour plusieurs images
+  videoUrl?: string; // URL YouTube pour le projet
 }
 
 const Projects = () => {
@@ -33,7 +34,8 @@ const Projects = () => {
       ],
       technologies: [t('projects.technologies.teamwork'), t('projects.technologies.modeling3d'), t('projects.technologies.projectManagement'), t('projects.technologies.communication'), t('projects.technologies.mechanics')],
       icon: Wrench,
-      color: "blue"
+      color: "blue",
+      videoUrl: "https://www.youtube.com/watch?v=oMu2nE1SH9U"
     },
     {
       title: t('projects.pix2.title'),
@@ -46,7 +48,8 @@ const Projects = () => {
       ],
       technologies: [t('projects.technologies.projectManagement'), t('projects.technologies.moa'), t('projects.technologies.specifications'), t('projects.technologies.ideation'), t('projects.technologies.riskAnalysis')],
       icon: ClipboardList,
-      color: "green"
+      color: "green",
+      videoUrl: "https://www.youtube.com/watch?v=36V9WvqcvQE"
     },
     {
       title: t('projects.multimedia.title'),
@@ -145,6 +148,25 @@ const Projects = () => {
                       ))}
                     </div>
                   </div>
+
+                  {/* Vidéo YouTube du projet (si disponible) */}
+                  {project.videoUrl && (
+                    <div className="space-y-3 mt-6">
+                      <h4 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                        <Play size={16} className="text-red-600" />
+                        {t('projects.video')}
+                      </h4>
+                      <div className="relative w-full" style={{ paddingBottom: '56.25%' }}> {/* 16:9 aspect ratio */}
+                        <iframe
+                          src={project.videoUrl.replace('watch?v=', 'embed/')}
+                          title={`${project.title} - Demonstration`}
+                          className="absolute top-0 left-0 w-full h-full rounded-lg border border-gray-200 dark:border-gray-700"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        />
+                      </div>
+                    </div>
+                  )}
 
                   {/* Architecture du projet (si disponible) */}
                   {project.architectureImages && project.architectureImages.length > 0 && (
