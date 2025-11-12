@@ -1206,3 +1206,45 @@ textarea {
     overflow-wrap: break-word;
   }
 }
+
+/* Styles spécifiques pour les logos de la timeline */
+.timeline-logo {
+  transition: all 0.3s ease-in-out;
+  filter: brightness(0) invert(1) drop-shadow(0 0 2px rgba(255, 255, 255, 0.3));
+}
+
+.timeline-logo:hover {
+  transform: scale(1.1);
+  filter: brightness(0) invert(1) drop-shadow(0 0 4px rgba(255, 255, 255, 0.6));
+}
+
+/* Animation pour l'apparition des logos */
+@keyframes logo-fade-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.5) rotate(-180deg);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1) rotate(-90deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.animate-logo-in {
+  animation: logo-fade-in 0.8s ease-out forwards;
+  animation-fill-mode: both;
+}
+
+/* Amélioration pour les logos dans les cercles colorés */
+.timeline-icon-container {
+  background: linear-gradient(135deg, var(--icon-color-start), var(--icon-color-end));
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.timeline-icon-container:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}

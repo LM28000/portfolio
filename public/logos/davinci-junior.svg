@@ -1,0 +1,21 @@
+<svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="davinciGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#14B8A6"/>
+      <stop offset="100%" style="stop-color:#5EEAD4"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Fond -->
+  <rect width="50" height="50" rx="10" fill="url(#davinciGradient)"/>
+  
+  <!-- Logo stylisé DaVinci Junior -->
+  <g transform="translate(8, 8)">
+    <!-- D stylisée avec courbes modernes -->
+    <path d="M2 2 L2 32 L18 32 Q32 32 32 17 Q32 2 18 2 Z" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- Point représentant Junior/jeunesse -->
+    <circle cx="28" cy="8" r="2.5" fill="white"/>
+    <!-- Ligne d'énergie -->
+    <path d="M20 15 Q25 10 30 15" stroke="white" stroke-width="1.5" fill="none" opacity="0.8"/>
+  </g>
+</svg>

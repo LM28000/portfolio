@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import LanguageSwitch from './LanguageSwitch';
 import ThemeToggle from './ThemeToggle';
@@ -9,46 +10,24 @@ import { trackPortfolioEvent } from '../utils/analytics';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState('hero');
+  const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useLanguage();
 
   const navItems = [
-    { id: 'hero', label: t('nav.home') },
-    { id: 'about', label: t('nav.about') },
-    { id: 'timeline', label: t('timeline.title') },
-    { id: 'skills', label: t('nav.skills') },
-    { id: 'certifications', label: t('certifications.title') },
-    { id: 'projects', label: t('nav.projects') },
-    { id: 'interests', label: t('nav.interests') },
-    { id: 'contact', label: t('nav.contact') },
+    { id: '/', label: t('nav.home') },
+    { id: '/experience', label: t('timeline.title') },
+    { id: '/skills', label: t('nav.skills') },
+    { id: '/projects', label: t('nav.projects') },
+    { id: '/interests', label: t('nav.interests') },
+    { id: '/contact', label: t('nav.contact') },
   ];
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const sections = navItems.map(item => item.id);
-      const scrollPosition = window.scrollY + 100;
-
-      for (const section of sections) {
-        const element = document.getElementById(section);
-        if (element && scrollPosition >= element.offsetTop && scrollPosition < element.offsetTop + element.offsetHeight) {
-          setActiveSection(section);
-          break;
-        }
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-      setIsMenuOpen(false);
-      // Track navigation event
-      trackPortfolioEvent.navigation(sectionId);
-    }
+  const navigateToPage = (path: string) => {
+    navigate(path);
+    setIsMenuOpen(false);
+    // Track navigation event
+    trackPortfolioEvent.navigation(path);
   };
 
   return (
@@ -60,9 +39,9 @@ const Header = () => {
             {navItems.map((item) => (
               <button
                 key={item.id}
-                onClick={() => scrollToSection(item.id)}
+                onClick={() => navigateToPage(item.id)}
                 className={`text-sm font-medium transition-colors ${
-                  activeSection === item.id ? 'text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300'
+                  location.pathname === item.id ? 'text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300'
                 }`}
               >
                 {item.label}
@@ -97,9 +76,9 @@ const Header = () => {
             {navItems.map((item) => (
               <button
                 key={item.id}
-                onClick={() => scrollToSection(item.id)}
+                onClick={() => navigateToPage(item.id)}
                 className={`block w-full text-left px-4 py-3 text-base font-medium transition-colors ${
-                  activeSection === item.id ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20' : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+                  location.pathname === item.id ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20' : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                 }`}
               >
                 {item.label}

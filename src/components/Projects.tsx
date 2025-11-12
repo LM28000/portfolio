@@ -56,9 +56,11 @@ const Projects = () => {
         t('projects.multimedia.detail1'),
         t('projects.multimedia.detail2'),
         t('projects.multimedia.detail3'),
-        t('projects.multimedia.detail4')
+        t('projects.multimedia.detail4'),
+        t('projects.multimedia.detail5'),
+        t('projects.multimedia.detail6')
       ],
-      technologies: [t('projects.technologies.unixAdmin'), t('projects.technologies.docker'), t('projects.technologies.devops'), t('projects.technologies.virtualization'), t('projects.technologies.containerization'), t('projects.technologies.monitoring')],
+      technologies: [t('projects.technologies.unixAdmin'), t('projects.technologies.docker'), t('projects.technologies.devops'), t('projects.technologies.virtualization'), t('projects.technologies.containerization'), t('projects.technologies.monitoring'), t('projects.technologies.dns'), t('projects.technologies.reverseProxy'), t('projects.technologies.ssl'), t('projects.technologies.nginx'), t('projects.technologies.security')],
       icon: Server,
       color: "teal",
       architectureImages: [
