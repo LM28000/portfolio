@@ -7,18 +7,35 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
+.pnp
+.pnp.js
+
+# Build outputs
 dist
 dist-ssr
+build
 *.local
 
 # Environment files
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 api-server/.env
+
+# Testing
+coverage
+.nyc_output
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
 .idea
 .DS_Store
 *.suo
@@ -26,4 +43,47 @@ api-server/.env
 *.njsproj
 *.sln
 *.sw?
-.env
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Admin uploaded files (keep structure but not files)
+admin-files/*
+!admin-files/.gitkeep
+!admin-files/metadata.json
+
+# Temporary files
+*.tmp
+*.temp
+.cache
+
+# Docker
+.dockerignore
+
+# Production config (keep examples)
+docker-compose.override.yml
+
+# Vercel
+.vercel
+
+# Netlify
+.netlify
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
